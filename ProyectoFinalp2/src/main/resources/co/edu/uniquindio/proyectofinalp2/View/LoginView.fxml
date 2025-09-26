@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.LoginController">
+
+    <center>
+        <VBox spacing="15" alignment="CENTER">
+            <Label text="Plataforma de Logística"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+            <TextField fx:id="txtCorreo" promptText="Correo electrónico" maxWidth="250"/>
+            <PasswordField fx:id="txtContrasena" promptText="Contraseña" maxWidth="250"/>
+
+            <HBox spacing="20" alignment="CENTER">
+                <RadioButton fx:id="rbUsuario" text="Usuario"/>
+                <RadioButton fx:id="rbAdmin" text="Administrador"/>
+                <RadioButton fx:id="rbRepartidor" text = "Repartidor"/>
+            </HBox>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button text="Iniciar Sesión" onAction="#handleLogin"/>
+                <Button text="Registrarse" onAction="#handleRegistro"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
