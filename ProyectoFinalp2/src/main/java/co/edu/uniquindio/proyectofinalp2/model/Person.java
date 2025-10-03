@@ -9,7 +9,6 @@ public abstract class Person {
     protected String fullname;
     protected String email;
     protected String phone;
-    protected List<String> addresses;
 
 
     protected Person(Builder<?>  builder) {
@@ -17,8 +16,7 @@ public abstract class Person {
         this.fullname = builder.name;
         this.email = builder.email;
         this.phone = builder.phone;
-        this.addresses = new ArrayList<>();
-    }
+        }
 
 
     public String getFullname() {
@@ -51,14 +49,6 @@ public abstract class Person {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<String> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<String> addresses) {
-        this.addresses = addresses;
     }
 
     public abstract static class Builder<T extends Builder<T>>{

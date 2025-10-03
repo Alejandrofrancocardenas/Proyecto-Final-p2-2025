@@ -1,5 +1,7 @@
 package co.edu.uniquindio.proyectofinalp2.dto;
 
+import co.edu.uniquindio.proyectofinalp2.model.Address;
+
 import java.util.List;
 
 public class UserDTO {
@@ -8,7 +10,7 @@ public class UserDTO {
     private String fullname;
     private String email;
     private String phone;
-    private List<String> addresses;
+    private List<Address> addresses;
 
 
     public UserDTO() {}
@@ -46,11 +48,11 @@ public class UserDTO {
         this.phone = phone;
     }
 
-    public List<String> getAddresses() {
+    public List<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<String> addresses) {
+    public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
     }
 
