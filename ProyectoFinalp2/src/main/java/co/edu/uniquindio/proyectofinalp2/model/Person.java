@@ -1,18 +1,15 @@
 package co.edu.uniquindio.proyectofinalp2.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Person {
 
-    protected String idUser;
+    protected String id;
     protected String fullname;
     protected String email;
     protected String phone;
 
 
     protected Person(Builder<?>  builder) {
-        this.idUser = builder.id;
+        this.id = builder.id;
         this.fullname = builder.name;
         this.email = builder.email;
         this.phone = builder.phone;
@@ -27,12 +24,12 @@ public abstract class Person {
         this.fullname = fullname;
     }
 
-    public String getIdUser() {
-        return idUser;
+    public String getId() {
+        return id;
     }
 
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
+    public void setId(String idUser) {
+        this.id = idUser;
     }
 
     public String getEmail() {

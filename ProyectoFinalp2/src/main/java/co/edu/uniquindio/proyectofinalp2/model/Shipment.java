@@ -1,13 +1,11 @@
 package co.edu.uniquindio.proyectofinalp2.model;
 
-import co.edu.uniquindio.proyectofinalp2.Model.Repartidor;
-
 import java.time.LocalDateTime;
 
 public class Shipment {
     //conexion con otras clases
     private User user;
-    private Repartidor repartidor;
+    private Dealer dealer;
 
     private String idShipment;
     private double weight;
@@ -35,12 +33,12 @@ public class Shipment {
         this.user = user;
     }
 
-    public Repartidor getRepartidor() {
-        return repartidor;
+    public Dealer getRepartidor() {
+        return dealer;
     }
 
-    public void setRepartidor(Repartidor repartidor) {
-        this.repartidor = repartidor;
+    public void setRepartidor(Dealer dealer) {
+        this.dealer = dealer;
     }
 
     public String getIdShipment() {
@@ -103,7 +101,7 @@ public class Shipment {
     public String toString() {
         return "Shipment{" +
                 "user=" + user +
-                ", repartidor=" + repartidor +
+                ", dealer=" + dealer +
                 ", idShipment='" + idShipment + '\'' +
                 ", weight=" + weight +
                 ", dimensions=" + dimensions +
