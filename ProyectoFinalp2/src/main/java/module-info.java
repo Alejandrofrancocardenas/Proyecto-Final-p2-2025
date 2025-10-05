@@ -13,5 +13,5 @@ module co.edu.uniquindio.proyectofinalp2 {
     opens co.edu.uniquindio.proyectofinalp2.ViewController to javafx.fxml;
     opens co.edu.uniquindio.proyectofinalp2 to javafx.fxml;
     exports co.edu.uniquindio.proyectofinalp2;
-    opens co.edu.uniquindio.proyectofinalp2.Model to javafx.base;
+
 }

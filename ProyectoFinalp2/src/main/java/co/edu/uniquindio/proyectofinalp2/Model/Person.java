@@ -1,4 +1,4 @@
-package co.edu.uniquindio.proyectofinalp2.model;
+package co.edu.uniquindio.proyectofinalp2.Model;
 
 import java.util.ArrayList;
 import java.util.List;
