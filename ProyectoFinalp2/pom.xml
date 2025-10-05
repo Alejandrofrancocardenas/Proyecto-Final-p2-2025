@@ -134,7 +134,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                co.edu.uniquindio.proyectofinalp2/co.edu.uniquindio.proyectofinalp2.HelloApplication
+                                co.edu.uniquindio.proyectofinalp2/co.edu.uniquindio.proyectofinalp2.App
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

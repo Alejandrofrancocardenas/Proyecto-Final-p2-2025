@@ -6,12 +6,20 @@ import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 
+import java.io.IOException;
+
 public class LoginController {
 
-    @FXML private TextField txtCorreo;
-    @FXML private PasswordField txtContrasena;
-    @FXML private RadioButton rbUsuario;
-    @FXML private RadioButton rbAdmin;
+    @FXML
+    private TextField txtCorreo;
+    @FXML
+    private PasswordField txtContrasena;
+    @FXML
+    private RadioButton rbUsuario;
+    @FXML
+    private RadioButton rbAdmin;
+    @FXML
+    private RadioButton rbRepartidor;
 
     private ToggleGroup rol;
 
@@ -20,26 +28,48 @@ public class LoginController {
         rol = new ToggleGroup();
         rbUsuario.setToggleGroup(rol);
         rbAdmin.setToggleGroup(rol);
+        rbRepartidor.setToggleGroup(rol);
     }
-
     @FXML
     private void handleLogin() {
         try {
+            FXMLLoader loader;
+            Stage stage = new Stage();
+            Scene scene;
+
             if (rbUsuario.isSelected()) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/co/edu/uniquindio/proyectofinalp2/View/UsuarioView.fxml"));
-                Stage stage = new Stage();
+                loader = new FXMLLoader(getClass().getResource("/co/edu/uniquindio/proyectofinalp2/View/UsuarioView.fxml"));
+                scene = new Scene(loader.load(), 800, 600);
                 stage.setTitle("Panel Usuario");
-                stage.setScene(new Scene(loader.load(), 800, 600));
-                stage.show();
-            } else if (rbAdmin.isSelected()) {
-                mostrarAlerta("Info", "Aquí abriría el Panel del Administrador");
-            } else {
-                mostrarAlerta("Error", "Seleccione un rol (Usuario o Administrador)");
             }
-        } catch (Exception e) {
+            else if (rbAdmin.isSelected()) {
+                loader = new FXMLLoader(getClass().getResource("/co/edu/uniquindio/proyectofinalp2/View/AdministratorView.fxml"));
+                scene = new Scene(loader.load(), 800, 600);
+                stage.setTitle("Panel Administrador");
+            }
+            else if (rbRepartidor.isSelected()) {
+                loader = new FXMLLoader(getClass().getResource("/co/edu/uniquindio/proyectofinalp2/View/DealerView.fxml"));
+                scene = new Scene(loader.load(), 800, 600);
+                stage.setTitle("Panel Repartidor");
+            }
+            else {
+                mostrarAlerta("Error", "Seleccione un rol (Usuario, Administrador o Repartidor)");
+                return;
+            }
+
+            stage.setScene(scene);
+            stage.show();
+
+
+            Stage currentStage = (Stage) rbUsuario.getScene().getWindow();
+            currentStage.close();
+
+        } catch (IOException e) {
             e.printStackTrace();
+            mostrarAlerta("Error", "No se pudo cargar la vista seleccionada.");
         }
     }
+
 
     @FXML
     private void handleRegistro() {

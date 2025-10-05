@@ -1,0 +1,21 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorController">
+
+    <left>
+        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #2c3e50;">
+            <Button text="Gestionar Usuarios" fx:id="btnUsuarios" onAction="#onGestionUsuarios"/>
+            <Button text="Gestionar Repartidores" fx:id="btnRepartidores" onAction="#onGestionRepartidores"/>
+            <Button text="Asignar Envíos" fx:id="btnEnvios" onAction="#onAsignacionEnvios"/>
+            <Button text="Métricas" fx:id="btnMetricas" onAction="#onPanelMetricas"/>
+        </VBox>
+    </left>
+
+    <!-- Contenedor central -->
+    <center>
+        <StackPane fx:id="contenedorCentral"/>
+    </center>
+</BorderPane>
