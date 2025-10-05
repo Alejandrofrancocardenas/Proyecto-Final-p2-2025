@@ -1,6 +1,8 @@
-package co.edu.uniquindio.proyectofinalp2.model;
+package co.edu.uniquindio.proyectofinalp2.Model;
 
-public class Dealer extends Person{
+import co.edu.uniquindio.proyectofinalp2.Model.Person;
+
+public class Dealer extends Person {
     // hola, oye cambié el nombre de repartidor a dealer, para trabajar e ingles
 
     private Dealer (Builder builder) {

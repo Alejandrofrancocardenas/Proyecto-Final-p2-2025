@@ -1,5 +1,7 @@
 package co.edu.uniquindio.proyectofinalp2.model;
 
+import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
+
 import java.time.LocalDateTime;
 
 public class Shipment {
@@ -11,7 +13,7 @@ public class Shipment {
     private double weight;
     private double dimensions;
     private double price;
-    private ShippingStatus status;
+    private co.edu.uniquindio.proyectofinalp2.model.ShippingStatus status;
     private LocalDateTime creationDate;
     private LocalDateTime estimatedDeliveryDate;
 
@@ -73,11 +75,11 @@ public class Shipment {
         this.price = price;
     }
 
-    public ShippingStatus getStatus() {
+    public co.edu.uniquindio.proyectofinalp2.model.ShippingStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ShippingStatus status) {
+    public void setStatus(co.edu.uniquindio.proyectofinalp2.model.ShippingStatus status) {
         this.status = status;
     }
 

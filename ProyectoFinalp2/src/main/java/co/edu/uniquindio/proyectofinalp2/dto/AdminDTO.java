@@ -1,6 +1,6 @@
 package co.edu.uniquindio.proyectofinalp2.dto;
 
-import co.edu.uniquindio.proyectofinalp2.model.Address;
+import co.edu.uniquindio.proyectofinalp2.Model.Address;
 
 import java.util.List;
 

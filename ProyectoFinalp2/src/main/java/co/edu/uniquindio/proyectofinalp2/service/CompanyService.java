@@ -1,13 +1,13 @@
 package co.edu.uniquindio.proyectofinalp2.service;
 
 import co.edu.uniquindio.proyectofinalp2.dto.DealerDTO;
-import co.edu.uniquindio.proyectofinalp2.model.Dealer;
+import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
 import co.edu.uniquindio.proyectofinalp2.dto.AdminDTO;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
-import co.edu.uniquindio.proyectofinalp2.model.Admin;
+import co.edu.uniquindio.proyectofinalp2.Model.Admin;
 import co.edu.uniquindio.proyectofinalp2.model.Shipment;
-import co.edu.uniquindio.proyectofinalp2.model.User;
+import co.edu.uniquindio.proyectofinalp2.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;

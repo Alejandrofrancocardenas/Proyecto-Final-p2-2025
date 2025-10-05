@@ -1,4 +1,4 @@
-package co.edu.uniquindio.proyectofinalp2.model;
+package co.edu.uniquindio.proyectofinalp2.Model;
 
 public enum ShippingStatus {
     REQUIRED(1),

@@ -1,4 +1,4 @@
-package co.edu.uniquindio.proyectofinalp2.model;
+package co.edu.uniquindio.proyectofinalp2.Model;
 
 public class Address {
     private String idAddress;
