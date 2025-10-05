@@ -1,24 +1,19 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Person {
 
-    protected String idUser;
+    protected String id;
     protected String fullname;
     protected String email;
     protected String phone;
-    protected List<String> addresses;
 
 
     protected Person(Builder<?>  builder) {
-        this.idUser = builder.id;
+        this.id = builder.id;
         this.fullname = builder.name;
         this.email = builder.email;
         this.phone = builder.phone;
-        this.addresses = new ArrayList<>();
-    }
+        }
 
 
     public String getFullname() {
@@ -29,12 +24,12 @@ public abstract class Person {
         this.fullname = fullname;
     }
 
-    public String getIdUser() {
-        return idUser;
+    public String getId() {
+        return id;
     }
 
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
+    public void setId(String idUser) {
+        this.id = idUser;
     }
 
     public String getEmail() {
@@ -51,14 +46,6 @@ public abstract class Person {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<String> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<String> addresses) {
-        this.addresses = addresses;
     }
 
     public abstract static class Builder<T extends Builder<T>>{
