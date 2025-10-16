@@ -6,7 +6,7 @@ import co.edu.uniquindio.proyectofinalp2.dto.AdminDTO;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
 import co.edu.uniquindio.proyectofinalp2.Model.Admin;
-import co.edu.uniquindio.proyectofinalp2.model.Shipment;
+import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 import co.edu.uniquindio.proyectofinalp2.Model.User;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class CompanyService {
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .build();
-        user.setAddresses(dto.getAddresses());
+        //user.setAddresses(dto.getAddresses());
         users.add(user);
     }
 
@@ -49,7 +49,7 @@ public class CompanyService {
             dto.setFullname(userAux.getFullname());
             dto.setEmail(userAux.getEmail());
             dto.setPhone(userAux.getPhone());
-            dto.setAddresses(userAux.getAddresses());
+            //dto.setAddresses(userAux.getAddresses());
             list.add(dto);
         }
         return list;
@@ -65,7 +65,7 @@ public class CompanyService {
                     dto.setFullname(u.getFullname());
                     dto.setEmail(u.getEmail());
                     dto.setPhone(u.getPhone());
-                    dto.setAddresses(u.getAddresses());
+                    //dto.setAddresses(u.getAddresses());
                     return dto;
                 })
                 .findFirst();
@@ -93,7 +93,7 @@ public class CompanyService {
             user.setFullname(dto.getFullname());
             user.setEmail(dto.getEmail());
             user.setPhone(dto.getPhone());
-            user.setAddresses(dto.getAddresses());
+            //user.setAddresses(dto.getAddresses());
         } else {
             throw new NotFoundException("No se encontró ningun usuario con ID: " + dto.getIdUser());
         }

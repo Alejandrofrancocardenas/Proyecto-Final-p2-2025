@@ -1,19 +1,5 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-<<<<<<< HEAD
-import co.edu.uniquindio.proyectofinalp2.Model.Person;
-
-public class Dealer extends Person {
-    // hola, oye cambié el nombre de repartidor a dealer, para trabajar e ingles
-
-    private Dealer (Builder builder) {
-        super(builder);
-    }
-
-    public static class Builder extends Person.Builder<Builder>{
-        @Override
-        public Builder self(){
-=======
 import java.util.List;
 
 public class Dealer extends Person {
@@ -27,6 +13,7 @@ public class Dealer extends Person {
         this.disponible = builder.disponible;
         this.entregasRealizadas = builder.entregasRealizadas;
     }
+
     private List<Shipment> assignedShipments;
 
     public List<Shipment> getAssignedShipments() {
@@ -53,6 +40,7 @@ public class Dealer extends Person {
     public void setEntregasRealizadas(int entregasRealizadas) {
         this.entregasRealizadas = entregasRealizadas;
     }
+
     public double calcularTiempoPromedioEntregas() {
         if (assignedShipments == null || assignedShipments.isEmpty()) {
             return 0.0;
@@ -83,17 +71,10 @@ public class Dealer extends Person {
 
         public Builder entregasRealizadas(int entregasRealizadas) {
             this.entregasRealizadas = entregasRealizadas;
->>>>>>> 65819da0b0023e4abce002565ff94695d0e790c6
             return this;
         }
 
         @Override
-<<<<<<< HEAD
-        public Dealer build(){
-            return new Dealer(this);
-        }
-    }
-=======
         protected Builder self() {
             return this;
         }
@@ -102,8 +83,8 @@ public class Dealer extends Person {
         public Dealer build() {
             return new Dealer(this);
         }
-    }
 
+    }
     @Override
     public String toString() {
         return "Dealer{" +
@@ -114,5 +95,4 @@ public class Dealer extends Person {
                 ", entregasRealizadas=" + entregasRealizadas +
                 '}';
     }
->>>>>>> 65819da0b0023e4abce002565ff94695d0e790c6
 }

@@ -1,72 +1,3 @@
-<<<<<<< HEAD
-package co.edu.uniquindio.proyectofinalp2.model;
-
-import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
-
-import java.time.LocalDateTime;
-
-public class Shipment {
-    //conexion con otras clases
-    private User user;
-    private Dealer dealer;
-
-    private String idShipment;
-    private double weight;
-    private double dimensions;
-    private double price;
-    private co.edu.uniquindio.proyectofinalp2.model.ShippingStatus status;
-    private LocalDateTime creationDate;
-    private LocalDateTime estimatedDeliveryDate;
-
-    public Shipment(String idShipment, double weight, double dimensions, double price, ShippingStatus status, LocalDateTime creationDate, LocalDateTime estimatedDeliveryDate) {
-        this.idShipment = idShipment;
-        this.weight = weight;
-        this.dimensions = dimensions;
-        this.price = price;
-        this.status = status;
-        this.creationDate = creationDate;
-        this.estimatedDeliveryDate = estimatedDeliveryDate;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Dealer getRepartidor() {
-        return dealer;
-    }
-
-    public void setRepartidor(Dealer dealer) {
-        this.dealer = dealer;
-    }
-
-    public String getIdShipment() {
-        return idShipment;
-    }
-
-    public void setIdShipment(String idShipment) {
-        this.idShipment = idShipment;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public double getDimensions() {
-        return dimensions;
-    }
-
-    public void setDimensions(double dimensions) {
-        this.dimensions = dimensions;
-=======
 package co.edu.uniquindio.proyectofinalp2.Model;
 
 import java.util.ArrayList;
@@ -140,7 +71,6 @@ public class Shipment {
 
     public void setStatus(String status) {
         this.status = status;
->>>>>>> 65819da0b0023e4abce002565ff94695d0e790c6
     }
 
     public double getPrice() {
@@ -151,30 +81,6 @@ public class Shipment {
         this.price = price;
     }
 
-<<<<<<< HEAD
-    public co.edu.uniquindio.proyectofinalp2.model.ShippingStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(co.edu.uniquindio.proyectofinalp2.model.ShippingStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public LocalDateTime getEstimatedDeliveryDate() {
-        return estimatedDeliveryDate;
-    }
-
-    public void setEstimatedDeliveryDate(LocalDateTime estimatedDeliveryDate) {
-        this.estimatedDeliveryDate = estimatedDeliveryDate;
-=======
     public double getDeliveryTimeHours() {
         return deliveryTimeHours;
     }
@@ -209,30 +115,17 @@ public class Shipment {
 
     public void addService(String service) {
         this.additionalServices.add(service);
->>>>>>> 65819da0b0023e4abce002565ff94695d0e790c6
     }
 
     @Override
     public String toString() {
         return "Shipment{" +
-<<<<<<< HEAD
-                "user=" + user +
-                ", dealer=" + dealer +
-                ", idShipment='" + idShipment + '\'' +
-                ", weight=" + weight +
-                ", dimensions=" + dimensions +
-                ", price=" + price +
-                ", status=" + status +
-                ", creationDate=" + creationDate +
-                ", estimatedDeliveryDate=" + estimatedDeliveryDate +
-=======
                 "ID='" + shipmentId + '\'' +
                 ", Dealer=" + (assignedDealer != null ? assignedDealer.getFullname() : "No asignado") +
                 ", Zone='" + zone + '\'' +
                 ", Status='" + status + '\'' +
                 ", Price=" + price +
                 ", Time=" + deliveryTimeHours + "h" +
->>>>>>> 65819da0b0023e4abce002565ff94695d0e790c6
                 '}';
     }
 }
