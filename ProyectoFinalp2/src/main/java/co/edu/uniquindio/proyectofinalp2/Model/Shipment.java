@@ -1,5 +1,7 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
+import co.edu.uniquindio.proyectofinalp2.service.ShippingService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,19 +12,19 @@ import java.util.List;
  */
 public class Shipment {
 
-    private String shipmentId;             // Identificador único del envío
-    private String senderId;               // ID del usuario que realiza el envío
-    private Dealer assignedDealer;         // Repartidor asignado
-    private String zone;                   // Zona de entrega
-    private String status;                 // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
-    private double price;                  // Precio total del envío
-    private double deliveryTimeHours;      // Tiempo que tardó en entregarse (en horas)
-    private String period;                 // Periodo de entrega (por ejemplo "Octubre 2025")
-    private String incident;               // Descripción de incidencias
+    private String shipmentId;               // Identificador único del envío
+    private String senderId;                 // ID del usuario que realiza el envío
+    private Dealer assignedDealer;           // Repartidor asignado
+    private String zone;                     // Zona de entrega
+    private String status;                   // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
+    private ShippingService price;           // Precio total del envío
+    private double deliveryTimeHours;        // Tiempo que tardó en entregarse (en horas)
+    private String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
+    private String incident;                 // Descripción de incidencias
     private List<String> additionalServices; // Servicios adicionales (ej: "Seguro", "Entrega exprés")
 
     public Shipment(String shipmentId, String senderId, Dealer assignedDealer,
-                    String zone, double price, String period) {
+                    String zone, ShippingService price, String period) {
         this.shipmentId = shipmentId;
         this.senderId = senderId;
         this.assignedDealer = assignedDealer;
@@ -31,6 +33,16 @@ public class Shipment {
         this.period = period;
         this.status = "Pendiente";
         this.additionalServices = new ArrayList<>();
+    }
+
+    /**
+     * metodo para Crear, solicitudes de envío antes de ser asignadas.  toca arreglarlo
+     */
+    public Shipment(String shipmentId, String senderId, String zone, String period) {
+        this.shipmentId = shipmentId;
+        this.senderId = senderId;
+        this.zone = zone;
+        this.period = period;
     }
 
     public String getShipmentId() {
@@ -73,11 +85,11 @@ public class Shipment {
         this.status = status;
     }
 
-    public double getPrice() {
+    public ShippingService getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(ShippingService price) {
         this.price = price;
     }
 

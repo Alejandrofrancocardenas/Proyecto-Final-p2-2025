@@ -1,13 +1,12 @@
 package co.edu.uniquindio.proyectofinalp2.service;
 
+import co.edu.uniquindio.proyectofinalp2.Model.*;
 import co.edu.uniquindio.proyectofinalp2.dto.DealerDTO;
-import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
 import co.edu.uniquindio.proyectofinalp2.dto.AdminDTO;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
+import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectEmailException;
+import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectPasswordException;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
-import co.edu.uniquindio.proyectofinalp2.Model.Admin;
-import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
-import co.edu.uniquindio.proyectofinalp2.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -275,7 +274,19 @@ public class CompanyService {
         }
     }
 
-
-
+    //metodos de inicio de sesion users
+    public void login(String email, String passwordID) {
+        Optional<UserDTO> person = findUserByID(passwordID);
+        if (person.isPresent()) {
+            // significa tambien que la contraseña es correcta
+            if (email.equals(person.get().getEmail())) {
+                //permite inciar sesion
+            } else {
+                throw new IncorrectEmailException("Incorrect email" +  email);
+            }
+        } else {
+            throw new IncorrectPasswordException("Incorrect Password, please try again");
+        }
+    }
 
 }
