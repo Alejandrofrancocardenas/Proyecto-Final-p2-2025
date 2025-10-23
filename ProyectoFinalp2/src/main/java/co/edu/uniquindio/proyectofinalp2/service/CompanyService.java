@@ -15,7 +15,6 @@ import java.util.Optional;
 public class CompanyService {
     private List<User> users; // representa la lista de clientes finales
     private List<Admin> admins; // representa la lista de administradores
-    //debemos cambiarlo a ingles
     private List<Dealer> deliveryMen; //representa la lista de repartidores
 
     private List<Shipment> shipments; // representa la lista de envios realizados
@@ -287,6 +286,11 @@ public class CompanyService {
         } else {
             throw new IncorrectPasswordException("Incorrect Password, please try again");
         }
+    }
+
+    // metodo que recibe una solicitud de envio y hace el proceso para enviar
+    public static void makeShipment(Shipment shipement){
+        //hace el proceso
     }
 
 }

@@ -10,7 +10,7 @@ public class Company {
     //debemos cambiarlo a ingles
     private List<co.edu.uniquindio.proyectofinalp2.Model.Dealer> repartidores; //representa la lista de repartidores
 
-    //private List<Shipment> shipments; // representa la lista de envios realizados
+    private List<Shipment> shipments; // representa la lista de envios realizados
 
     //constructor
     //getter y setter

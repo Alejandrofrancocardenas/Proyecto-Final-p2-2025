@@ -10,7 +10,7 @@ import java.util.List;
  * Cada envío tiene un remitente (usuario), un repartidor asignado,
  * información sobre la zona, precio, estado, tiempo de entrega y servicios adicionales.
  */
-public class Shipment {
+public class Shipment implements ITracker {
 
     private String shipmentId;               // Identificador único del envío
     private String senderId;                 // ID del usuario que realiza el envío
@@ -128,6 +128,13 @@ public class Shipment {
     public void addService(String service) {
         this.additionalServices.add(service);
     }
+
+
+    @Override
+    public void track() {
+        //rastreando
+    }
+
 
     @Override
     public String toString() {

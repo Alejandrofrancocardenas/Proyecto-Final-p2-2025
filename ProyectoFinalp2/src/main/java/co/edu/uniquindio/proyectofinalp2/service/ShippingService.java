@@ -5,7 +5,7 @@ public class ShippingService {
     }
 
     /**
-     * metodo para Cotizar tarifa de envío según origen, destino, peso, volumen y prioridad.
+     * metodo para calcular tarifa de envío según origen, destino, peso, volumen y prioridad.
      * @return double ShippingService
      */
     public static double calculatePrice(String origin, String destination, double weight
