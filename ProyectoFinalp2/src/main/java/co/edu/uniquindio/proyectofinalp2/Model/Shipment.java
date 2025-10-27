@@ -16,7 +16,7 @@ public class Shipment implements ITracker {
     private String senderId;                 // ID del usuario que realiza el envío
     private Dealer assignedDealer;           // Repartidor asignado
     private String zone;                     // Zona de entrega
-    private String status;                   // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
+    private ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
     private ShippingService price;           // Precio total del envío
     private double deliveryTimeHours;        // Tiempo que tardó en entregarse (en horas)
     private String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
@@ -31,7 +31,6 @@ public class Shipment implements ITracker {
         this.zone = zone;
         this.price = price;
         this.period = period;
-        this.status = "Pendiente";
         this.additionalServices = new ArrayList<>();
     }
 
@@ -77,11 +76,11 @@ public class Shipment implements ITracker {
         this.zone = zone;
     }
 
-    public String getStatus() {
+    public ShippingStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ShippingStatus status) {
         this.status = status;
     }
 
@@ -131,8 +130,18 @@ public class Shipment implements ITracker {
 
 
     @Override
-    public void track() {
-        //rastreando
+    public String track() {
+        return String.format(
+                "Envío #%s\nRemitente: %s\nRepartidor: %s\nZona: %s\nEstado: %s\nPeriodo: %s\nServicios: %s",
+                shipmentId,
+                senderId,
+                (assignedDealer != null ? assignedDealer.getFullname() : "No asignado"),
+                zone,
+                (status != null ? status : ShippingStatus.REQUIRED),
+                period,
+                (additionalServices.isEmpty() ? "Ninguno" : String.join(", ", additionalServices))
+        );
+
     }
 
 

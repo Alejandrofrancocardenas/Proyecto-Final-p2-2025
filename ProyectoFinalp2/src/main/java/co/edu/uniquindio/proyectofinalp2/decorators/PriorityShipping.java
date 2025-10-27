@@ -8,7 +8,7 @@ public class PriorityShipping extends ShipmentDecorate{
     }
 
     @Override
-    public void track() {
-        super.track();
+    public String track() {
+        return super.track();
     }
 }

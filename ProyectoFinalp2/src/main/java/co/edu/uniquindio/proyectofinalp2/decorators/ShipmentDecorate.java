@@ -12,7 +12,7 @@ public class ShipmentDecorate implements ITracker {
     }
 
     @Override
-    public void track() {
-        shipment.track();
+    public String track() {
+        return shipment.track();
     }
 }

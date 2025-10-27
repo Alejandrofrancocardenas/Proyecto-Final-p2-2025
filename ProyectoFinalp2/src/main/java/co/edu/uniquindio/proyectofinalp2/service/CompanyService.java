@@ -71,7 +71,7 @@ public class CompanyService {
     //bucar usuarios por email
     private Optional<UserDTO> findUserByEmail(String email) {
         return users.stream()
-                .filter(u -> u.getId().equals(email))
+                .filter(u -> u.getEmail().equals(email))
                 .findFirst()
                 .map(u -> {
                     UserDTO dto = new UserDTO();
@@ -309,16 +309,16 @@ public class CompanyService {
 
     // metodo que recibe una solicitud de envio y hace el proceso para enviar
     public static void makeShipment(Shipment shipement){
-        //hace el proceso
+        shipement.setStatus(ShippingStatus.ENROUTE);
     }
 
 
     // metodo para ratrear el estado del envio
-    public static void trackerShipment(Shipment shipment){
+    public static String trackerShipment(Shipment shipment){
         if (shipment != null){
-            shipment.track();
+            return shipment.track();
         } else {
-            throw new NotFoundException("No se logró encontrar el envio que pusiste");
+            throw new NotFoundException("No se logró encontrar el envío que pusiste");
         }
     }
 
