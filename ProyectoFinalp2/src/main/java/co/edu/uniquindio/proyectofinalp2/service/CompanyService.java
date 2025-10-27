@@ -54,19 +54,33 @@ public class CompanyService {
     }
 
     //bucar usuarios por ID
-    private Optional<UserDTO> findUserByID(String id){
+    private Optional<UserDTO> findUserByID(String id) {
         return users.stream()
                 .filter(u -> u.getId().equals(id))
+                .findFirst()
                 .map(u -> {
                     UserDTO dto = new UserDTO();
                     dto.setIdUser(u.getId());
                     dto.setFullname(u.getFullname());
                     dto.setEmail(u.getEmail());
                     dto.setPhone(u.getPhone());
-                    //dto.setAddresses(u.getAddresses());
                     return dto;
-                })
-                .findFirst();
+                });
+    }
+
+    //bucar usuarios por email
+    private Optional<UserDTO> findUserByEmail(String email) {
+        return users.stream()
+                .filter(u -> u.getId().equals(email))
+                .findFirst()
+                .map(u -> {
+                    UserDTO dto = new UserDTO();
+                    dto.setIdUser(u.getId());
+                    dto.setFullname(u.getFullname());
+                    dto.setEmail(u.getEmail());
+                    dto.setPhone(u.getPhone());
+                    return dto;
+                });
     }
 
     //Read: ver un user
@@ -137,18 +151,18 @@ public class CompanyService {
     }
 
     //bucar Admin por ID
-    private Optional<AdminDTO> findAdminByID(String id){
+    private Optional<AdminDTO> findAdminByID(String id) {
         return admins.stream()
                 .filter(a -> a.getId().equals(id))
-                .map(u -> {
-              AdminDTO dto = new AdminDTO();
-                    dto.setIdAdmin(u.getId());
-                    dto.setFullname(u.getFullname());
-                    dto.setEmail(u.getEmail());
-                    dto.setPhone(u.getPhone());
+                .findFirst()
+                .map(a -> {
+                    AdminDTO dto = new AdminDTO();
+                    dto.setIdAdmin(a.getId());
+                    dto.setFullname(a.getFullname());
+                    dto.setEmail(a.getEmail());
+                    dto.setPhone(a.getPhone());
                     return dto;
-                })
-                .findFirst();
+                });
     }
 
     //Read: ver un admin
@@ -219,9 +233,10 @@ public class CompanyService {
     }
 
     //bucar Dealer por ID
-    private Optional<DealerDTO> findDealerByID(String id){
+    private Optional<DealerDTO> findDealerByID(String id) {
         return deliveryMen.stream()
                 .filter(d -> d.getId().equals(id))
+                .findFirst()
                 .map(d -> {
                     DealerDTO dto = new DealerDTO();
                     dto.setIdDealer(d.getId());
@@ -229,8 +244,7 @@ public class CompanyService {
                     dto.setEmail(d.getEmail());
                     dto.setPhone(d.getPhone());
                     return dto;
-                })
-                .findFirst();
+                });
     }
 
     //Read: ver un dealer
@@ -274,23 +288,38 @@ public class CompanyService {
     }
 
     //metodos de inicio de sesion users
-    public void login(String email, String passwordID) {
-        Optional<UserDTO> person = findUserByID(passwordID);
-        if (person.isPresent()) {
-            // significa tambien que la contraseña es correcta
-            if (email.equals(person.get().getEmail())) {
-                //permite inciar sesion
-            } else {
-                throw new IncorrectEmailException("Incorrect email" +  email);
-            }
-        } else {
+    public UserDTO login(String email, String passwordID) {
+        Optional<UserDTO> userOpt = findUserByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            throw new IncorrectEmailException("No existe ninguna cuenta con el email: " + email);
+        }
+
+        UserDTO user = userOpt.get();
+
+        if (!user.getIdUser().equals(passwordID)) {
             throw new IncorrectPasswordException("Incorrect Password, please try again");
         }
+
+        // si pasa esta logica, sigifica que el usuario es valido
+        // devuelve el user para que el controlador decida que hacer con el
+        return user;
     }
+
 
     // metodo que recibe una solicitud de envio y hace el proceso para enviar
     public static void makeShipment(Shipment shipement){
         //hace el proceso
+    }
+
+
+    // metodo para ratrear el estado del envio
+    public static void trackerShipment(Shipment shipment){
+        if (shipment != null){
+            shipment.track();
+        } else {
+            throw new NotFoundException("No se logró encontrar el envio que pusiste");
+        }
     }
 
 }
