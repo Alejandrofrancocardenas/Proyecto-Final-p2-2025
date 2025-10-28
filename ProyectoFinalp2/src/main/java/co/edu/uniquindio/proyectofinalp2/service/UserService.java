@@ -1,5 +1,7 @@
  package co.edu.uniquindio.proyectofinalp2.service;
 
+import co.edu.uniquindio.proyectofinalp2.Model.Address;
+import co.edu.uniquindio.proyectofinalp2.Model.Payment;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.Model.User;
@@ -77,4 +79,69 @@ public class UserService {
         return shipmentAux;
     }
 
+    // metodo para crear una direccion
+    public static void addAddressToUser(User user, Address newAddress) {
+        if (user == null || newAddress == null) {
+            throw new IllegalArgumentException("Usuario o dirección inválidos");
+        }
+        user.getAddresses().add(newAddress);
+    }
+
+    // metodo para actualizar una drireccion
+    public static void updateAddress(User user, String idAddress, Address updatedAddress) {
+        if (user == null || idAddress == null) {
+            throw new IllegalArgumentException("Usuario o dirección inválidos");
+        }
+
+        Address address = user.getAddresses()
+                .stream()
+                .filter(a -> a.getIdAddress().equals(idAddress))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Dirección no encontrada: " + idAddress));
+
+        address.setAlias(updatedAddress.getAlias());
+        address.setStreet(updatedAddress.getStreet());
+        address.setCity(updatedAddress.getCity());
+        address.setCoordinates(updatedAddress.getCoordinates());
+    }
+
+
+    // metodo para eliminar una direccion
+    public static void deleteAddress(User user, String idAddress) {
+        if (user == null || idAddress == null) {
+            throw new IllegalArgumentException("Usuario o dirección inválidos");
+        }
+
+        boolean removed = user.getAddresses().removeIf(a -> a.getIdAddress().equals(idAddress));
+
+        if (!removed) {
+            throw new NotFoundException("No se encontró ninguna dirección con ID: " + idAddress);
+        }
+    }
+
+
+    // metodo para consultar direcciones
+    public static List<Address> listAddresses(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Usuario inválido");
+        }
+        return user.getAddresses();
+    }
+
+    // metodo para pagar un envío
+    public static void payShipment(User user, Shipment shipment, double amount) {
+        if (user == null || shipment == null) {
+            throw new IllegalArgumentException("Usuario o envío inválido");
+        }
+
+        Payment payment = new Payment(
+                "PAY-" + System.currentTimeMillis(),
+                amount,
+                java.time.LocalDateTime.now(),
+                true
+        );
+
+        user.getPayments().add(payment);
+        shipment.setPayment(payment);
+    }
 }

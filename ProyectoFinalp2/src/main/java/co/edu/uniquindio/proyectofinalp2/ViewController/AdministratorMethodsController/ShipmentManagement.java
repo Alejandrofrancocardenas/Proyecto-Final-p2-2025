@@ -2,6 +2,7 @@ package co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorMethodsCon
 
 import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
+import co.edu.uniquindio.proyectofinalp2.Model.ShippingStatus;
 import co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorController;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class ShipmentManagement {
     /**
      * Actualiza el estado del envío.
      */
-    public boolean updateShipmentStatus(String shipmentId, String newStatus) {
+    public boolean updateShipmentStatus(String shipmentId, ShippingStatus newStatus) {
         Shipment shipment = findShipmentById(shipmentId);
         if (shipment == null) return false;
 
@@ -109,10 +110,10 @@ public class ShipmentManagement {
     /**
      * Filtra los envíos según su estado (por ejemplo, "Pendiente" o "Entregado").
      */
-    public List<Shipment> getShipmentsByStatus(String status) {
+    public List<Shipment> getShipmentsByStatus(ShippingStatus status) {
         List<Shipment> filtered = new ArrayList<>();
         for (Shipment s : shipments) {
-            if (s.getStatus().equalsIgnoreCase(status)) {
+            if (s.getStatus().equals(status)) {
                 filtered.add(s);
             }
         }

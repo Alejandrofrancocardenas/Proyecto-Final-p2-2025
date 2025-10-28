@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class CompanyService {
+    private static CompanyService instance;
     private List<User> users; // representa la lista de clientes finales
     private List<Admin> admins; // representa la lista de administradores
     private List<Dealer> deliveryMen; //representa la lista de repartidores
@@ -20,9 +21,18 @@ public class CompanyService {
     private List<Shipment> shipments; // representa la lista de envios realizados
 
 
-    public CompanyService() {
+    private CompanyService() {
         this.users = new ArrayList<>();
         this.deliveryMen = new ArrayList<>();
+        this.shipments = new ArrayList<>();
+        this.admins = new ArrayList<>();
+    }
+
+    public static CompanyService getInstance() {
+        if (instance == null) {
+            instance = new CompanyService();
+        }
+        return instance;
     }
 
     //CRUD de usuarios

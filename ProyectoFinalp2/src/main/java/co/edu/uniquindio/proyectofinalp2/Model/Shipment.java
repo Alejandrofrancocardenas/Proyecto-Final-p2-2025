@@ -17,14 +17,19 @@ public class Shipment implements ITracker {
     private Dealer assignedDealer;           // Repartidor asignado
     private String zone;                     // Zona de entrega
     private ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
-    private ShippingService price;           // Precio total del envío
+    private double price;           // Precio total del envío
     private double deliveryTimeHours;        // Tiempo que tardó en entregarse (en horas)
     private String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
     private String incident;                 // Descripción de incidencias
     private List<String> additionalServices; // Servicios adicionales (ej: "Seguro", "Entrega exprés")
+    private Address origin;
+    private Address destination;
+    private double weight;
+    private double volume;
+    private Payment payment;
 
     public Shipment(String shipmentId, String senderId, Dealer assignedDealer,
-                    String zone, ShippingService price, String period) {
+                    String zone, double price, String period) {
         this.shipmentId = shipmentId;
         this.senderId = senderId;
         this.assignedDealer = assignedDealer;
@@ -42,6 +47,7 @@ public class Shipment implements ITracker {
         this.senderId = senderId;
         this.zone = zone;
         this.period = period;
+        this.additionalServices = new ArrayList<>();
     }
 
     public String getShipmentId() {
@@ -84,11 +90,11 @@ public class Shipment implements ITracker {
         this.status = status;
     }
 
-    public ShippingService getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(ShippingService price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -120,6 +126,46 @@ public class Shipment implements ITracker {
         return additionalServices;
     }
 
+    public Address getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(Address origin) {
+        this.origin = origin;
+    }
+
+    public Address getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Address destination) {
+        this.destination = destination;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public double getVolume() {
+        return volume;
+    }
+
+    public void setVolume(double volume) {
+        this.volume = volume;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
     public void setAdditionalServices(List<String> additionalServices) {
         this.additionalServices = additionalServices;
     }
@@ -129,11 +175,14 @@ public class Shipment implements ITracker {
     }
 
 
+
     @Override
     public String track() {
         return String.format(
-                "Envío #%s\nRemitente: %s\nRepartidor: %s\nZona: %s\nEstado: %s\nPeriodo: %s\nServicios: %s",
+                "Envío #%s\nOrigen: %s\nDestino: %s\nRemitente: %s\nRepartidor: %s\nZona: %s\nEstado: %s\nPeriodo: %s\nServicios: %s",
                 shipmentId,
+                (origin != null ? origin.getCity() : "No definido"),
+                (destination != null ? destination.getCity() : "No definido"),
                 senderId,
                 (assignedDealer != null ? assignedDealer.getFullname() : "No asignado"),
                 zone,
@@ -141,7 +190,6 @@ public class Shipment implements ITracker {
                 period,
                 (additionalServices.isEmpty() ? "Ninguno" : String.join(", ", additionalServices))
         );
-
     }
 
 
