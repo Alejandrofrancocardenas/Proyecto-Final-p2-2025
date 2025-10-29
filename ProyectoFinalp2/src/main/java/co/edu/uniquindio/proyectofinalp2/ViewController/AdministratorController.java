@@ -1,13 +1,18 @@
 package co.edu.uniquindio.proyectofinalp2.ViewController;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Controlador principal del panel del Administrador.
@@ -22,11 +27,12 @@ public class AdministratorController {
     @FXML
     private BorderPane mainPane; // Panel principal donde se cargan las vistas
 
+
     @FXML
     private StackPane contenedorCentral; // (Opcional) contenedor interno si lo usas en el FXML
 
     @FXML
-    private Button btnUsuarios, btnRepartidores, btnEnvios, btnMetricas;
+    private Button btnUsuarios, btnRepartidores, btnEnvios, btnMetricas, btnSalida;
 
     /**
      * Inicializa el panel del administrador cargando una vista por defecto.
@@ -62,6 +68,28 @@ public class AdministratorController {
     private void onAsignacionEnvios() {
         cargarVista("/co/edu/uniquindio/proyectofinalp2/View/AsignacionEnviosView.fxml");
     }
+
+    @FXML
+    private void onSalida(ActionEvent event) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/co/edu/uniquindio/proyectofinalp2/view/LoginView.fxml"));
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root, 400, 400);
+
+        scene.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/co/edu/uniquindio/proyectofinalp2/css/estilos.css")).toExternalForm()
+        );
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        currentStage.close();
+
+        Stage loginStage = new Stage();
+        loginStage.setScene(scene);
+        loginStage.setTitle("Inicio de Sesión");
+        loginStage.show();
+    }
+
 
     /**
      * Acción: Mostrar el panel de métricas.

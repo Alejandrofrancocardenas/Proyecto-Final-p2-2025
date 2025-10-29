@@ -11,6 +11,7 @@
             <Button text="Gestionar Repartidores" fx:id="btnRepartidores" onAction="#onGestionRepartidores"/>
             <Button text="Asignar Envíos" fx:id="btnEnvios" onAction="#onAsignacionEnvios"/>
             <Button text="Métricas" fx:id="btnMetricas" onAction="#onPanelMetricas"/>
+            <Button text ="Salir" fx:id="btnSalida" onAction="#onSalida"/>
         </VBox>
     </left>
 

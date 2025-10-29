@@ -38,7 +38,7 @@ public class LoginController {
             Scene scene;
 
             if (rbUsuario.isSelected()) {
-                loader = new FXMLLoader(getClass().getResource("/co/edu/uniquindio/proyectofinalp2/View/UsuarioView.fxml"));
+                loader = new FXMLLoader(getClass().getResource("/co/edu/uniquindio/proyectofinalp2/View/UserView.fxml"));
                 scene = new Scene(loader.load(), 800, 600);
                 stage.setTitle("Panel Usuario");
             }

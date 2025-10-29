@@ -6,7 +6,7 @@ import co.edu.uniquindio.proyectofinalp2.service.UserService;
 
 import java.time.LocalDateTime;
 
-public class MAINPrueba {
+public class MainTest {
     public static void main(String[] args) {
 
         System.out.println("=== 🚀 Iniciando pruebas del sistema de envíos ===");
