@@ -6,25 +6,35 @@ import java.util.List;
 public class User extends Person {
 
     private String password;
+    private String rol;
     private List<Address> addresses;
     private List<Payment> payments;
     private List<Shipment> shipments;
 
-
     private User(Builder builder) {
         super(builder);
         this.password = builder.password;
-        this.addresses = new ArrayList<Address>();
-        this.payments = new ArrayList<Payment>();
-        this.shipments = new ArrayList<Shipment>();
+        this.rol = builder.rol;
+        this.addresses = new ArrayList<>();
+        this.payments = new ArrayList<>();
+        this.shipments = new ArrayList<>();
     }
 
+    // Getters y setters
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 
     public List<Address> getAddresses() {
@@ -51,13 +61,18 @@ public class User extends Person {
         this.shipments = shipments;
     }
 
-    // Builder concreto
+    // Builder
     public static class Builder extends Person.Builder<Builder> {
-
         private String password;
+        private String rol;
 
         public Builder password(String password) {
             this.password = password;
+            return this;
+        }
+
+        public Builder rol(String rol) { // 👈 método builder para rol
+            this.rol = rol;
             return this;
         }
 

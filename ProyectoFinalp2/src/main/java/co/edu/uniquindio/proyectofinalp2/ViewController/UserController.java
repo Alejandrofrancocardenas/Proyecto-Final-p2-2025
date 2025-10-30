@@ -9,17 +9,17 @@ public class UserController {
     @FXML private StackPane contenidoPrincipal;
 
     @FXML
-    private void mostrarPerfil() {
+    private void onMostrarPerfil() {
         contenidoPrincipal.getChildren().setAll(new Label("Aquí se mostraría el Perfil"));
     }
 
     @FXML
-    private void mostrarDirecciones() {
+    private void onMostrarDirecciones() {
         contenidoPrincipal.getChildren().setAll(new Label("Aquí CRUD de Direcciones"));
     }
 
     @FXML
-    private void mostrarPagos() {
+    private void onMostrarPagos() {
         contenidoPrincipal.getChildren().setAll(new Label("Aquí CRUD de Métodos de Pago"));
     }
 
