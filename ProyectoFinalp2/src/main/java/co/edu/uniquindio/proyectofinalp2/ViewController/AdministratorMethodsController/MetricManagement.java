@@ -61,13 +61,16 @@ public class MetricManagement {
         Map<String, Integer> incidencias = new HashMap<>();
 
         for (Shipment s : shipments) {
-            if (s.getIncident() != null && !s.getIncident().isEmpty()) {
+            // Verifica si el envío tiene una incidencia asociada
+            if (s.getIncident() != null) {
                 String zona = s.getZone();
                 incidencias.put(zona, incidencias.getOrDefault(zona, 0) + 1);
             }
         }
+
         return incidencias;
     }
+
 
     /** Calcula la frecuencia de servicios adicionales usados (por ejemplo, "Seguro", "Entrega exprés"). */
     public Map<String, Integer> calcularServiciosMasUsados() {

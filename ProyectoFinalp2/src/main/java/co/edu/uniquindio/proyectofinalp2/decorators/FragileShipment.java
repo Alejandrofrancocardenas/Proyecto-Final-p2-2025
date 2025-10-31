@@ -8,6 +8,11 @@ public class FragileShipment extends ShipmentDecorate {
     }
 
     @Override
+    public double getPrice() {
+        return shipment.getPrice() + 500000;
+    }
+
+    @Override
     public String track() {
         return super.track();
     }

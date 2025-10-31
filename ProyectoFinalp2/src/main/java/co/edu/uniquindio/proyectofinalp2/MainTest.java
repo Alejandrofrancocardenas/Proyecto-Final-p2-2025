@@ -1,80 +1,73 @@
 package co.edu.uniquindio.proyectofinalp2;
 
 import co.edu.uniquindio.proyectofinalp2.Model.*;
+import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.service.CompanyService;
+import co.edu.uniquindio.proyectofinalp2.service.ShippingService;
 import co.edu.uniquindio.proyectofinalp2.service.UserService;
 
 import java.time.LocalDateTime;
 
 public class MainTest {
+
     public static void main(String[] args) {
 
-        System.out.println("=== 🚀 Iniciando pruebas del sistema de envíos ===");
+        // --- 1️⃣ Inicializar servicios globales ---
+        CompanyService companyService = CompanyService.getInstance();
+        ShippingService shippingService = ShippingService.getInstance();
 
-        // Instancia del servicio principal (Singleton)
-        CompanyService company = CompanyService.getInstance();
-
-        // 1️⃣ Registrar un usuario
+        // --- 2️⃣ Crear un usuario ---
         User user = new User.Builder()
-                .id("1001")
+                .id("U001")
                 .name("Juan Pérez")
                 .email("juan@example.com")
-                .phone("3123456789")
-                .password("abc123")
+                .phone("3001234567")
                 .build();
 
-        System.out.println("\n✅ Usuario registrado: " + user.getFullname());
 
-        // 2️⃣ Crear direcciones y agregarlas al usuario
-        Address home = new Address();
-        home.setIdAddress("ADDR1");
-        home.setAlias("Casa");
-        home.setStreet("Calle 10 # 4-23");
-        home.setCity("Armenia");
-        home.setCoordinates("4.5356, -75.6753");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setIdUser(user.getId());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPhone(user.getPhone());
+        userDTO.setAddresses(user.getAddresses());
 
-        Address office = new Address();
-        office.setIdAddress("ADDR2");
-        office.setAlias("Oficina");
-        office.setStreet("Cra 14 # 5-30");
-        office.setCity("Calarcá");
-        office.setCoordinates("4.5310, -75.6402");
+        companyService.registerUser(userDTO);
 
-        UserService.addAddressToUser(user, home);
-        UserService.addAddressToUser(user, office);
+        UserService userService = new UserService(user);
 
-        System.out.println("📍 Direcciones agregadas: ");
-        user.getAddresses().forEach(a -> System.out.println(" - " + a));
+        System.out.println("✅ Usuario registrado: " + user.getFullname());
 
-        // 3️⃣ Crear una solicitud de envío temporal
-//        Shipment shipment = UserService.createShipment("SHIP1", user.getId(), "Zona Norte", "Octubre 2025");
-//        shipment.setOrigin(home);
-//        shipment.setDestination(office);
-//        shipment.addService("Seguro");
-//        shipment.setWeight(120);
-//        shipment.setVolume(400);
-//        shipment.setPrice( UserService.getPrice("Armenia", "Calarcá", shipment.getWeight(), shipment.getVolume(), "2") );
-//
-//        System.out.println("\n📦 Envío creado:");
-//        System.out.println(shipment.track());
+        // --- 3️⃣ Crear un paquete ---
+        PackageModel pack = new PackageModel("xxxx", 0, 0);
+        pack.setWeight(200);
+        pack.setVolume(700);
 
-        // 4️⃣ Confirmar el envío
-        UserService.makeShipment("SHIP1");
-        System.out.println("\n🚚 Estado actualizado:");
-       // System.out.println(shipment.track());
+        // --- 4️⃣ Crear un envío básico ---
+        Shipment shipment = new NormalShipment("SHP001", user, "Zona Norte", "Octubre 2025");
+        shipment.setPackageModel(pack);
 
-        // 5️⃣ Simular pago
-        //Payment payment = new Payment("PAY1", shipment.getPrice(), LocalDateTime.now(), true);
-        //user.getPayments().add(payment);
-        //shipment.setPayment(payment);
+        // Calcular precio base
+        double basePrice = shippingService.calculateBasePrice(shipment);
+        shipment.setPrice(basePrice);
 
-        System.out.println("\n💳 Pago realizado con éxito:");
-        //System.out.println(payment);
+        System.out.println("\n💰 Precio base del envío: " + basePrice);
 
-        // 6️⃣ Rastrear el envío
-        //String trackingInfo = CompanyService.trackerShipment(shipment);
-        //System.out.println("\n📍 Rastreo actual del envío:\n" + trackingInfo);
+        // --- 5️⃣ Aplicar decoradores (servicios adicionales) ---
+        shipment = shippingService.applyDecorators(
+                shipment,
+                true,   // prioridad
+                true,   // frágil
+                false,  // sin seguro
+                true    // con firma requerida
+        );
 
-        System.out.println("\n=== ✅ Fin de pruebas ===");
+        System.out.println("\n🚀 Envío con decoradores aplicado:");
+        System.out.println("Precio total: " + shipment.getPrice());
+        System.out.println("Tracking:\n" + shipment.track());
+
+        // --- 6️⃣ Registrar el envío en la compañía ---
+        companyService.getCompany().getShipments().add(shipment);
+
+        System.out.println("\n📦 Envío registrado exitosamente en la compañía.");
     }
 }

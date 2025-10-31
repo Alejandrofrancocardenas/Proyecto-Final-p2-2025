@@ -9,7 +9,7 @@ import java.util.List;
  * Cada envío tiene un remitente (usuario), un repartidor asignado,
  * información sobre la zona, precio, estado, tiempo de entrega y servicios adicionales.
  */
-public class Shipment implements ITracker {
+public abstract class Shipment {
 
     private String shipmentId;               // Identificador único del envío
     private Rate rate;                       // la tarifa
@@ -179,10 +179,8 @@ public class Shipment implements ITracker {
 
 
 
-    @Override
-    public String track() {
-        return "hola";
-    }
+
+    public abstract String track();
 
 
     @Override

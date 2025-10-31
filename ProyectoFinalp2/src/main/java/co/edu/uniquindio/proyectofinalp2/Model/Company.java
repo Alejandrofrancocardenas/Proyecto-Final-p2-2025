@@ -4,37 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Company {
-    private String name;
-    private String nit;
     private List<User> users; // representa la lista de clientes finales
     private List<Admin> admins; // representa la lista de administradores
     private List<Dealer> dealers; //representa la lista de repartidores
     private List<Shipment> shipments; // representa la lista de envios realizados
 
 
-    public Company(String name, String nit) {
-        this.name = name;
-        this.nit = nit;
+    public Company() {
         this.users = new ArrayList<>();
         this.admins = new ArrayList<>();
         this.dealers = new ArrayList<>();
         this.shipments = new ArrayList<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNit() {
-        return nit;
-    }
-
-    public void setNit(String nit) {
-        this.nit = nit;
     }
 
     public List<User> getUsers() {
@@ -72,8 +52,6 @@ public class Company {
     @Override
     public String toString() {
         return "Company{" +
-                "name='" + name + '\'' +
-                ", nit='" + nit + '\'' +
                 ", users=" + users +
                 ", admins=" + admins +
                 ", dealers=" + dealers +

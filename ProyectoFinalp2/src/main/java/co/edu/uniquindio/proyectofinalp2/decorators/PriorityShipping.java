@@ -8,7 +8,12 @@ public class PriorityShipping extends ShipmentDecorate{
     }
 
     @Override
+    public double getPrice() {
+        return shipment.getPrice() + 5000;
+    }
+
+    @Override
     public String track() {
-        return super.track();
+        return shipment.track() + "\nEl envío tiene prioridad alta (express).";
     }
 }

@@ -7,6 +7,12 @@ public class SignatureRequiredShipment extends ShipmentDecorate{
         super(shipment);
     }
 
+
+    @Override
+    public double getPrice() {
+        return shipment.getPrice() + 1000;
+    }
+
     @Override
     public String track() {
         return super.track();

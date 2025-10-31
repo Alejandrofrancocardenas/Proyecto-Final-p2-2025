@@ -8,6 +8,7 @@ import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectEmailException;
 import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectPasswordException;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,13 +19,13 @@ public class CompanyService {
     private final Company company;
 
 
-    private CompanyService(String name, String nit) {
-        this.company = new Company(name, nit);
+    private CompanyService() {
+        this.company = new Company();
     }
 
-    public static CompanyService getInstance(String name, String nit) {
+    public static CompanyService getInstance() {
         if (instance == null) {
-            instance = new CompanyService(name, nit);
+            instance = new CompanyService();
         }
         return instance;
     }
@@ -307,6 +308,7 @@ public class CompanyService {
     // metodo que recibe una solicitud de envio y hace el proceso para enviar
     public void makeShipment(Shipment shipement){
         shipement.setStatus(ShippingStatus.ENROUTE);
+        company.getShipments().add(shipement);
     }
 
 
@@ -319,4 +321,19 @@ public class CompanyService {
         }
     }
 
+    public List<Shipment> filterShipments(LocalDate date, ShippingStatus status, String zone) {
+        return company.getShipments().stream()
+                .filter(s -> (date == null || s.getCrationDate().toLocalDate().equals(date)))
+                .filter(s -> (status == null || s.getStatus() == status))
+                .filter(s -> (zone == null || s.getZone().equalsIgnoreCase(zone)))
+                .toList();
+    }
+
+//    public Shipment getShipmentDetails(String shipmentId) {
+//        return findShipmentById(shipmentId);
+//    }
+
+    public Company getCompany() {
+        return this.company;
+    }
 }

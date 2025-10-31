@@ -7,6 +7,12 @@ public class SecureShipping extends ShipmentDecorate {
         super(shipment);
     }
 
+
+    @Override
+    public double getPrice() {
+        return shipment.getPrice() + 50000;
+    }
+
     @Override
     public String track() {
         return super.track();
