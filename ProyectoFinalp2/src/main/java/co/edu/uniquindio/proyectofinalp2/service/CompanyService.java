@@ -14,23 +14,17 @@ import java.util.Optional;
 
 public class CompanyService {
     private static CompanyService instance;
-    private List<User> users; // representa la lista de clientes finales
-    private List<Admin> admins; // representa la lista de administradores
-    private List<Dealer> deliveryMen; //representa la lista de repartidores
 
-    private List<Shipment> shipments; // representa la lista de envios realizados
+    private final Company company;
 
 
-    private CompanyService() {
-        this.users = new ArrayList<>();
-        this.deliveryMen = new ArrayList<>();
-        this.shipments = new ArrayList<>();
-        this.admins = new ArrayList<>();
+    private CompanyService(String name, String nit) {
+        this.company = new Company(name, nit);
     }
 
-    public static CompanyService getInstance() {
+    public static CompanyService getInstance(String name, String nit) {
         if (instance == null) {
-            instance = new CompanyService();
+            instance = new CompanyService(name, nit);
         }
         return instance;
     }
@@ -45,60 +39,51 @@ public class CompanyService {
                 .phone(dto.getPhone())
                 .build();
         //user.setAddresses(dto.getAddresses());
-        users.add(user);
+        company.getUsers().add(user);
     }
 
     // Listar usuarios como DTO  para poder devolverlo al controller
     public List<UserDTO> listUserDTO() {
         List<UserDTO> list = new ArrayList<>();
-        for (User userAux : users) {
+        for (User userAux : company.getUsers()) {
             UserDTO dto = new UserDTO();
             dto.setIdUser(userAux.getId());
             dto.setFullname(userAux.getFullname());
             dto.setEmail(userAux.getEmail());
             dto.setPhone(userAux.getPhone());
-            //dto.setAddresses(userAux.getAddresses());
+            dto.setAddresses(userAux.getAddresses());
             list.add(dto);
         }
         return list;
     }
 
     //bucar usuarios por ID
-    private Optional<UserDTO> findUserByID(String id) {
-        return users.stream()
+    private Optional<User> findUserByID(String id) {
+        return company.getUsers().stream()
                 .filter(u -> u.getId().equals(id))
-                .findFirst()
-                .map(u -> {
-                    UserDTO dto = new UserDTO();
-                    dto.setIdUser(u.getId());
-                    dto.setFullname(u.getFullname());
-                    dto.setEmail(u.getEmail());
-                    dto.setPhone(u.getPhone());
-                    return dto;
-                });
+                .findFirst();
     }
 
     //bucar usuarios por email
-    private Optional<UserDTO> findUserByEmail(String email) {
-        return users.stream()
+    private Optional<User> findUserByEmail(String email) {
+        return company.getUsers().stream()
                 .filter(u -> u.getEmail().equals(email))
-                .findFirst()
-                .map(u -> {
-                    UserDTO dto = new UserDTO();
-                    dto.setIdUser(u.getId());
-                    dto.setFullname(u.getFullname());
-                    dto.setEmail(u.getEmail());
-                    dto.setPhone(u.getPhone());
-                    return dto;
-                });
+                .findFirst();
     }
 
     //Read: ver un user
     private UserDTO readUser(String id){
 
-        Optional<UserDTO> userFind = findUserByID(id);
+        Optional<User> userFind = findUserByID(id);
         if (userFind.isPresent()){
-            return userFind.get();
+            User userAux = userFind.get();
+            UserDTO dto = new UserDTO();
+            dto.setIdUser(userAux.getId());
+            dto.setFullname(userAux.getFullname());
+            dto.setEmail(userAux.getEmail());
+            dto.setPhone(userAux.getPhone());
+            dto.setAddresses(userAux.getAddresses());
+            return dto;
         } else {
             throw new NotFoundException("No se encontró ningun usuario con ID: " + id);
         }
@@ -106,7 +91,7 @@ public class CompanyService {
 
     //update: actulizar usuario
     private void updateUser(UserDTO dto) {
-        Optional<User> userOp = users.stream()
+        Optional<User> userOp = company.getUsers().stream()
                 .filter(u -> u.getId().equals(dto.getIdUser()))
                 .findFirst();
 
@@ -124,11 +109,11 @@ public class CompanyService {
 
     //Delete: eliminar user
     private void deleteUser(String id){
-        Optional<User> user = users.stream()
+        Optional<User> user = company.getUsers().stream()
                     .filter(u -> u.getId().equals(id))
                     .findFirst();
         if (user.isPresent()){
-            users.remove(user.get());
+            company.getUsers().remove(user.get());
         } else {
             throw new NotFoundException("No se encontró ningun usuario con ID: " + id);
         }
@@ -143,13 +128,13 @@ public class CompanyService {
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .build();
-        admins.add(admin);
+        company.getAdmins().add(admin);
     }
 
     // Listar usuarios como DTO  para poder devolverlo al controller
     public List<AdminDTO> listAdminDTO() {
         List<AdminDTO> list = new ArrayList<>();
-        for (Admin adminAux : admins) {
+        for (Admin adminAux : company.getAdmins()) {
             AdminDTO dto = new AdminDTO();
             dto.setIdAdmin(adminAux.getId());
             dto.setFullname(adminAux.getFullname());
@@ -161,34 +146,32 @@ public class CompanyService {
     }
 
     //bucar Admin por ID
-    private Optional<AdminDTO> findAdminByID(String id) {
-        return admins.stream()
+    private Optional<Admin> findAdminByID(String id) {
+        return company.getAdmins().stream()
                 .filter(a -> a.getId().equals(id))
-                .findFirst()
-                .map(a -> {
-                    AdminDTO dto = new AdminDTO();
-                    dto.setIdAdmin(a.getId());
-                    dto.setFullname(a.getFullname());
-                    dto.setEmail(a.getEmail());
-                    dto.setPhone(a.getPhone());
-                    return dto;
-                });
+                .findFirst();
     }
 
     //Read: ver un admin
     private AdminDTO readAdmin(String id){
 
-        Optional<AdminDTO> adminFind = findAdminByID(id);
+        Optional<Admin> adminFind = findAdminByID(id);
         if (adminFind.isPresent()){
-            return adminFind.get();
+            Admin adminAux = adminFind.get();
+            AdminDTO dto = new AdminDTO();
+            dto.setIdAdmin(adminAux.getId());
+            dto.setFullname(adminAux.getFullname());
+            dto.setEmail(adminAux.getEmail());
+            dto.setPhone(adminAux.getPhone());
+            return dto;
         } else {
             throw new NotFoundException("No se encontró ningun Admin con ID: " + id);
         }
     }
 
     //update: actulizar Admin
-    private void updateADmin(AdminDTO dto) {
-        Optional<Admin> adminOp = admins.stream()
+    private void updateAdmin(AdminDTO dto) {
+        Optional<Admin> adminOp = company.getAdmins().stream()
                 .filter(a -> a.getId().equals(dto.getIdAdmin()))
                 .findFirst();
 
@@ -205,11 +188,11 @@ public class CompanyService {
 
     //Delete: eliminar Admin
     private void deleteAdmin(String id){
-        Optional<Admin> admin = admins.stream()
+        Optional<Admin> admin = company.getAdmins().stream()
                 .filter(a -> a.getId().equals(id))
                 .findFirst();
         if (admin.isPresent()){
-            admins.remove(admin.get());
+            company.getAdmins().remove(admin.get());
         } else {
             throw new NotFoundException("No se encontró ningun admin con ID: " + id);
         }
@@ -225,13 +208,13 @@ public class CompanyService {
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .build();
-        deliveryMen.add(dealer);
+        company.getDealers().add(dealer);
     }
 
     // Listar repartidores como DTO  para poder devolverlo al controller
     public List<DealerDTO> listDealerDTO() {
         List<DealerDTO> list = new ArrayList<>();
-        for (Dealer dealerAux : deliveryMen) {
+        for (Dealer dealerAux : company.getDealers()) {
             DealerDTO dto = new DealerDTO();
             dto.setIdDealer(dealerAux.getId());
             dto.setFullname(dealerAux.getFullname());
@@ -243,34 +226,33 @@ public class CompanyService {
     }
 
     //bucar Dealer por ID
-    private Optional<DealerDTO> findDealerByID(String id) {
-        return deliveryMen.stream()
+    private Optional<Dealer> findDealerByID(String id) {
+        return company.getDealers().stream()
                 .filter(d -> d.getId().equals(id))
-                .findFirst()
-                .map(d -> {
-                    DealerDTO dto = new DealerDTO();
-                    dto.setIdDealer(d.getId());
-                    dto.setFullname(d.getFullname());
-                    dto.setEmail(d.getEmail());
-                    dto.setPhone(d.getPhone());
-                    return dto;
-                });
+                .findFirst();
     }
 
     //Read: ver un dealer
     private DealerDTO readDealer(String id){
 
-        Optional<DealerDTO> dealerFind = findDealerByID(id);
+        Optional<Dealer> dealerFind = findDealerByID(id);
         if (dealerFind.isPresent()){
-            return dealerFind.get();
+            Dealer dealerAux = dealerFind.get();
+            DealerDTO dto = new DealerDTO();
+            dto.setIdDealer(dealerAux.getId());
+            dto.setFullname(dealerAux.getFullname());
+            dto.setEmail(dealerAux.getEmail());
+            dto.setPhone(dealerAux.getPhone());
+            return dto;
         } else {
             throw new NotFoundException("No se encontró ningun repartidor con ID: " + id);
         }
     }
 
+
     //update: actulizar repartidor
     private void updateDealer(DealerDTO dto) {
-        Optional<Dealer> dealerOp = deliveryMen.stream()
+        Optional<Dealer> dealerOp = company.getDealers().stream()
                 .filter(d -> d.getId().equals(dto.getIdDealer()))
                 .findFirst();
 
@@ -287,44 +269,49 @@ public class CompanyService {
 
     //Delete: eliminar repartidor
     private void deleteDealer(String id){
-        Optional<Dealer> dealer = deliveryMen.stream()
+        Optional<Dealer> dealer = company.getDealers().stream()
                 .filter(d -> d.getId().equals(id))
                 .findFirst();
         if (dealer.isPresent()){
-            deliveryMen.remove(dealer.get());
+            company.getDealers().remove(dealer.get());
         } else {
             throw new NotFoundException("No se encontró ningun repartidor con ID: " + id);
         }
     }
 
     //metodos de inicio de sesion users
-    public UserDTO login(String email, String passwordID) {
-        Optional<UserDTO> userOpt = findUserByEmail(email);
+    public UserDTO login(String email, String password) {
+        Optional<User> user = findUserByEmail(email);
 
-        if (userOpt.isEmpty()) {
+        if (user.isEmpty()) {
             throw new IncorrectEmailException("No existe ninguna cuenta con el email: " + email);
         }
 
-        UserDTO user = userOpt.get();
-
-        if (!user.getIdUser().equals(passwordID)) {
+        User userAux = user.get();
+        if (!userAux.getPassword().equals(password)) {
             throw new IncorrectPasswordException("Incorrect Password, please try again");
         }
 
+        UserDTO dto = new UserDTO();
+        dto.setIdUser(userAux.getId());
+        dto.setFullname(userAux.getFullname());
+        dto.setEmail(userAux.getEmail());
+        dto.setPhone(userAux.getPhone());
+        dto.setAddresses(userAux.getAddresses());
+        return dto;
         // si pasa esta logica, sigifica que el usuario es valido
         // devuelve el user para que el controlador decida que hacer con el
-        return user;
     }
 
 
     // metodo que recibe una solicitud de envio y hace el proceso para enviar
-    public static void makeShipment(Shipment shipement){
+    public void makeShipment(Shipment shipement){
         shipement.setStatus(ShippingStatus.ENROUTE);
     }
 
 
     // metodo para ratrear el estado del envio
-    public static String trackerShipment(Shipment shipment){
+    public String trackerShipment(Shipment shipment){
         if (shipment != null){
             return shipment.track();
         } else {

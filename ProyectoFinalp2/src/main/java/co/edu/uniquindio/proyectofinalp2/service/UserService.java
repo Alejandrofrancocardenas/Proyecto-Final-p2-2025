@@ -22,19 +22,19 @@ import java.util.List;
     }
 
     //metodo para crear solicitudes de envío antes de ser asignadas.
-    public static Shipment createShipment(String shipmentId, String senderId, String zone, String period){
+    public static Shipment createShipment(String shipmentId, User senderId, String zone, String period){
         Shipment shipment = new Shipment(shipmentId, senderId, zone, period);
         shipmentsTemp.add(shipment);
         return shipment;
     }
 
     // metodo para modificar solicitudes de envio antes de ser asignadas
-    public static Shipment updateShipment(String shipmentId, String newSenderId, String newZone, String newPeriod){
+    public static Shipment updateShipment(String shipmentId, User newSenderId, String newZone, String newPeriod){
         Shipment shipmentAux = findShipmentTempById(shipmentId);
         if (shipmentAux == null){
             throw new NotFoundException("Shipment not found");
         } else {
-            shipmentAux.setUserId(newSenderId);
+            shipmentAux.setUser(newSenderId);
             shipmentAux.setZone(newZone);
             shipmentAux.setPeriod(newPeriod);
             return shipmentAux;

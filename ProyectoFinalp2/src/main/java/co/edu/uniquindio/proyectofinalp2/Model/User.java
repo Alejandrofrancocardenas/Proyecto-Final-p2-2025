@@ -71,7 +71,7 @@ public class User extends Person {
             return this;
         }
 
-        public Builder rol(String rol) { // 👈 método builder para rol
+        public Builder rol(String rol) { // 👈 metodo builder para rol
             this.rol = rol;
             return this;
         }
