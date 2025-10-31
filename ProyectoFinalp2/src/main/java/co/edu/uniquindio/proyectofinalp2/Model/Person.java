@@ -50,8 +50,8 @@ public abstract class Person {
 
     public abstract static class Builder<T extends Builder<T>>{
 
-        private String name;
         private String id;
+        private String name;
         private String email;
         private String phone;
 

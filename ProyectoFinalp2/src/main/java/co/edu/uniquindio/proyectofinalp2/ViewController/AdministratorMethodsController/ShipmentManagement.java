@@ -129,8 +129,8 @@ public class ShipmentManagement {
         double total = 0;
         int count = 0;
         for (Shipment s : shipments) {
-            if (s.getDeliveryTimeHours() > 0) {
-                total += s.getDeliveryTimeHours();
+            if (s.getEstimatedDeliveryDate() > 0) {
+                total += s.getEstimatedDeliveryDate();
                 count++;
             }
         }

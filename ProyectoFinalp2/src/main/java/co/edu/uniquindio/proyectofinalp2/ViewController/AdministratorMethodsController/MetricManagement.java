@@ -37,8 +37,8 @@ public class MetricManagement {
         int count = 0;
 
         for (Shipment s : shipments) {
-            if (s.getDeliveryTimeHours() > 0) {
-                totalTiempo += s.getDeliveryTimeHours();
+            if (s.getEstimatedDeliveryDate() > 0) {
+                totalTiempo += s.getEstimatedDeliveryDate();
                 count++;
             }
         }

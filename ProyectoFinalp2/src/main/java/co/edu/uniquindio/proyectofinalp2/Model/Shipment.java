@@ -1,7 +1,6 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-import co.edu.uniquindio.proyectofinalp2.service.ShippingService;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,25 +12,25 @@ import java.util.List;
 public class Shipment implements ITracker {
 
     private String shipmentId;               // Identificador único del envío
-    private String senderId;                 // ID del usuario que realiza el envío
+    private Rate rate;                       // la tarifa
+    private Incidence incidence;             // piuede tener incidencias
+    private Payment payment;                 // el pago que nesecita el envio para ser enviado
+    private Address address;                 // aqui va el origen y el destino
+    private PackageModel packageModel;       // el envio nesecita tener un paqwuete para enviar
+    private double price;                    // Precio total del envío
+    private ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
+    private LocalDateTime crationDate;       // fecha cuando se crea
+    private double estimatedDeliveryDate;    // Tiempo que tardó en entregarse (en horas)
+    private User user;                       // el usuario que realiza el envío
     private Dealer assignedDealer;           // Repartidor asignado
     private String zone;                     // Zona de entrega
-    private ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
-    private double price;           // Precio total del envío
-    private double deliveryTimeHours;        // Tiempo que tardó en entregarse (en horas)
     private String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
-    private String incident;                 // Descripción de incidencias
     private List<String> additionalServices; // Servicios adicionales (ej: "Seguro", "Entrega exprés")
-    private Address origin;
-    private Address destination;
-    private double weight;
-    private double volume;
-    private Payment payment;
 
-    public Shipment(String shipmentId, String senderId, Dealer assignedDealer,
+    public Shipment(String shipmentId, User user, Dealer assignedDealer,
                     String zone, double price, String period) {
         this.shipmentId = shipmentId;
-        this.senderId = senderId;
+        this.user = user;
         this.assignedDealer = assignedDealer;
         this.zone = zone;
         this.price = price;
@@ -42,9 +41,9 @@ public class Shipment implements ITracker {
     /**
      * metodo para Crear, solicitudes de envío antes de ser asignadas.  toca arreglarlo
      */
-    public Shipment(String shipmentId, String senderId, String zone, String period) {
+    public Shipment(String shipmentId, User user, String zone, String period) {
         this.shipmentId = shipmentId;
-        this.senderId = senderId;
+        this.user = user;
         this.zone = zone;
         this.period = period;
         this.additionalServices = new ArrayList<>();
@@ -58,12 +57,12 @@ public class Shipment implements ITracker {
         this.shipmentId = shipmentId;
     }
 
-    public String getSenderId() {
-        return senderId;
+    public User getUser() {
+        return user;
     }
 
-    public void setSenderId(String senderId) {
-        this.senderId = senderId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Dealer getAssignedDealer() {
@@ -98,12 +97,12 @@ public class Shipment implements ITracker {
         this.price = price;
     }
 
-    public double getDeliveryTimeHours() {
-        return deliveryTimeHours;
+    public double getEstimatedDeliveryDate() {
+        return estimatedDeliveryDate;
     }
 
-    public void setDeliveryTimeHours(double deliveryTimeHours) {
-        this.deliveryTimeHours = deliveryTimeHours;
+    public void setEstimatedDeliveryDate(double estimatedDeliveryDate) {
+        this.estimatedDeliveryDate = estimatedDeliveryDate;
     }
 
     public String getPeriod() {
@@ -114,48 +113,52 @@ public class Shipment implements ITracker {
         this.period = period;
     }
 
-    public String getIncident() {
-        return incident;
+    public Incidence getIncident() {
+        return incidence;
     }
 
-    public void setIncident(String incident) {
-        this.incident = incident;
+    public void setIncidence(Incidence incidence) {
+        this.incidence = incidence;
     }
 
     public List<String> getAdditionalServices() {
         return additionalServices;
     }
 
-    public Address getOrigin() {
-        return origin;
+    public Rate getRate() {
+        return rate;
     }
 
-    public void setOrigin(Address origin) {
-        this.origin = origin;
+    public void setRate(Rate rate) {
+        this.rate = rate;
     }
 
-    public Address getDestination() {
-        return destination;
+    public Incidence getIncidence() {
+        return incidence;
     }
 
-    public void setDestination(Address destination) {
-        this.destination = destination;
+    public Address getAddress() {
+        return address;
     }
 
-    public double getWeight() {
-        return weight;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public PackageModel getPackageModel() {
+        return packageModel;
     }
 
-    public double getVolume() {
-        return volume;
+    public void setPackageModel(PackageModel packageModel) {
+        this.packageModel = packageModel;
     }
 
-    public void setVolume(double volume) {
-        this.volume = volume;
+    public LocalDateTime getCrationDate() {
+        return crationDate;
+    }
+
+    public void setCrationDate(LocalDateTime crationDate) {
+        this.crationDate = crationDate;
     }
 
     public Payment getPayment() {
@@ -178,30 +181,28 @@ public class Shipment implements ITracker {
 
     @Override
     public String track() {
-        return String.format(
-                "Envío #%s\nOrigen: %s\nDestino: %s\nRemitente: %s\nRepartidor: %s\nZona: %s\nEstado: %s\nPeriodo: %s\nServicios: %s",
-                shipmentId,
-                (origin != null ? origin.getCity() : "No definido"),
-                (destination != null ? destination.getCity() : "No definido"),
-                senderId,
-                (assignedDealer != null ? assignedDealer.getFullname() : "No asignado"),
-                zone,
-                (status != null ? status : ShippingStatus.REQUIRED),
-                period,
-                (additionalServices.isEmpty() ? "Ninguno" : String.join(", ", additionalServices))
-        );
+        return "hola";
     }
 
 
     @Override
     public String toString() {
         return "Shipment{" +
-                "ID='" + shipmentId + '\'' +
-                ", Dealer=" + (assignedDealer != null ? assignedDealer.getFullname() : "No asignado") +
-                ", Zone='" + zone + '\'' +
-                ", Status='" + status + '\'' +
-                ", Price=" + price +
-                ", Time=" + deliveryTimeHours + "h" +
+                "shipmentId='" + shipmentId + '\'' +
+                ", rate=" + rate +
+                ", incidence=" + incidence +
+                ", payment=" + payment +
+                ", address=" + address +
+                ", packageModel=" + packageModel +
+                ", price=" + price +
+                ", status=" + status +
+                ", crationDate=" + crationDate +
+                ", estimatedDeliveryDate=" + estimatedDeliveryDate +
+                ", user=" + user +
+                ", assignedDealer=" + assignedDealer +
+                ", zone='" + zone + '\'' +
+                ", period='" + period + '\'' +
+                ", additionalServices=" + additionalServices +
                 '}';
     }
 }

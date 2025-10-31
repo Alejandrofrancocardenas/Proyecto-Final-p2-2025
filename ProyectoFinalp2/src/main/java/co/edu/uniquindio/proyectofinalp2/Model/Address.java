@@ -2,6 +2,8 @@ package co.edu.uniquindio.proyectofinalp2.Model;
 
 public class Address {
     private String idAddress;
+    private String origin;
+    private String destination;
     private String alias;
     private String street;
     private String city;

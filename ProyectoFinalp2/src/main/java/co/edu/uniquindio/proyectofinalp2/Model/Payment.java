@@ -6,7 +6,7 @@ public class Payment {
     private String idPay;
     private double mount;
     private LocalDateTime Date;
-    //monto de pago?? simulado
+    private String payMethod;
     private boolean result;
 
     public Payment(String idPay, double mount, LocalDateTime date, boolean result) {

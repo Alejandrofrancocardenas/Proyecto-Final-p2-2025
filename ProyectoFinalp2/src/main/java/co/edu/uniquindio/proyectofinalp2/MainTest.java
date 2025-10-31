@@ -47,33 +47,33 @@ public class MainTest {
         user.getAddresses().forEach(a -> System.out.println(" - " + a));
 
         // 3️⃣ Crear una solicitud de envío temporal
-        Shipment shipment = UserService.createShipment("SHIP1", user.getId(), "Zona Norte", "Octubre 2025");
-        shipment.setOrigin(home);
-        shipment.setDestination(office);
-        shipment.addService("Seguro");
-        shipment.setWeight(120);
-        shipment.setVolume(400);
-        shipment.setPrice( UserService.getPrice("Armenia", "Calarcá", shipment.getWeight(), shipment.getVolume(), "2") );
-
-        System.out.println("\n📦 Envío creado:");
-        System.out.println(shipment.track());
+//        Shipment shipment = UserService.createShipment("SHIP1", user.getId(), "Zona Norte", "Octubre 2025");
+//        shipment.setOrigin(home);
+//        shipment.setDestination(office);
+//        shipment.addService("Seguro");
+//        shipment.setWeight(120);
+//        shipment.setVolume(400);
+//        shipment.setPrice( UserService.getPrice("Armenia", "Calarcá", shipment.getWeight(), shipment.getVolume(), "2") );
+//
+//        System.out.println("\n📦 Envío creado:");
+//        System.out.println(shipment.track());
 
         // 4️⃣ Confirmar el envío
         UserService.makeShipment("SHIP1");
         System.out.println("\n🚚 Estado actualizado:");
-        System.out.println(shipment.track());
+       // System.out.println(shipment.track());
 
         // 5️⃣ Simular pago
-        Payment payment = new Payment("PAY1", shipment.getPrice(), LocalDateTime.now(), true);
-        user.getPayments().add(payment);
-        shipment.setPayment(payment);
+        //Payment payment = new Payment("PAY1", shipment.getPrice(), LocalDateTime.now(), true);
+        //user.getPayments().add(payment);
+        //shipment.setPayment(payment);
 
         System.out.println("\n💳 Pago realizado con éxito:");
-        System.out.println(payment);
+        //System.out.println(payment);
 
         // 6️⃣ Rastrear el envío
-        String trackingInfo = CompanyService.trackerShipment(shipment);
-        System.out.println("\n📍 Rastreo actual del envío:\n" + trackingInfo);
+        //String trackingInfo = CompanyService.trackerShipment(shipment);
+        //System.out.println("\n📍 Rastreo actual del envío:\n" + trackingInfo);
 
         System.out.println("\n=== ✅ Fin de pruebas ===");
     }

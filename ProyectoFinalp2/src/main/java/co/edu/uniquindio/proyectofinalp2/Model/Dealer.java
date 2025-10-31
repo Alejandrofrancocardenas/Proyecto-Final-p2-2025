@@ -50,8 +50,8 @@ public class Dealer extends Person {
         int entregasValidas = 0;
 
         for (Shipment s : assignedShipments) {
-            if (s.getDeliveryTimeHours() > 0) { // solo cuenta las entregas completadas
-                totalHoras += s.getDeliveryTimeHours();
+            if (s.getEstimatedDeliveryDate() > 0) { // solo cuenta las entregas completadas
+                totalHoras += s.getEstimatedDeliveryDate();
                 entregasValidas++;
             }
         }

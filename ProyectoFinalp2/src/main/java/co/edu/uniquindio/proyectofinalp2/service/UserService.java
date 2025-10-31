@@ -3,15 +3,13 @@
 import co.edu.uniquindio.proyectofinalp2.Model.Address;
 import co.edu.uniquindio.proyectofinalp2.Model.Payment;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
-import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.Model.User;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class UserService {
+ public class UserService {
     private List<User> users = new ArrayList<>();
     private static List<Shipment> shipmentsTemp = new ArrayList<>();
 
@@ -36,7 +34,7 @@ public class UserService {
         if (shipmentAux == null){
             throw new NotFoundException("Shipment not found");
         } else {
-            shipmentAux.setSenderId(newSenderId);
+            shipmentAux.setUserId(newSenderId);
             shipmentAux.setZone(newZone);
             shipmentAux.setPeriod(newPeriod);
             return shipmentAux;
