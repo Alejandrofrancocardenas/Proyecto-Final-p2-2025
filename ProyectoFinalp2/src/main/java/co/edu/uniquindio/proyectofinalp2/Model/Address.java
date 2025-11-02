@@ -9,7 +9,6 @@ public class Address {
     private String city;
     private String coordinates;
 
-    // podria ser factory??
     public Address(){}
     public Address(String idAddress, String origin, String destination, String alias, String street, String city, String coordinates){
         this.idAddress = idAddress;
@@ -27,6 +26,22 @@ public class Address {
 
     public void setIdAddress(String idAddress) {
         this.idAddress = idAddress;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     public String getAlias() {
@@ -63,10 +78,14 @@ public class Address {
 
     @Override
     public String toString() {
-        return idAddress + " " +
-                alias    + " " +
-                street   + " " +
-                city     + " " +
-                coordinates;
+        return "Address{" +
+                "idAddress='" + idAddress + '\'' +
+                ", origin='" + origin + '\'' +
+                ", destination='" + destination + '\'' +
+                ", alias='" + alias + '\'' +
+                ", street='" + street + '\'' +
+                ", city='" + city + '\'' +
+                ", coordinates='" + coordinates + '\'' +
+                '}';
     }
 }
