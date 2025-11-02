@@ -11,43 +11,33 @@ import java.util.List;
  */
 public abstract class Shipment {
 
-    private String shipmentId;               // Identificador único del envío
-    private Rate rate;                       // la tarifa
-    private Incidence incidence;             // piuede tener incidencias
-    private Payment payment;                 // el pago que nesecita el envio para ser enviado
-    private Address address;                 // aqui va el origen y el destino
-    private PackageModel packageModel;       // el envio nesecita tener un paqwuete para enviar
-    private double price;                    // Precio total del envío
-    private ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
-    private LocalDateTime crationDate;       // fecha cuando se crea
-    private double estimatedDeliveryDate;    // Tiempo que tardó en entregarse (en horas)
-    private User user;                       // el usuario que realiza el envío
-    private Dealer assignedDealer;           // Repartidor asignado
-    private String zone;                     // Zona de entrega
-    private String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
-    private List<String> additionalServices; // Servicios adicionales (ej: "Seguro", "Entrega exprés")
+    protected String shipmentId;               // Identificador único del envío
+    protected Rate rate;                       // la tarifa
+    protected Incidence incidence;             // piuede tener incidencias
+    protected Payment payment;                 // el pago que nesecita el envio para ser enviado
+    protected Address address;                 // aqui va el origen y el destino
+    protected PackageModel packageModel;       // el envio nesecita tener un paqwuete para enviar
+    protected double price;                    // Precio total del envío
+    protected ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
+    protected LocalDateTime crationDate;       // fecha cuando se crea
+    protected double estimatedDeliveryDate;    // Tiempo que tardó en entregarse (en horas)
+    protected User user;                       // el usuario que realiza el envío
+    protected Dealer assignedDealer;           // Repartidor asignado
+    protected String zone;                     // Zona de entrega
+    protected String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
+    protected List<String> additionalServices = new ArrayList<>(); // Servicios adicionales (ej: "Seguro", "Entrega exprés")
 
-    public Shipment(String shipmentId, User user, Dealer assignedDealer,
-                    String zone, double price, String period) {
-        this.shipmentId = shipmentId;
-        this.user = user;
-        this.assignedDealer = assignedDealer;
-        this.zone = zone;
-        this.price = price;
-        this.period = period;
-        this.additionalServices = new ArrayList<>();
+
+    protected Shipment(Builder<?> builder) {
+        this.shipmentId = builder.shipmentId;
+        this.user = builder.user;
+        this.zone = builder.zone;
+        this.address = builder.address;
+        this.packageModel = builder.packageModel;
     }
 
-    /**
-     * metodo para Crear, solicitudes de envío antes de ser asignadas.  toca arreglarlo
-     */
-    public Shipment(String shipmentId, User user, String zone, String period) {
-        this.shipmentId = shipmentId;
-        this.user = user;
-        this.zone = zone;
-        this.period = period;
-        this.additionalServices = new ArrayList<>();
-    }
+    // este se usa unicamente para decoradores que no necesitan builder
+    protected Shipment() {}
 
     public String getShipmentId() {
         return shipmentId;
@@ -182,6 +172,43 @@ public abstract class Shipment {
 
     public abstract String track();
 
+    public abstract static class Builder<T extends Builder<T>> {
+
+        private String shipmentId;
+        private Address address;
+        private PackageModel packageModel;
+        private User user;
+        private String zone;
+
+        public T shipmentId(String shipmentId) {
+            this.shipmentId = shipmentId;
+            return self();
+        }
+
+        public T address(Address address) {
+            this.address = address;
+            return self();
+        }
+
+        public T packageModel(PackageModel packageModel) {
+            this.packageModel = packageModel;
+            return self();
+        }
+
+        public T user(User user) {
+            this.user = user;
+            return self();
+        }
+
+        public T zone(String zone) {
+            this.zone = zone;
+            return self();
+        }
+
+        protected abstract T self();
+        public abstract Shipment build();
+
+    }
 
     @Override
     public String toString() {

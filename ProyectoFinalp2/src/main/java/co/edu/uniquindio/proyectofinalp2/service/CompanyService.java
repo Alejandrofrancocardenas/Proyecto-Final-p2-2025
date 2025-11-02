@@ -31,15 +31,12 @@ public class CompanyService {
     }
 
     //CRUD de usuarios
-    //Create: registrar un usuario a partir de DTO
-    public void registerUser(UserDTO dto) {
-        User user = new User.Builder()
-                .name(dto.getFullname())
-                .id(dto.getIdUser())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .build();
-        //user.setAddresses(dto.getAddresses());
+    //Create: registrar un usuario
+    public void registerUser(User user) {
+        Optional<User> userAux = findUserByID(user.getId());
+        if (userAux.isPresent()) {
+            throw new IllegalArgumentException("No pueden haber 2 usuarios con id "+ user.getId());
+        }
         company.getUsers().add(user);
     }
 
@@ -73,7 +70,7 @@ public class CompanyService {
     }
 
     //Read: ver un user
-    private UserDTO readUser(String id){
+    public UserDTO readUser(String id){
 
         Optional<User> userFind = findUserByID(id);
         if (userFind.isPresent()){
@@ -91,7 +88,7 @@ public class CompanyService {
     }
 
     //update: actulizar usuario
-    private void updateUser(UserDTO dto) {
+    public void updateUser(UserDTO dto) {
         Optional<User> userOp = company.getUsers().stream()
                 .filter(u -> u.getId().equals(dto.getIdUser()))
                 .findFirst();
@@ -101,7 +98,7 @@ public class CompanyService {
             user.setFullname(dto.getFullname());
             user.setEmail(dto.getEmail());
             user.setPhone(dto.getPhone());
-            //user.setAddresses(dto.getAddresses());
+            user.setAddresses(dto.getAddresses());
         } else {
             throw new NotFoundException("No se encontró ningun usuario con ID: " + dto.getIdUser());
         }
@@ -109,7 +106,7 @@ public class CompanyService {
 
 
     //Delete: eliminar user
-    private void deleteUser(String id){
+    public void deleteUser(String id){
         Optional<User> user = company.getUsers().stream()
                     .filter(u -> u.getId().equals(id))
                     .findFirst();
@@ -305,10 +302,12 @@ public class CompanyService {
     }
 
 
-    // metodo que recibe una solicitud de envio y hace el proceso para enviar
-    public void makeShipment(Shipment shipement){
-        shipement.setStatus(ShippingStatus.ENROUTE);
-        company.getShipments().add(shipement);
+    // metodo que recibe una solicitud de envio y hace el proceso para enviar, requiere que el pago sea true
+    public void makeShipment(Shipment shipment){
+        //asignar repartidor
+        shipment.setPeriod("toca poner una fecha");
+        shipment.setStatus(ShippingStatus.ENROUTE);
+        company.getShipments().add(shipment);
     }
 
 

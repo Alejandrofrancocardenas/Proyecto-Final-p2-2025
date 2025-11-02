@@ -6,15 +6,13 @@ public abstract class ShipmentDecorate extends Shipment {
 
     protected Shipment shipment;
 
+
     public ShipmentDecorate(Shipment shipment) {
-        super(shipment.getShipmentId(),
-                shipment.getUser(),
-                shipment.getAssignedDealer(),
-                shipment.getZone(),
-                shipment.getPrice(),
-                shipment.getPeriod());
+        // pasamos null al padre porque el decorador no se construye con builder
+        super();
         this.shipment = shipment;
     }
+
 
     @Override
     public double getPrice() {

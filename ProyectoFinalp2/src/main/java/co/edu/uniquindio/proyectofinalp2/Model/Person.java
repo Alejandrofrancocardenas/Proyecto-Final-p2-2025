@@ -79,4 +79,12 @@ public abstract class Person {
         public abstract Person build();
     }
 
+    @Override
+    public String toString() {
+        return  "id='" + id + '\'' +
+                ", fullname='" + fullname + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
 }

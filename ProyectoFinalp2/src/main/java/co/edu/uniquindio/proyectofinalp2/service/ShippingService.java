@@ -72,13 +72,13 @@ public class ShippingService {
     }
 
 
-     public Shipment applyDecorators(Shipment shipment, boolean isPriority, boolean isFragile, boolean isSecure, boolean isSignatureRequired) {
-         if (isPriority) shipment = new PriorityShipping(shipment);
-         if (isFragile) shipment = new FragileShipment(shipment);
-         if (isSecure) shipment = new SecureShipping(shipment);
-         if (isSignatureRequired) shipment = new SignatureRequiredShipment(shipment);
-         return shipment;
-     }
+    public Shipment applyDecorators(Shipment shipment, boolean isPriority, boolean isFragile, boolean isSecure, boolean isSignatureRequired) {
+        if (isPriority) shipment = new PriorityShipping(shipment);
+        if (isFragile) shipment = new FragileShipment(shipment);
+        if (isSecure) shipment = new SecureShipping(shipment);
+        if (isSignatureRequired) shipment = new SignatureRequiredShipment(shipment);
+        return shipment;
+    }
 
 
 }

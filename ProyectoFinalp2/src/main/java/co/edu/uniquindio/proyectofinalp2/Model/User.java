@@ -68,12 +68,12 @@ public class User extends Person {
 
         public Builder password(String password) {
             this.password = password;
-            return this;
+            return self();
         }
 
         public Builder rol(String rol) { // 👈 metodo builder para rol
             this.rol = rol;
-            return this;
+            return self();
         }
 
         @Override

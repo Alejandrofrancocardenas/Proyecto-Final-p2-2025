@@ -11,6 +11,15 @@ public class Address {
 
     // podria ser factory??
     public Address(){}
+    public Address(String idAddress, String origin, String destination, String alias, String street, String city, String coordinates){
+        this.idAddress = idAddress;
+        this.origin = origin;
+        this.destination = destination;
+        this.alias = alias;
+        this.street = street;
+        this.city = city;
+        this.coordinates = coordinates;
+    }
 
     public String getIdAddress() {
         return idAddress;

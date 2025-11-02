@@ -1,19 +1,30 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
+import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
+
 public class NormalShipment extends Shipment {
 
-
-    public NormalShipment(String shipmentId, User user, Dealer assignedDealer, String zone, double price, String period) {
-        super(shipmentId, user, assignedDealer, zone, price, period);
+    private NormalShipment(Builder builder) {
+        super(builder);
     }
 
-    public NormalShipment(String shipmentId, User user, String zone, String period) {
-        super(shipmentId, user, zone, period);
+    public static class Builder extends Shipment.Builder<Builder> {
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        public NormalShipment build() {
+            return new NormalShipment(this);
+        }
     }
+
 
     @Override
     public String track() {
-        return "\nEl envío es normal.";
+        return "\nEl envío está " + this.status;
     }
 
 }

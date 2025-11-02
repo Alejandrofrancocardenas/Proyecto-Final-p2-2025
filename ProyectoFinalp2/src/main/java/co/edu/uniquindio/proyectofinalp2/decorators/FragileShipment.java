@@ -5,6 +5,7 @@ import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 public class FragileShipment extends ShipmentDecorate {
     public FragileShipment(Shipment shipment) {
         super(shipment);
+        shipment.addService("FragileShipment");
     }
 
     @Override

@@ -5,6 +5,8 @@ import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 public class SecureShipping extends ShipmentDecorate {
     public SecureShipping(Shipment shipment) {
         super(shipment);
+        shipment.addService("SecureShipping");
+
     }
 
 
