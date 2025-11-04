@@ -4,14 +4,14 @@ import java.util.List;
 
 public class Dealer extends Person {
 
-    private boolean disponible;
-    private int entregasRealizadas;
+    private boolean avaliable;
+    private int deliveriesMade;
 
     // Constructor con builder
     protected Dealer(Builder builder) {
         super(builder);
-        this.disponible = builder.disponible;
-        this.entregasRealizadas = builder.entregasRealizadas;
+        this.avaliable = builder.avaliable;
+        this.deliveriesMade = builder.deliveriesMade;
     }
 
     private List<Shipment> assignedShipments;
@@ -25,20 +25,20 @@ public class Dealer extends Person {
     }
 
     // Getters y Setters
-    public boolean isDisponible() {
-        return disponible;
+    public boolean getAvaliable() {
+        return avaliable;
     }
 
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
+    public void setAvaliable(boolean avaliable) {
+        this.avaliable = avaliable;
     }
 
-    public int getEntregasRealizadas() {
-        return entregasRealizadas;
+    public int getDeliveriesMade() {
+        return deliveriesMade;
     }
 
-    public void setEntregasRealizadas(int entregasRealizadas) {
-        this.entregasRealizadas = entregasRealizadas;
+    public void setDeliveriesMade(int deliveriesMade) {
+        this.deliveriesMade = deliveriesMade;
     }
 
     public double calcularTiempoPromedioEntregas() {
@@ -61,16 +61,16 @@ public class Dealer extends Person {
 
     // Builder estático
     public static class Builder extends Person.Builder<Builder> {
-        private boolean disponible;
-        private int entregasRealizadas;
+        private boolean avaliable;
+        private int deliveriesMade;
 
-        public Builder disponible(boolean disponible) {
-            this.disponible = disponible;
+        public Builder avaliable(boolean avaliable) {
+            this.avaliable = avaliable;
             return this;
         }
 
-        public Builder entregasRealizadas(int entregasRealizadas) {
-            this.entregasRealizadas = entregasRealizadas;
+        public Builder deliveriesMade(int deliveriesMade) {
+            this.deliveriesMade = deliveriesMade;
             return this;
         }
 
@@ -91,8 +91,8 @@ public class Dealer extends Person {
                 "nombre='" + fullname + '\'' +
                 ", correo='" + email + '\'' +
                 ", telefono='" + phone + '\'' +
-                ", disponible=" + disponible +
-                ", entregasRealizadas=" + entregasRealizadas +
+                ", disponible=" + avaliable +
+                ", entregasRealizadas=" + deliveriesMade +
                 '}';
     }
 }

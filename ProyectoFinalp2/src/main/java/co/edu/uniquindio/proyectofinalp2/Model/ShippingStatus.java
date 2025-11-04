@@ -5,11 +5,11 @@ public enum ShippingStatus {
     ASSIGNED(2),
     ENROUTE(3),
     DELIVERED(4),
-    INCIDENCE(5);
+    INCIDENCE(5),
+    CANCELLED(6);
+    private final int value;
 
-    private int value;
-
-    ShippingStatus(int value){
+    ShippingStatus(int value) {
         this.value = value;
     }
 

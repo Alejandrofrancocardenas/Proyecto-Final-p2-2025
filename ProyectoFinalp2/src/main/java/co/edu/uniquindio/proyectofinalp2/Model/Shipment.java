@@ -19,7 +19,7 @@ public abstract class Shipment {
     protected PackageModel packageModel;       // el envio nesecita tener un paqwuete para enviar
     protected double price;                    // Precio total del envío
     protected ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
-    protected LocalDateTime crationDate;       // fecha cuando se crea
+    protected LocalDateTime creationDate;       // fecha cuando se crea
     protected double estimatedDeliveryDate;    // Tiempo que tardó en entregarse (en horas)
     protected User user;                       // el usuario que realiza el envío
     protected Dealer assignedDealer;           // Repartidor asignado
@@ -143,12 +143,12 @@ public abstract class Shipment {
         this.packageModel = packageModel;
     }
 
-    public LocalDateTime getCrationDate() {
-        return crationDate;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
-    public void setCrationDate(LocalDateTime crationDate) {
-        this.crationDate = crationDate;
+    public void setCreationDate(LocalDateTime crationDate) {
+        this.creationDate = creationDate;
     }
 
     public Payment getPayment() {
@@ -221,7 +221,7 @@ public abstract class Shipment {
                 ", packageModel=" + packageModel +
                 ", price=" + price +
                 ", status=" + status +
-                ", crationDate=" + crationDate +
+                ", crationDate=" + creationDate +
                 ", estimatedDeliveryDate=" + estimatedDeliveryDate +
                 ", user=" + user +
                 ", assignedDealer=" + assignedDealer +

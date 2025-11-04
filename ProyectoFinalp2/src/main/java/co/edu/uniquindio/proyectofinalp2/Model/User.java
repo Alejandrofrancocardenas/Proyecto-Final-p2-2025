@@ -6,7 +6,7 @@ import java.util.List;
 public class User extends Person {
 
     private String password;
-    private String rol;
+    private String role;
     private List<Address> addresses;
     private List<Payment> payments;
     private List<Shipment> shipments;
@@ -14,7 +14,7 @@ public class User extends Person {
     private User(Builder builder) {
         super(builder);
         this.password = builder.password;
-        this.rol = builder.rol;
+        this.role = builder.rol;
         this.addresses = new ArrayList<>();
         this.payments = new ArrayList<>();
         this.shipments = new ArrayList<>();
@@ -29,12 +29,12 @@ public class User extends Person {
         this.password = password;
     }
 
-    public String getRol() {
-        return rol;
+    public String getRole() {
+        return role;
     }
 
     public void setRol(String rol) {
-        this.rol = rol;
+        this.role = rol;
     }
 
     public List<Address> getAddresses() {
@@ -64,15 +64,15 @@ public class User extends Person {
     // Builder
     public static class Builder extends Person.Builder<Builder> {
         private String password;
-        private String rol;
+        private String role;
 
         public Builder password(String password) {
             this.password = password;
             return self();
         }
 
-        public Builder rol(String rol) { // 👈 metodo builder para rol
-            this.rol = rol;
+        public Builder role(String role) { // 👈 metodo builder para rol
+            this.role = role;
             return self();
         }
 

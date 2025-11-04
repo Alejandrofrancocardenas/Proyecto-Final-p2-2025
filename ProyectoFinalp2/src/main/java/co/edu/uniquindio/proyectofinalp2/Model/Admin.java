@@ -1,6 +1,8 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-public class Admin extends Person{
+import com.fasterxml.jackson.databind.ser.std.NullSerializer;
+
+public class Admin extends Person {
 
     private Admin(Builder builder){
         super(builder);

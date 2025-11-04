@@ -77,9 +77,9 @@ public class DealerManagement {
         colTelefono.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getPhone()));
         colDisponible.setCellValueFactory(cellData ->
-                new SimpleBooleanProperty(cellData.getValue().isDisponible()));
+                new SimpleBooleanProperty(cellData.getValue().getAvaliable()));
         colEntregas.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().getEntregasRealizadas()).asObject());
+                new SimpleIntegerProperty(cellData.getValue().getDeliveriesMade()).asObject());
     }
 
     /**
@@ -101,8 +101,8 @@ public class DealerManagement {
                 .name(nombre)
                 .email(correo)
                 .phone(telefono)
-                .disponible(disponible)
-                .entregasRealizadas(0)
+                .avaliable(disponible)
+                .deliveriesMade(0)
                 .build();
 
         listaDealers.add(nuevoDealer);
@@ -152,7 +152,7 @@ public class DealerManagement {
         seleccionado.setFullname(nuevoNombre);
         seleccionado.setEmail(nuevoCorreo);
         seleccionado.setPhone(nuevoTelefono);
-        seleccionado.setDisponible(disponible);
+        seleccionado.setAvaliable(disponible);
 
         tablaDealers.refresh();
         limpiarCampos();
@@ -178,7 +178,7 @@ public class DealerManagement {
         txtNombre.setText(dealer.getFullname());
         txtCorreo.setText(dealer.getEmail());
         txtTelefono.setText(dealer.getPhone());
-        chkDisponible.setSelected(dealer.isDisponible());
+        chkDisponible.setSelected(dealer.getAvaliable());
     }
 
     /**

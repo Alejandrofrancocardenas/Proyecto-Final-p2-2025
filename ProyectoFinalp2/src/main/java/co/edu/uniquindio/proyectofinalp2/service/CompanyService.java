@@ -56,14 +56,14 @@ public class CompanyService {
     }
 
     //bucar usuarios por ID
-    private Optional<User> findUserByID(String id) {
+    public Optional<User> findUserByID(String id) {
         return company.getUsers().stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
 
     //bucar usuarios por email
-    private Optional<User> findUserByEmail(String email) {
+    public Optional<User> findUserByEmail(String email) {
         return company.getUsers().stream()
                 .filter(u -> u.getEmail().equals(email))
                 .findFirst();
@@ -144,7 +144,7 @@ public class CompanyService {
     }
 
     //bucar Admin por ID
-    private Optional<Admin> findAdminByID(String id) {
+    public Optional<Admin> findAdminByID(String id) {
         return company.getAdmins().stream()
                 .filter(a -> a.getId().equals(id))
                 .findFirst();
@@ -168,7 +168,7 @@ public class CompanyService {
     }
 
     //update: actulizar Admin
-    private void updateAdmin(AdminDTO dto) {
+    public void updateAdmin(AdminDTO dto) {
         Optional<Admin> adminOp = company.getAdmins().stream()
                 .filter(a -> a.getId().equals(dto.getIdAdmin()))
                 .findFirst();
@@ -224,7 +224,7 @@ public class CompanyService {
     }
 
     //bucar Dealer por ID
-    private Optional<Dealer> findDealerByID(String id) {
+    public Optional<Dealer> findDealerByID(String id) {
         return company.getDealers().stream()
                 .filter(d -> d.getId().equals(id))
                 .findFirst();

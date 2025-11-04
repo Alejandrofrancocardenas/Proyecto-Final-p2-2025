@@ -9,6 +9,7 @@ module co.edu.uniquindio.proyectofinalp2 {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires itextpdf;
+    requires com.fasterxml.jackson.databind;
     opens co.edu.uniquindio.proyectofinalp2.ViewController to javafx.fxml;
     opens co.edu.uniquindio.proyectofinalp2 to javafx.fxml;
     exports co.edu.uniquindio.proyectofinalp2;

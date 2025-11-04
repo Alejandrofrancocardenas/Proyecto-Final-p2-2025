@@ -58,7 +58,7 @@ public class LoginController {
         User nuevo = new User.Builder()
                 .email(correo)
                 .password(contrasena)
-                .rol(rolSeleccionado)
+                .role(rolSeleccionado)
                 .build();
 
         // Registrar usuario en la sesión
