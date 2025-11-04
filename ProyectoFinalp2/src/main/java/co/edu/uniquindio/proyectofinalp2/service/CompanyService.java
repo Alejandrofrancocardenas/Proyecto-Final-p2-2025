@@ -322,7 +322,7 @@ public class CompanyService {
 
     public List<Shipment> filterShipments(LocalDate date, ShippingStatus status, String zone) {
         return company.getShipments().stream()
-                .filter(s -> (date == null || s.getCrationDate().toLocalDate().equals(date)))
+                .filter(s -> (date == null || s.getCreationDate().toLocalDate().equals(date)))
                 .filter(s -> (status == null || s.getStatus() == status))
                 .filter(s -> (zone == null || s.getZone().equalsIgnoreCase(zone)))
                 .toList();
