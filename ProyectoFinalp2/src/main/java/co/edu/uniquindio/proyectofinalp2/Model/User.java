@@ -14,7 +14,7 @@ public class User extends Person {
     private User(Builder builder) {
         super(builder);
         this.password = builder.password;
-        this.role = builder.rol;
+        this.role = builder.role;
         this.addresses = new ArrayList<>();
         this.payments = new ArrayList<>();
         this.shipments = new ArrayList<>();

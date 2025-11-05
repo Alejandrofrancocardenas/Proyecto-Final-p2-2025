@@ -29,7 +29,7 @@ public class Sesion {
         for (User user : usuariosRegistrados) {
             if (user.getEmail().equalsIgnoreCase(correo) &&
                     user.getPassword().equals(password) &&
-                    user.getRol().equalsIgnoreCase(rolSeleccionado))
+                    user.getRole().equalsIgnoreCase(rolSeleccionado))
             {
                 usuarioActual = user;
                 return true;

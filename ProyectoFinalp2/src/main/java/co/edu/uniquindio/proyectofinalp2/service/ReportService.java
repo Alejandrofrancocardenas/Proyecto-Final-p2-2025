@@ -33,7 +33,7 @@ public class ReportService {
                         s.getZone(),
                         s.getStatus(),
                         s.getPrice(),
-                        s.getCrationDate()
+                        s.getCreationDate()
                 ));
             }
         } catch (IOException e) {

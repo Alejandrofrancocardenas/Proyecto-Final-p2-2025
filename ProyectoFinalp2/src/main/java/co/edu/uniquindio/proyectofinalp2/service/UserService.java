@@ -103,7 +103,7 @@ import java.util.List;
     public void confirmShipment(String shipmentId){
         Shipment shipmentAux = findShipmentTempById(shipmentId);
         shipmentAux.setPrice(ShippingService.getInstance().calculateBasePrice(shipmentAux));
-        shipmentAux.setCrationDate(LocalDateTime.now());
+        shipmentAux.setCreationDate(LocalDateTime.now());
     }
 
 
@@ -143,7 +143,7 @@ import java.util.List;
      public ArrayList<Shipment> shipmentsHistory(User user, LocalDateTime date, ShippingStatus shippingStatus){
          ArrayList<Shipment> shipmentsHistory = new ArrayList<>();
          for  (Shipment shipment : user.getShipments()){
-             if (shipment.getCrationDate().isBefore(date)){
+             if (shipment.getCreationDate().isBefore(date)){
                 if (shipment.getStatus().equals(shippingStatus)){
                     shipmentsHistory.add(shipment);
                 }
