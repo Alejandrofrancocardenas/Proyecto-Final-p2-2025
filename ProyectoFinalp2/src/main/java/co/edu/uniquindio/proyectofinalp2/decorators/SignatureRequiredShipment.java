@@ -1,5 +1,6 @@
 package co.edu.uniquindio.proyectofinalp2.decorators;
 
+import co.edu.uniquindio.proyectofinalp2.Model.Rate;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 
 public class SignatureRequiredShipment extends ShipmentDecorate{
@@ -12,7 +13,7 @@ public class SignatureRequiredShipment extends ShipmentDecorate{
 
     @Override
     public double getPrice() {
-        return shipment.getPrice() + 1000;
+        return shipment.getRate().getBase() + 1000;
     }
 
     @Override

@@ -310,10 +310,10 @@ public class AdminService {
      */
     public Map<String, Double> getIncomeByPeriod() {
         return companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getPeriod() != null && s.getPrice() > 0)
+                .filter(s -> s.getPeriod() != null && s.getRate().getBase() > 0)
                 .collect(Collectors.groupingBy(
                         Shipment::getPeriod,
-                        Collectors.summingDouble(Shipment::getPrice)
+                        Collectors.summingDouble(s -> s.getRate().getBase())
                 ));
     }
 

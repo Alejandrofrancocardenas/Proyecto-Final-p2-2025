@@ -1,6 +1,7 @@
 package co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorMethodsController;
 
 import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
+import co.edu.uniquindio.proyectofinalp2.Model.Rate;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 import co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorController;
 import javafx.collections.FXCollections;
@@ -51,7 +52,7 @@ public class MetricManagement {
 
         for (Shipment s : shipments) {
             String periodo = s.getPeriod(); // ejemplo: "Octubre 2025"
-            ingresos.put(periodo, ingresos.getOrDefault(periodo, 0.0) + s.getPrice());
+            ingresos.put(periodo, ingresos.getOrDefault(periodo, 0.0) + s.getRate().getBase());
         }
         return ingresos;
     }

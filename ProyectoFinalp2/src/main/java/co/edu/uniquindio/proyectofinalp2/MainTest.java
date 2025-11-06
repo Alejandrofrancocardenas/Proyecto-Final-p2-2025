@@ -84,7 +84,7 @@ public class MainTest {
         // el usuario confirma que quiere hacer el envio
         userService.confirmShipment("01");
         System.out.println(user.getShipments());
-
+        System.out.println("aca va bien");
         // el usuario paga el envio
         userService.payShipment(userService.getUser(), "01", 4000);
         System.out.println(user.getShipments());
@@ -100,7 +100,7 @@ public class MainTest {
         );
 
         System.out.println("\n🚀 Envío con decoradores aplicado:");
-        System.out.println("Precio total: " + shipment.getPrice());
+        System.out.println("Precio total: " + shipment.getRate().getBase());
         System.out.println("Tracking:\n" + shipment.track());
 
         // --- 6️⃣ Registrar el envío en la compañía ---

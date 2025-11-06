@@ -1,5 +1,6 @@
 package co.edu.uniquindio.proyectofinalp2.service;
 
+import co.edu.uniquindio.proyectofinalp2.Model.Rate;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 
 import java.io.FileWriter;
@@ -32,7 +33,7 @@ public class ReportService {
                         s.getUser().getFullname(),
                         s.getZone(),
                         s.getStatus(),
-                        s.getPrice(),
+                        s.getRate().getBase(),
                         s.getCreationDate()
                 ));
             }
@@ -63,7 +64,7 @@ public class ReportService {
                 table.addCell(s.getUser().getFullname());
                 table.addCell(s.getZone());
                 table.addCell(s.getStatus().toString());
-                table.addCell(String.valueOf(s.getPrice()));
+                table.addCell(String.valueOf(s.getRate().getBase()));
             }
 
             document.add(table);

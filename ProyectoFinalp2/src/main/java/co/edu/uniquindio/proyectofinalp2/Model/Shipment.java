@@ -17,7 +17,6 @@ public abstract class Shipment {
     protected Payment payment;                 // el pago que nesecita el envio para ser enviado
     protected Address address;                 // aqui va el origen y el destino
     protected PackageModel packageModel;       // el envio nesecita tener un paqwuete para enviar
-    protected double price;                    // Precio total del envío
     protected ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
     protected LocalDateTime creationDate;       // fecha cuando se crea
     protected double estimatedDeliveryDate;    // Tiempo que tardó en entregarse (en horas)
@@ -77,14 +76,6 @@ public abstract class Shipment {
 
     public void setStatus(ShippingStatus status) {
         this.status = status;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public double getEstimatedDeliveryDate() {
@@ -147,7 +138,7 @@ public abstract class Shipment {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime crationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -167,9 +158,9 @@ public abstract class Shipment {
         this.additionalServices.add(service);
     }
 
-
-
-
+    public double getPrice() {
+        return this.rate.getBase();
+    }
     public abstract String track();
 
     public abstract static class Builder<T extends Builder<T>> {
@@ -219,7 +210,6 @@ public abstract class Shipment {
                 ", payment=" + payment +
                 ", address=" + address +
                 ", packageModel=" + packageModel +
-                ", price=" + price +
                 ", status=" + status +
                 ", crationDate=" + creationDate +
                 ", estimatedDeliveryDate=" + estimatedDeliveryDate +

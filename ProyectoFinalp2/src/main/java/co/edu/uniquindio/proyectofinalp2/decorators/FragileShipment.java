@@ -1,5 +1,6 @@
 package co.edu.uniquindio.proyectofinalp2.decorators;
 
+import co.edu.uniquindio.proyectofinalp2.Model.Rate;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 
 public class FragileShipment extends ShipmentDecorate {
@@ -10,7 +11,7 @@ public class FragileShipment extends ShipmentDecorate {
 
     @Override
     public double getPrice() {
-        return shipment.getPrice() + 500000;
+        return shipment.getRate().getBase() + 500000;
     }
 
     @Override

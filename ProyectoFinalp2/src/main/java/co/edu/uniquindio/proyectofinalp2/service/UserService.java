@@ -78,6 +78,7 @@ import java.util.List;
 
     //metodo para crear solicitudes de envío antes de ser asignadas.
     public void createShipment(Shipment shipment) {
+        shipment.setCreationDate(LocalDateTime.now());
         user.getShipments().add(shipment);
     }
 
@@ -102,8 +103,12 @@ import java.util.List;
     // metodo para confirmar solicitud de envio cuando ya esta seguro
     public void confirmShipment(String shipmentId){
         Shipment shipmentAux = findShipmentTempById(shipmentId);
-        shipmentAux.setPrice(ShippingService.getInstance().calculateBasePrice(shipmentAux));
+        double price = ShippingService.getInstance().calculateBasePrice(shipmentAux);
         shipmentAux.setCreationDate(LocalDateTime.now());
+        Rate rate = new Rate("random", shipmentAux.getPackageModel().getVolume(), shipmentAux.getPackageModel().getWeight());
+
+        shipmentAux.setRate(rate);
+        shipmentAux.getRate().setBase(price);
     }
 
 
@@ -125,7 +130,7 @@ import java.util.List;
             throw new IllegalArgumentException("Usuario");
         }
 
-        if (amount >= shipment.getPrice()) {
+        if (amount >= shipment.getRate().getBase()) {
             Payment payment = new Payment(
                     "PAY-" + System.currentTimeMillis(),
                     amount,

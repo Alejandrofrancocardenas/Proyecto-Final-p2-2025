@@ -5,15 +5,15 @@ public class Rate {
     private double base;
     private double weightPrice;
     private double volumePrice;
-    private double proritySurcharge;
+    private String surcharges;
 
-    public Rate(String rateId, double base, double weightPrice, double volumePrice, double proritySurcharge) {
+
+    public Rate(String rateId, double weightPrice, double volumePrice) {
         this.rateId = rateId;
-        this.base = base;
         this.weightPrice = weightPrice;
         this.volumePrice = volumePrice;
-        this.proritySurcharge = proritySurcharge;
     }
+
 
     public String getRateId() {
         return rateId;
@@ -23,6 +23,7 @@ public class Rate {
         this.rateId = rateId;
     }
 
+
     public double getBase() {
         return base;
     }
@@ -30,6 +31,7 @@ public class Rate {
     public void setBase(double base) {
         this.base = base;
     }
+
 
     public double getWeightPrice() {
         return weightPrice;
@@ -39,6 +41,7 @@ public class Rate {
         this.weightPrice = weightPrice;
     }
 
+
     public double getVolumePrice() {
         return volumePrice;
     }
@@ -47,13 +50,15 @@ public class Rate {
         this.volumePrice = volumePrice;
     }
 
-    public double getProritySurcharge() {
-        return proritySurcharge;
+
+    public String getSurcharges() {
+        return surcharges;
     }
 
-    public void setProritySurcharge(double proritySurcharge) {
-        this.proritySurcharge = proritySurcharge;
+    public void setSurcharges(String surcharges) {
+        this.surcharges = surcharges;
     }
+
 
     @Override
     public String toString() {
@@ -62,12 +67,23 @@ public class Rate {
                 ", base=" + base +
                 ", weightPrice=" + weightPrice +
                 ", volumePrice=" + volumePrice +
-                ", proritySurcharge=" + proritySurcharge +
+                ", proritySurcharge=" + surcharges +
                 '}';
     }
 
-    public double calculateShipmentRate(Shipment shipment) {
-        //logiacaa
-        return 0;
+
+    public static double calculateShipmentRate(double weight, double volume) {
+        double price = 0;
+
+        if (weight > 0 && volume > 0) {
+            if (weight < 100 && volume < 500) {
+                price += 2000;
+            } else if (weight < 500 && volume < 1000) {
+                price += 4000;
+            } else {
+                price += 99999;
+            }
+        }
+        return price;
     }
 }

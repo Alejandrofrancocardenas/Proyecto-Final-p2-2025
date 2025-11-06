@@ -1,5 +1,6 @@
 package co.edu.uniquindio.proyectofinalp2.service;
 
+import co.edu.uniquindio.proyectofinalp2.Model.Rate;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 import co.edu.uniquindio.proyectofinalp2.decorators.FragileShipment;
 import co.edu.uniquindio.proyectofinalp2.decorators.PriorityShipping;
@@ -30,16 +31,7 @@ public class ShippingService {
         double volume = shipment.getPackageModel().getVolume();
 
         // Precio base por peso y volumen
-        if (weight > 0 && volume > 0) {
-            if (weight < 100 && volume < 500) {
-                price += 2000;
-            } else if (weight < 500 && volume < 1000) {
-                price += 4000;
-            } else {
-                price += 99999;
-            }
-        }
-
+        price = Rate.calculateShipmentRate(weight, volume);
         return price;
     }
 
@@ -72,11 +64,32 @@ public class ShippingService {
     }
 
 
+    // requiere que ya tenga la tarifa el envio osea que esto se hace despues de haber creado el envio con la tarifa
     public Shipment applyDecorators(Shipment shipment, boolean isPriority, boolean isFragile, boolean isSecure, boolean isSignatureRequired) {
-        if (isPriority) shipment = new PriorityShipping(shipment);
-        if (isFragile) shipment = new FragileShipment(shipment);
-        if (isSecure) shipment = new SecureShipping(shipment);
-        if (isSignatureRequired) shipment = new SignatureRequiredShipment(shipment);
+        if (isPriority) {
+            shipment.getRate().setSurcharges("Prioridad");
+            shipment.getRate().setBase(shipment.getRate().getBase() + 2000);
+            shipment = new PriorityShipping(shipment);
+        }
+
+        if (isFragile) {
+            shipment.getRate().setSurcharges("Frágil");
+            shipment.getRate().setBase(shipment.getRate().getBase() + 8000);
+            shipment = new FragileShipment(shipment);
+        }
+
+        if (isSecure) {
+            shipment.getRate().setSurcharges("Seguro");
+            shipment.getRate().setBase(shipment.getRate().getBase() + 6200);
+            shipment = new SecureShipping(shipment);
+        }
+
+        if (isSignatureRequired) {
+            shipment.getRate().setSurcharges("Firma requerida");
+            shipment.getRate().setBase(shipment.getRate().getBase() + 10000);
+            shipment = new SignatureRequiredShipment(shipment);
+        }
+
         return shipment;
     }
 
