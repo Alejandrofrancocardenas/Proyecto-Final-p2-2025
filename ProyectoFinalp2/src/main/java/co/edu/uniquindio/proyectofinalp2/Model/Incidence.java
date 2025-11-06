@@ -49,11 +49,9 @@ public class Incidence {
 
     @Override
     public String toString() {
-        return "Incidence{" +
-                "incidenceId='" + incidenceId + '\'' +
-                ", type='" + type + '\'' +
-                ", description='" + description + '\'' +
-                ", date=" + date +
-                '}';
+        return incidenceId  + " " +
+                type        + " " +
+                description + " " +
+                date;
     }
 }

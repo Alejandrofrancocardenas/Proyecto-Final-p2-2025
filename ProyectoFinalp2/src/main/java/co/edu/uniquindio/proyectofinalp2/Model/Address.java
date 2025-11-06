@@ -76,16 +76,15 @@ public class Address {
         this.coordinates = coordinates;
     }
 
+
     @Override
     public String toString() {
-        return "Address{" +
-                "idAddress='" + idAddress + '\'' +
-                ", origin='" + origin + '\'' +
-                ", destination='" + destination + '\'' +
-                ", alias='" + alias + '\'' +
-                ", street='" + street + '\'' +
-                ", city='" + city + '\'' +
-                ", coordinates='" + coordinates + '\'' +
-                '}';
+        return idAddress    + " " +
+                origin      + " " +
+                destination + " " +
+                alias       + " " +
+                street      + " " +
+                city        + " " +
+                coordinates;
     }
 }

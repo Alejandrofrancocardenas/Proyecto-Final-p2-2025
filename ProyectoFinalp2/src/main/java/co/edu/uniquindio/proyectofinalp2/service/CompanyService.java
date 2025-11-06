@@ -15,7 +15,6 @@ import java.util.Optional;
 
 public class CompanyService {
     private static CompanyService instance;
-
     private final Company company;
 
 
@@ -30,7 +29,12 @@ public class CompanyService {
         return instance;
     }
 
-    //CRUD de usuarios
+    public Company getCompany() {
+        return this.company;
+    }
+
+    //CRUD de usuarios -------------------------------------------------------------------------------------------------
+
     //Create: registrar un usuario
     public void registerUser(User user) {
         Optional<User> userAux = findUserByID(user.getId());
@@ -40,34 +44,6 @@ public class CompanyService {
         company.getUsers().add(user);
     }
 
-    // Listar usuarios como DTO  para poder devolverlo al controller
-    public List<UserDTO> listUserDTO() {
-        List<UserDTO> list = new ArrayList<>();
-        for (User userAux : company.getUsers()) {
-            UserDTO dto = new UserDTO();
-            dto.setIdUser(userAux.getId());
-            dto.setFullname(userAux.getFullname());
-            dto.setEmail(userAux.getEmail());
-            dto.setPhone(userAux.getPhone());
-            dto.setAddresses(userAux.getAddresses());
-            list.add(dto);
-        }
-        return list;
-    }
-
-    //bucar usuarios por ID
-    public Optional<User> findUserByID(String id) {
-        return company.getUsers().stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-    }
-
-    //bucar usuarios por email
-    public Optional<User> findUserByEmail(String email) {
-        return company.getUsers().stream()
-                .filter(u -> u.getEmail().equals(email))
-                .findFirst();
-    }
 
     //Read: ver un user
     public UserDTO readUser(String id){
@@ -86,6 +62,7 @@ public class CompanyService {
             throw new NotFoundException("No se encontró ningun usuario con ID: " + id);
         }
     }
+
 
     //update: actulizar usuario
     public void updateUser(UserDTO dto) {
@@ -108,8 +85,8 @@ public class CompanyService {
     //Delete: eliminar user
     public void deleteUser(String id){
         Optional<User> user = company.getUsers().stream()
-                    .filter(u -> u.getId().equals(id))
-                    .findFirst();
+                .filter(u -> u.getId().equals(id))
+                .findFirst();
         if (user.isPresent()){
             company.getUsers().remove(user.get());
         } else {
@@ -117,38 +94,52 @@ public class CompanyService {
         }
     }
 
-    //CRUD para Admins
-    //Create: registrar un usuario a partir de DTO
-    public void registerAdmin(UserDTO dto) {
-        Admin admin = new Admin.Builder()
-                .name(dto.getFullname())
-                .id(dto.getIdUser())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .build();
-        company.getAdmins().add(admin);
-    }
 
     // Listar usuarios como DTO  para poder devolverlo al controller
-    public List<AdminDTO> listAdminDTO() {
-        List<AdminDTO> list = new ArrayList<>();
-        for (Admin adminAux : company.getAdmins()) {
-            AdminDTO dto = new AdminDTO();
-            dto.setIdAdmin(adminAux.getId());
-            dto.setFullname(adminAux.getFullname());
-            dto.setEmail(adminAux.getEmail());
-            dto.setPhone(adminAux.getPhone());
+    public List<UserDTO> listUserDTO() {
+        List<UserDTO> list = new ArrayList<>();
+        for (User userAux : company.getUsers()) {
+            UserDTO dto = new UserDTO();
+            dto.setIdUser(userAux.getId());
+            dto.setFullname(userAux.getFullname());
+            dto.setEmail(userAux.getEmail());
+            dto.setPhone(userAux.getPhone());
+            dto.setAddresses(userAux.getAddresses());
             list.add(dto);
         }
         return list;
     }
 
-    //bucar Admin por ID
-    public Optional<Admin> findAdminByID(String id) {
-        return company.getAdmins().stream()
-                .filter(a -> a.getId().equals(id))
+
+    //bucar usuarios por ID
+    public Optional<User> findUserByID(String id) {
+        return company.getUsers().stream()
+                .filter(u -> u.getId().equals(id))
                 .findFirst();
     }
+
+
+    //bucar usuarios por email
+    public Optional<User> findUserByEmail(String email) {
+        return company.getUsers().stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst();
+    }
+
+
+    //CRUD para Admins--------------------------------------------------------------------------------------------------
+
+    //Create: registrar un Admin a partir de DTO  samuel aca de toca arreglarlo, porque por ejemplo yo que hoce user le quité eñ dto
+//    public void registerAdmin(UserDTO dto) {
+//        Admin admin = new Admin.Builder()
+//                .name(dto.getFullname())
+//                .id(dto.getIdUser())
+//                .email(dto.getEmail())
+//                .phone(dto.getPhone())
+//                .build();
+//        company.getAdmins().add(admin);
+//    }
+
 
     //Read: ver un admin
     private AdminDTO readAdmin(String id){
@@ -166,6 +157,7 @@ public class CompanyService {
             throw new NotFoundException("No se encontró ningun Admin con ID: " + id);
         }
     }
+
 
     //update: actulizar Admin
     public void updateAdmin(AdminDTO dto) {
@@ -197,8 +189,31 @@ public class CompanyService {
     }
 
 
-    //CRUD para Repartidores
-    //Create: registrar un repartidor a partir de DTO
+    // Listar usuarios como DTO  para poder devolverlo al controller
+    public List<AdminDTO> listAdminDTO() {
+        List<AdminDTO> list = new ArrayList<>();
+        for (Admin adminAux : company.getAdmins()) {
+            AdminDTO dto = new AdminDTO();
+            dto.setIdAdmin(adminAux.getId());
+            dto.setFullname(adminAux.getFullname());
+            dto.setEmail(adminAux.getEmail());
+            dto.setPhone(adminAux.getPhone());
+            list.add(dto);
+        }
+        return list;
+    }
+
+    //bucar Admin por ID
+    public Optional<Admin> findAdminByID(String id) {
+        return company.getAdmins().stream()
+                .filter(a -> a.getId().equals(id))
+                .findFirst();
+    }
+
+
+    //CRUD para Repartidores--------------------------------------------------------------------------------------------
+
+    //Create: registrar un repartidor a partir de DTO // aca lo mismpo SAMUEL
     public void registerDealer(DealerDTO dto) {
         Dealer dealer = new Dealer.Builder()
                 .name(dto.getFullname())
@@ -209,26 +224,6 @@ public class CompanyService {
         company.getDealers().add(dealer);
     }
 
-    // Listar repartidores como DTO  para poder devolverlo al controller
-    public List<DealerDTO> listDealerDTO() {
-        List<DealerDTO> list = new ArrayList<>();
-        for (Dealer dealerAux : company.getDealers()) {
-            DealerDTO dto = new DealerDTO();
-            dto.setIdDealer(dealerAux.getId());
-            dto.setFullname(dealerAux.getFullname());
-            dto.setEmail(dealerAux.getEmail());
-            dto.setPhone(dealerAux.getPhone());
-            list.add(dto);
-        }
-        return list;
-    }
-
-    //bucar Dealer por ID
-    public Optional<Dealer> findDealerByID(String id) {
-        return company.getDealers().stream()
-                .filter(d -> d.getId().equals(id))
-                .findFirst();
-    }
 
     //Read: ver un dealer
     private DealerDTO readDealer(String id){
@@ -277,7 +272,30 @@ public class CompanyService {
         }
     }
 
-    //metodos de inicio de sesion users
+    // Listar repartidores como DTO  para poder devolverlo al controller
+    public List<DealerDTO> listDealerDTO() {
+        List<DealerDTO> list = new ArrayList<>();
+        for (Dealer dealerAux : company.getDealers()) {
+            DealerDTO dto = new DealerDTO();
+            dto.setIdDealer(dealerAux.getId());
+            dto.setFullname(dealerAux.getFullname());
+            dto.setEmail(dealerAux.getEmail());
+            dto.setPhone(dealerAux.getPhone());
+            list.add(dto);
+        }
+        return list;
+    }
+
+    //bucar Dealer por ID
+    public Optional<Dealer> findDealerByID(String id) {
+        return company.getDealers().stream()
+                .filter(d -> d.getId().equals(id))
+                .findFirst();
+    }
+
+
+    //metodos de inicio de sesion users---------------------------------------------------------------------------------
+
     public UserDTO login(String email, String password) {
         Optional<User> user = findUserByEmail(email);
 
@@ -302,11 +320,13 @@ public class CompanyService {
     }
 
 
+    // procesos para envios---------------------------------------------------------------------------------------------
+
     // metodo que recibe una solicitud de envio y hace el proceso para enviar, requiere que el pago sea true
     public void makeShipment(Shipment shipment){
         //asignar repartidor
         shipment.setPeriod("toca poner una fecha");
-        shipment.setStatus(ShippingStatus.ENROUTE);
+        shipment.setStatus(ShippingStatus.ONROUTE);
         company.getShipments().add(shipment);
     }
 
@@ -331,8 +351,4 @@ public class CompanyService {
 //    public Shipment getShipmentDetails(String shipmentId) {
 //        return findShipmentById(shipmentId);
 //    }
-
-    public Company getCompany() {
-        return this.company;
-    }
 }

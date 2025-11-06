@@ -203,21 +203,19 @@ public abstract class Shipment {
 
     @Override
     public String toString() {
-        return "Shipment{" +
-                "shipmentId='" + shipmentId + '\'' +
-                ", rate=" + rate +
-                ", incidence=" + incidence +
-                ", payment=" + payment +
-                ", address=" + address +
-                ", packageModel=" + packageModel +
-                ", status=" + status +
-                ", crationDate=" + creationDate +
-                ", estimatedDeliveryDate=" + estimatedDeliveryDate +
-                ", user=" + user +
-                ", assignedDealer=" + assignedDealer +
-                ", zone='" + zone + '\'' +
-                ", period='" + period + '\'' +
-                ", additionalServices=" + additionalServices +
-                '}';
+        return shipmentId             + " " +
+                rate                  + " " +
+                incidence             + " " +
+                payment               + " " +
+                address               + " " +
+                packageModel          + " " +
+                status                + " " +
+                creationDate          + " " +
+                estimatedDeliveryDate + " " +
+                user                  + " " +
+                assignedDealer        + " " +
+                zone                  + " " +
+                period                + " " +
+                additionalServices;
     }
 }

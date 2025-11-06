@@ -1,12 +1,12 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 
 public class NormalShipment extends Shipment {
 
     private NormalShipment(Builder builder) {
         super(builder);
     }
+
 
     public static class Builder extends Shipment.Builder<Builder> {
 

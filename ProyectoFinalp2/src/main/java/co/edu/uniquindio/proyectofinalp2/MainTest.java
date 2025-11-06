@@ -109,6 +109,6 @@ public class MainTest {
         System.out.println("\n📦 Envío registrado exitosamente en la compañía.");
 
         System.out.println("historial");
-        System.out.println(userService.shipmentsHistory(userService.getUser(), LocalDateTime.now(), ShippingStatus.ENROUTE));
+        System.out.println(userService.shipmentsHistory(userService.getUser(), LocalDateTime.now(), ShippingStatus.ONROUTE));
     }
 }

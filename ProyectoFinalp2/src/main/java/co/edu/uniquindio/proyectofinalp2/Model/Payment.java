@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 public class Payment {
     private String idPay;
     private double mount;
-    private LocalDateTime Date;
+    private LocalDateTime date;
     private String payMethod;
     private boolean result;
 
     public Payment(String idPay, double mount, LocalDateTime date, boolean result) {
         this.idPay = idPay;
         this.mount = mount;
-        Date = date;
+        this.date = date;
         this.result = result;
     }
 
@@ -34,11 +34,11 @@ public class Payment {
     }
 
     public LocalDateTime getDate() {
-        return Date;
+        return date;
     }
 
     public void setDate(LocalDateTime date) {
-        Date = date;
+        this.date = date;
     }
 
     public boolean isResult() {
@@ -53,7 +53,7 @@ public class Payment {
     public String toString() {
         return idPay  + " " +
                 mount + " " +
-                Date  + " " +
+                date + " " +
                 result;
     }
 }

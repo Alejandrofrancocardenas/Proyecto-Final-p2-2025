@@ -23,7 +23,6 @@ public class Rate {
         this.rateId = rateId;
     }
 
-
     public double getBase() {
         return base;
     }
@@ -31,7 +30,6 @@ public class Rate {
     public void setBase(double base) {
         this.base = base;
     }
-
 
     public double getWeightPrice() {
         return weightPrice;
@@ -41,7 +39,6 @@ public class Rate {
         this.weightPrice = weightPrice;
     }
 
-
     public double getVolumePrice() {
         return volumePrice;
     }
@@ -49,7 +46,6 @@ public class Rate {
     public void setVolumePrice(double volumePrice) {
         this.volumePrice = volumePrice;
     }
-
 
     public String getSurcharges() {
         return surcharges;
@@ -62,13 +58,11 @@ public class Rate {
 
     @Override
     public String toString() {
-        return "Rate{" +
-                "rateId='" + rateId + '\'' +
-                ", base=" + base +
-                ", weightPrice=" + weightPrice +
-                ", volumePrice=" + volumePrice +
-                ", proritySurcharge=" + surcharges +
-                '}';
+        return rateId       + " " +
+                base        + " " +
+                weightPrice + " " +
+                volumePrice + " " +
+                surcharges;
     }
 
 

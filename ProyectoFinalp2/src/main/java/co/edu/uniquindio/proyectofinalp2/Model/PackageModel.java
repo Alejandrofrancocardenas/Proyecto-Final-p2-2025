@@ -37,10 +37,8 @@ public class PackageModel {
 
     @Override
     public String toString() {
-        return "PackageModel{" +
-                "packageId='" + packageId + '\'' +
-                ", weight=" + weight +
-                ", volume=" + volume +
-                '}';
+        return packageId + " " +
+                weight   + " " +
+                volume;
     }
 }

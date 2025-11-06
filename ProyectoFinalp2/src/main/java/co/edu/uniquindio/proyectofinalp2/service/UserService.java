@@ -19,6 +19,7 @@ import java.util.List;
         this.user = user;
      }
 
+
      // metodo para crear una direccion
      public void addAddressToUser(User user, Address newAddress) {
          if (user == null || newAddress == null) {
@@ -143,6 +144,7 @@ import java.util.List;
         }
         CompanyService.getInstance().makeShipment(shipment);
     }
+
 
     // metodo para consultar el historial de envios con filtro por fecha y estado
      public ArrayList<Shipment> shipmentsHistory(User user, LocalDateTime date, ShippingStatus shippingStatus){

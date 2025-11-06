@@ -11,8 +11,7 @@ import javafx.scene.layout.Priority;
 public class ShippingService {
 
     public static ShippingService instance;
-    private ShippingService() {
-    }
+    private ShippingService() {}
 
     public static ShippingService getInstance() {
         if (instance == null) {
@@ -33,34 +32,6 @@ public class ShippingService {
         // Precio base por peso y volumen
         price = Rate.calculateShipmentRate(weight, volume);
         return price;
-    }
-
-    public Shipment applyPriority(Shipment shipment, boolean isPriority) {
-        if (isPriority) {
-            return new PriorityShipping(shipment);
-        }
-        return shipment;
-    }
-
-    public Shipment applyFragile(Shipment shipment, boolean isFragile) {
-        if (isFragile) {
-            return new FragileShipment(shipment);
-        }
-        return shipment;
-    }
-
-    public Shipment applySecure(Shipment shipment, boolean isSecure) {
-        if (isSecure) {
-            return new SecureShipping(shipment);
-        }
-        return shipment;
-    }
-
-    public Shipment applySignatureRequired(Shipment shipment, boolean isSignatureRequired) {
-        if (isSignatureRequired) {
-            return new SignatureRequiredShipment(shipment);
-        }
-        return shipment;
     }
 
 
@@ -94,5 +65,33 @@ public class ShippingService {
     }
 
 
+    // esto de aca abajo es experimental--------------------------------------------------------------------------------
+    public Shipment applyPriority(Shipment shipment, boolean isPriority) {
+        if (isPriority) {
+            return new PriorityShipping(shipment);
+        }
+        return shipment;
+    }
+
+    public Shipment applyFragile(Shipment shipment, boolean isFragile) {
+        if (isFragile) {
+            return new FragileShipment(shipment);
+        }
+        return shipment;
+    }
+
+    public Shipment applySecure(Shipment shipment, boolean isSecure) {
+        if (isSecure) {
+            return new SecureShipping(shipment);
+        }
+        return shipment;
+    }
+
+    public Shipment applySignatureRequired(Shipment shipment, boolean isSignatureRequired) {
+        if (isSignatureRequired) {
+            return new SignatureRequiredShipment(shipment);
+        }
+        return shipment;
+    }
 }
 

@@ -81,10 +81,9 @@ public abstract class Person {
 
     @Override
     public String toString() {
-        return  "id='" + id + '\'' +
-                ", fullname='" + fullname + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
+        return  id       + " " +
+                fullname + " " +
+                email    + " " +
+                phone;
     }
 }

@@ -265,7 +265,7 @@ public class AdminService {
                     dealer.setAvaliable(true);
                     System.out.println("🚫 Envío cancelado/incidencia. Repartidor liberado.");
                 }
-                case ENROUTE, ASSIGNED -> dealer.setAvaliable(false);
+                case ONROUTE, ASSIGNED -> dealer.setAvaliable(false);
             }
         }
 
