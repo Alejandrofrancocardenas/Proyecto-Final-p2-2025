@@ -10,6 +10,7 @@ module co.edu.uniquindio.proyectofinalp2 {
     requires com.almasb.fxgl.all;
     requires itextpdf;
     requires com.fasterxml.jackson.databind;
+    requires jdk.sctp;
     opens co.edu.uniquindio.proyectofinalp2.ViewController to javafx.fxml;
     opens co.edu.uniquindio.proyectofinalp2 to javafx.fxml;
     exports co.edu.uniquindio.proyectofinalp2;

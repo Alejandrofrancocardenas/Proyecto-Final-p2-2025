@@ -1,5 +1,8 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
+import co.edu.uniquindio.proyectofinalp2.observer.ShipmentNotifier;
+import co.edu.uniquindio.proyectofinalp2.observer.ShipmentObserver;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,18 @@ public abstract class Shipment {
     protected String zone;                     // Zona de entrega
     protected String period;                   // Periodo de entrega (por ejemplo "Octubre 2025")
     protected List<String> additionalServices = new ArrayList<>(); // Servicios adicionales (ej: "Seguro", "Entrega exprés")
+
+    private final ShipmentNotifier notifier = new ShipmentNotifier();
+
+
+    // Métodos para gestionar observadores
+    public void addObserver(ShipmentObserver observer) {
+        notifier.addObserver(observer);
+    }
+
+    public void removeObserver(ShipmentObserver observer) {
+        notifier.removeObserver(observer);
+    }
 
 
     protected Shipment(Builder<?> builder) {
@@ -76,6 +91,7 @@ public abstract class Shipment {
 
     public void setStatus(ShippingStatus status) {
         this.status = status;
+        notifier.notifyObservers(this);
     }
 
     public double getEstimatedDeliveryDate() {
@@ -161,6 +177,7 @@ public abstract class Shipment {
     public double getPrice() {
         return this.rate.getBase();
     }
+
     public abstract String track();
 
     public abstract static class Builder<T extends Builder<T>> {

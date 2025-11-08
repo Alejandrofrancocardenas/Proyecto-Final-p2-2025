@@ -1,5 +1,7 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
+import co.edu.uniquindio.proyectofinalp2.strategy.ShippingCostStrategy;
+
 public class Rate {
     private String rateId;
     private double base;
@@ -7,11 +9,11 @@ public class Rate {
     private double volumePrice;
     private String surcharges;
 
+    private ShippingCostStrategy costStrategy;
 
-    public Rate(String rateId, double weightPrice, double volumePrice) {
+    public Rate(String rateId, ShippingCostStrategy costStrategy) {
         this.rateId = rateId;
-        this.weightPrice = weightPrice;
-        this.volumePrice = volumePrice;
+        this.costStrategy = costStrategy;
     }
 
 
@@ -66,18 +68,7 @@ public class Rate {
     }
 
 
-    public static double calculateShipmentRate(double weight, double volume) {
-        double price = 0;
-
-        if (weight > 0 && volume > 0) {
-            if (weight < 100 && volume < 500) {
-                price += 2000;
-            } else if (weight < 500 && volume < 1000) {
-                price += 4000;
-            } else {
-                price += 99999;
-            }
-        }
-        return price;
+    public double calculateShipmentRate(PackageModel packageModel, Address address) {
+        return costStrategy.calculateCost(packageModel, address);
     }
 }

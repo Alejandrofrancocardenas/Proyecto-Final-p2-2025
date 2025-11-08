@@ -2,6 +2,7 @@
 
 import co.edu.uniquindio.proyectofinalp2.Model.*;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
+import co.edu.uniquindio.proyectofinalp2.strategy.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -78,6 +79,7 @@ import java.util.List;
 
 
     //metodo para crear solicitudes de envío antes de ser asignadas.
+     // este envio llega aca, pero primero el controller lo crea con el factory
     public void createShipment(Shipment shipment) {
         shipment.setCreationDate(LocalDateTime.now());
         user.getShipments().add(shipment);
@@ -102,14 +104,30 @@ import java.util.List;
 
 
     // metodo para confirmar solicitud de envio cuando ya esta seguro
-    public void confirmShipment(String shipmentId){
+    public void confirmShipment(String shipmentId) {
         Shipment shipmentAux = findShipmentTempById(shipmentId);
+
+        ShippingCostStrategy costStrategy;
+
+        if (shipmentAux.getAdditionalServices().contains("prioryty")) {
+            costStrategy = new PriorityCostStrategy();
+        } else if (shipmentAux.getAdditionalServices().contains("fragile")) {
+            costStrategy = new FragileCostStrategy();
+        } else if (shipmentAux.getAdditionalServices().contains("secure")) {
+            costStrategy = new SecureCostStrategy();
+        } else if (shipmentAux.getAdditionalServices().contains("signature")) {
+            costStrategy = new SignatureCostStrategy();
+        } else {
+            costStrategy = new NormalCostStrategy();
+        }
+
+        Rate rate = new Rate("R-" + shipmentId, costStrategy);
+
         double price = ShippingService.getInstance().calculateBasePrice(shipmentAux);
-        shipmentAux.setCreationDate(LocalDateTime.now());
-        Rate rate = new Rate("random", shipmentAux.getPackageModel().getVolume(), shipmentAux.getPackageModel().getWeight());
 
         shipmentAux.setRate(rate);
         shipmentAux.getRate().setBase(price);
+        shipmentAux.setCreationDate(LocalDateTime.now());
     }
 
 

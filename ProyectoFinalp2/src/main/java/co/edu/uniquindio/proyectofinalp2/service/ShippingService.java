@@ -24,14 +24,12 @@ public class ShippingService {
      * Calcula la tarifa de envío según origen, destino, peso, volumen y prioridad.
      */
     public double calculateBasePrice(Shipment shipment) {
-        double price = 0;
-
-        double weight = shipment.getPackageModel().getWeight();
-        double volume = shipment.getPackageModel().getVolume();
+        if (shipment.getRate() == null) {
+            throw new IllegalStateException("El envio no tiene una tarifa asignada");
+        }
 
         // Precio base por peso y volumen
-        price = Rate.calculateShipmentRate(weight, volume);
-        return price;
+        return shipment.getRate().calculateShipmentRate(shipment.getPackageModel(), shipment.getAddress());
     }
 
 
