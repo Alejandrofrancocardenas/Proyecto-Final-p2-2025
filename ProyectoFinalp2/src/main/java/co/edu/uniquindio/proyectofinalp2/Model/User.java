@@ -20,7 +20,6 @@ public class User extends Person {
         this.shipments = new ArrayList<>();
     }
 
-    // Getters y setters
     public String getPassword() {
         return password;
     }
@@ -61,7 +60,24 @@ public class User extends Person {
         this.shipments = shipments;
     }
 
-    // Builder
+    public void addAddress(Address address) {
+        if (address != null) {
+            addresses.add(address);
+        }
+    }
+
+    public void addPayment(Payment payment) {
+        if (payment != null) {
+            payments.add(payment);
+        }
+    }
+
+    public void addShipment(Shipment shipment) {
+        if (shipment != null) {
+            shipments.add(shipment);
+        }
+    }
+
     public static class Builder extends Person.Builder<Builder> {
         private String password;
         private String role;
@@ -71,7 +87,7 @@ public class User extends Person {
             return self();
         }
 
-        public Builder role(String role) { // 👈 metodo builder para rol
+        public Builder role(String role) {
             this.role = role;
             return self();
         }
@@ -85,5 +101,16 @@ public class User extends Person {
         public User build() {
             return new User(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + getFullname() + '\'' +
+                ", role='" + role + '\'' +
+                ", addresses=" + addresses +
+                ", payments=" + payments.size() +
+                ", shipments=" + shipments.size() +
+                '}';
     }
 }

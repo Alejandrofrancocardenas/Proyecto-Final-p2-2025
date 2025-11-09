@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 
 public class Payment {
 
-    private String idPay;          // ID del pago
-    private double mount;          // Monto del pago
-    private LocalDateTime date;    // Fecha y hora del pago
-    private String payMethod;      // Método de pago (Tarjeta, Efectivo, etc.)
-    private boolean result;        // Resultado del pago (aprobado o rechazado)
-    private User user;             // Usuario que realiza el pago
+    private String idPay;
+    private double mount;
+    private LocalDateTime date;
+    private String payMethod;
+    private boolean result;
+    private User user;
 
-    // Constructor principal
+    //  Constructor corto
     public Payment(String idPay, double mount, LocalDateTime date, boolean result) {
         this.idPay = idPay;
         this.mount = mount;
@@ -19,61 +19,34 @@ public class Payment {
         this.result = result;
     }
 
-    // 🔹 Getter y Setter para idPay
-    public String getIdPay() {
-        return idPay;
-    }
-
-    public void setIdPay(String idPay) {
+    //  Constructor completo
+    public Payment(String idPay, double mount, LocalDateTime date, String payMethod, boolean result) {
         this.idPay = idPay;
-    }
-
-    // 🔹 Getter y Setter para mount
-    public double getMount() {
-        return mount;
-    }
-
-    public void setMount(double mount) {
         this.mount = mount;
-    }
-
-    // 🔹 Getter y Setter para date
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
         this.date = date;
-    }
-
-    // 🔹 Getter y Setter para payMethod
-    public String getPayMethod() {
-        return payMethod;
-    }
-
-    public void setPayMethod(String payMethod) {
         this.payMethod = payMethod;
-    }
-
-    // 🔹 Getter y Setter para result
-    public boolean isResult() {
-        return result;
-    }
-
-    public void setResult(boolean result) {
         this.result = result;
     }
 
-    // 🔹 Nuevo: Getter y Setter para user
-    public User getUser() {
-        return user;
-    }
+    // Getters y Setters...
+    public String getIdPay() { return idPay; }
+    public void setIdPay(String idPay) { this.idPay = idPay; }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public double getMount() { return mount; }
+    public void setMount(double mount) { this.mount = mount; }
 
-    // 🔹 Representación en texto del pago
+    public LocalDateTime getDate() { return date; }
+    public void setDate(LocalDateTime date) { this.date = date; }
+
+    public String getPayMethod() { return payMethod; }
+    public void setPayMethod(String payMethod) { this.payMethod = payMethod; }
+
+    public boolean isResult() { return result; }
+    public void setResult(boolean result) { this.result = result; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
     @Override
     public String toString() {
         return "Payment{" +

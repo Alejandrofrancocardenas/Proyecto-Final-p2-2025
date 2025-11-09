@@ -16,9 +16,6 @@ public class Rate {
         this.costStrategy = costStrategy;
     }
 
-    public Rate(String rateId, co.edu.uniquindio.proyectofinalp2.strategy.ShippingCostStrategy costStrategy) {
-    }
-
 
     public String getRateId() {
         return rateId;

@@ -1,142 +1,167 @@
 package co.edu.uniquindio.proyectofinalp2;
 
 import co.edu.uniquindio.proyectofinalp2.Model.*;
-import co.edu.uniquindio.proyectofinalp2.decorators.PriorityShipping;
-import co.edu.uniquindio.proyectofinalp2.decorators.SecureShipping;
-import co.edu.uniquindio.proyectofinalp2.decorators.SignatureRequiredShipment;
+import co.edu.uniquindio.proyectofinalp2.decorators.*;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.factory.ShipmentFactory;
 import co.edu.uniquindio.proyectofinalp2.facade.SystemFacade;
-import co.edu.uniquindio.proyectofinalp2.observer.DealerNotification;
-import co.edu.uniquindio.proyectofinalp2.observer.NotificationHandler;
-import co.edu.uniquindio.proyectofinalp2.observer.UserNotification;
+import co.edu.uniquindio.proyectofinalp2.observer.*;
 import co.edu.uniquindio.proyectofinalp2.proxy.ShipmentProxy;
-import co.edu.uniquindio.proyectofinalp2.strategy.FragileCostStrategy;
-import co.edu.uniquindio.proyectofinalp2.strategy.NormalCostStrategy;
-import co.edu.uniquindio.proyectofinalp2.strategy.PriorityCostStrategy;
+import co.edu.uniquindio.proyectofinalp2.strategy.*;
+import co.edu.uniquindio.proyectofinalp2.chain.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class MainTest {
 
     public static void main(String[] args) {
 
-        // ✅ Se usa el Facade para centralizar todos los servicios
-        SystemFacade systemFacade = new SystemFacade();
 
-        System.out.println("=== 🔹 INICIO DE PRUEBAS DEL SISTEMA DE ENVÍOS 🔹 ===\n");
+        // 🔹 1️⃣ Inicializar fachada (Facade)
 
-        // 1️⃣ Crear usuarios (solo clientes)
-        User cliente1 = new User.Builder()
+        SystemFacade facade = SystemFacade.getInstance();
+        System.out.println("=== 🚚 INICIANDO PRUEBAS DEL SISTEMA DE ENVÍOS ===\n");
+
+
+        // 🔹 2️⃣ Crear usuarios (clientes)
+
+        User client1 = new User.Builder()
                 .id("U001")
                 .name("Juan Pérez")
-                .role("cliente")
+                .role("client")
                 .email("c1@gmail.com")
                 .password("123")
                 .build();
 
-        User cliente2 = new User.Builder()
+        User client2 = new User.Builder()
                 .id("U002")
                 .name("María Gómez")
-                .role("cliente")
+                .role("client")
                 .email("c2@gmail.com")
                 .password("1234")
                 .build();
 
-        // registrarse como cliente
-        systemFacade.registerUser(cliente1);
-        systemFacade.registerUser(cliente2);
+        // Registrar usuarios en la empresa
+        facade.registerUser(client1);
+        facade.registerUser(client2);
 
-        System.out.println(systemFacade.getCompany().getUsers());
+        System.out.println("👥 Usuarios registrados:");
+        System.out.println(facade.getCompany().getUsers());
 
-        //iniciar sesion
-        //supongo que este es el que coje el controller
-        systemFacade.registerUserLogin("c1@gmail.com", "123");
-        boolean loginOk = systemFacade.verifyLoginCredentials("c1@gmail.com", "123");
-        if (loginOk) {
-            System.out.println("inicio de sesion exitoso");
+
+        // 🔹 3️⃣ Simular inicio de sesión
+
+        boolean loginSuccess = facade.verifyLoginCredentials("c1@gmail.com", "123");
+        if (loginSuccess) {
+            System.out.println("✅ Inicio de sesión exitoso para Juan Pérez");
+        } else {
+            System.out.println("❌ Falló el inicio de sesión");
         }
 
-        // 2️⃣ Crear direcciones
-        Address direccion1 = new Address("A1", "Quimbaya", "Medellin", "LARUTA", "Cra 45 # 12-34", "Quimbaya", "001,011");
-        Address direccion2 = new Address("A2", "Bogota", "Cali", "LAVIA", "Cra 45 # 10-34", "Bogota", "021,051");
 
-        // agrega las direcciones al cliente
-        cliente1.addAddress(direccion1);
-        cliente1.addAddress(direccion2);
-        System.out.println(cliente1.getAddresses());
+        // 🔹 4️⃣ Crear direcciones
 
-        // 3️⃣ Crear paquetes
-        PackageModel paquete1 = new PackageModel("P001", 2.5, 30.0);
-        PackageModel paquete2 = new PackageModel("P002", 10.0, 80.0);
+        Address address1 = new Address("A1", "Quimbaya", "Medellin", "LARUTA",
+                "Cra 45 # 12-34", "Medellin", "001,011");
+        Address address2 = new Address("A2", "Bogota", "Cali", "LAVIA",
+                "Cra 45 # 10-34", "Cali", "021,051");
 
-        // 4️⃣ Crear envíos usando la FACTORY
-        // aca los datos los proporciona el user desde la GUI y supongo que el controller llama al factory y hace algo asi como lo de aca abajo
-        // luego el userService hace el proceso final
-        System.out.println("🧩 Creando envíos con diferentes tipos...");
-        Shipment envioNormal = ShipmentFactory.createShipment("normal", "S001", cliente1, "Zona Norte", direccion2, paquete1);
-        Shipment envioPrioritario = ShipmentFactory.createShipment("priority", "S002", cliente2, "Zona Sur", direccion2, paquete2);
-        Shipment envioFragil = ShipmentFactory.createShipment("fragile", "S003", cliente1, "Zona Norte", direccion2, paquete1);
+        client1.addAddress(address1);
+        client1.addAddress(address2);
 
-        // aca el userService hacel el procesos final
-        systemFacade.createShipment(envioNormal);
-        systemFacade.createShipment(envioPrioritario);
-        systemFacade.createShipment(envioFragil);
+        System.out.println("🏠 Direcciones del usuario:");
+        System.out.println(client1.getAddresses());
 
-        System.out.println(systemFacade.getCompany().getShipments());
 
-        // 5️⃣ Asignar tarifa con STRATEGY
+        // 🔹 5️⃣ Crear paquetes
+
+        PackageModel package1 = new PackageModel("P001", 2.5, 30.0);
+        PackageModel package2 = new PackageModel("P002", 10.0, 80.0);
+
+
+        // 🔹 6️⃣ Crear envíos usando Factory
+
+        System.out.println("\n📦 Creando envíos con la Fábrica (Factory)...");
+        Shipment normalShipment = ShipmentFactory.createShipment("normal", "S001", client1, "Zona Norte", address2, package1);
+        Shipment priorityShipment = ShipmentFactory.createShipment("priority", "S002", client2, "Zona Sur", address2, package2);
+        Shipment fragileShipment = ShipmentFactory.createShipment("fragile", "S003", client1, "Zona Norte", address2, package1);
+
+        facade.createShipment(normalShipment);
+        facade.createShipment(priorityShipment);
+        facade.createShipment(fragileShipment);
+
+        System.out.println("📋 Envíos creados: " + client1.getShipments());
+
+
+        // 🔹 7️⃣ STRATEGY: cálculo de tarifas
+
         System.out.println("\n💰 Calculando tarifas...");
+
         Rate rateNormal = new Rate("R001", new NormalCostStrategy());
-        double costoNormal = rateNormal.calculateShipmentRate(paquete1, direccion2);
-        rateNormal.setBase(costoNormal);
-        envioNormal.setRate(rateNormal);
-        System.out.println("Costo envío normal: " + costoNormal);
+        rateNormal.setBase(rateNormal.calculateShipmentRate(package1, address2));
+        normalShipment.setRate(rateNormal);
+        System.out.println("Costo envío normal: $" + rateNormal.getBase());
 
         Rate ratePriority = new Rate("R002", new PriorityCostStrategy());
-        double costoPriority = ratePriority.calculateShipmentRate(paquete2, direccion2);
-        ratePriority.setBase(costoPriority);
-        envioPrioritario.setRate(ratePriority);
-        System.out.println("Costo envío prioritario: " + costoPriority);
+        ratePriority.setBase(ratePriority.calculateShipmentRate(package2, address2));
+        priorityShipment.setRate(ratePriority);
+        System.out.println("Costo envío prioritario: $" + ratePriority.getBase());
 
         Rate rateFragile = new Rate("R003", new FragileCostStrategy());
-        double costoFragile = rateFragile.calculateShipmentRate(paquete1, direccion2);
-        rateFragile.setBase(costoFragile);
-        envioFragil.setRate(rateFragile);
-        System.out.println("Costo envío frágil: " + costoFragile);
+        rateFragile.setBase(rateFragile.calculateShipmentRate(package1, address2));
+        fragileShipment.setRate(rateFragile);
+        System.out.println("Costo envío frágil: $" + rateFragile.getBase());
 
-        // 6️⃣ Agregar observadores (USER y DEALER)
-        System.out.println("\n🔔 Añadiendo observadores...");
-        NotificationHandler consolaHandler = msg -> System.out.println("📢 [Notificación]: " + msg);
-        envioNormal.addObserver(new UserNotification(consolaHandler));
-        envioNormal.addObserver(new DealerNotification(consolaHandler));
 
-        // 7️⃣ Simular cambio de estado y notificaciones
+        // 🔹 8️⃣ OBSERVER: notificación de cambios
+
+        System.out.println("\n🔔 Configurando observadores...");
+        NotificationHandler handler = msg -> System.out.println("📢 [Notificación]: " + msg);
+
+        normalShipment.addObserver(new UserNotification(handler));
+        normalShipment.addObserver(new DealerNotification(handler));
+
         System.out.println("\n🚀 Cambiando estado del envío...");
-        envioNormal.setStatus(ShippingStatus.ONROUTE);
-        envioNormal.setStatus(ShippingStatus.DELIVERED);
+        normalShipment.setStatus(ShippingStatus.ONROUTE);
+        normalShipment.setStatus(ShippingStatus.DELIVERED);
 
-        // 8️⃣ Decorar un envío con servicios adicionales
+
+        // 🔹 9️⃣ DECORATOR: servicios adicionales
+
         System.out.println("\n🎁 Aplicando decoradores...");
-        Shipment envioDecorado = new SecureShipping(new SignatureRequiredShipment(new PriorityShipping(envioNormal)));
-        envioDecorado.addService("Seguro + Firma + Prioridad");
-        System.out.println("Decorador aplicado a envío: " + envioDecorado.getShipmentId());
-        System.out.println("Servicios extra: " + envioDecorado.getAdditionalServices());
+        Shipment decoratedShipment = new SecureShipping(
+                new SignatureRequiredShipment(
+                        new PriorityShipping(normalShipment)
+                )
+        );
+        decoratedShipment.addService("Seguro + Firma + Prioritario");
+        System.out.println("Envío decorado: " + decoratedShipment.getShipmentId());
+        System.out.println("Servicios adicionales: " + decoratedShipment.getAdditionalServices());
 
-        // 9️⃣ PROXY: validar permisos de cancelación
-        System.out.println("\n🛑 Probando Proxy de cancelación...");
-        ShipmentProxy proxyEnvio = new ShipmentProxy(envioNormal, cliente1);
-        proxyEnvio.cancel();
-        System.out.println("El envío " + envioNormal.getShipmentId() + " fue cancelado con éxito.");
 
-        // 🔟 Simular pago (CHAIN OF RESPONSIBILITY)
-        System.out.println("\n💳 Simulando proceso de pago (ejemplo para Chain of Responsibility)...");
-        Payment pago = new Payment("PAY001", 20000.0, LocalDateTime.now(), true);
-        envioNormal.setPayment(pago);
-        System.out.println("Pago asignado al envío: " + envioNormal.getPayment());
+        // 🔹 🔟 PROXY: cancelación segura
 
-        // 🔚 Finalizar
-        System.out.println("\n✅ Fin de pruebas del sistema de envíos.");
+        System.out.println("\n🛑 Probando Proxy (cancelación segura)...");
+        ShipmentProxy proxyShipment = new ShipmentProxy(normalShipment, client1);
+        proxyShipment.cancel();
+        System.out.println("El envío " + normalShipment.getShipmentId() + " fue cancelado correctamente.");
+
+
+        // 🔹 11️⃣ CHAIN OF RESPONSIBILITY: proceso de pago
+
+        System.out.println("\n💳 Simulando proceso de pago con Chain of Responsibility...");
+
+        // Crear un pago válido con usuario asociado
+        Payment payment = new Payment("PAY001", 20000.0, LocalDateTime.now(), "Tarjeta de crédito", true);
+        payment.setUser(client1); // ✅ Asociar usuario para validación
+
+        // Procesar el pago usando la fachada
+        facade.processPaymentChain(payment);
+
+        // Asociar el pago al envío
+        normalShipment.setPayment(payment);
+        System.out.println("Pago procesado y asignado al envío: " + normalShipment.getPayment());
+
+        System.out.println("\n✅ Fin de las pruebas del sistema de envíos.");
     }
 }
