@@ -6,24 +6,24 @@ import co.edu.uniquindio.proyectofinalp2.decorators.SecureShipping;
 import co.edu.uniquindio.proyectofinalp2.decorators.SignatureRequiredShipment;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.factory.ShipmentFactory;
+import co.edu.uniquindio.proyectofinalp2.facade.SystemFacade;
 import co.edu.uniquindio.proyectofinalp2.observer.DealerNotification;
 import co.edu.uniquindio.proyectofinalp2.observer.NotificationHandler;
 import co.edu.uniquindio.proyectofinalp2.observer.UserNotification;
 import co.edu.uniquindio.proyectofinalp2.proxy.ShipmentProxy;
-import co.edu.uniquindio.proyectofinalp2.service.*;
 import co.edu.uniquindio.proyectofinalp2.strategy.FragileCostStrategy;
 import co.edu.uniquindio.proyectofinalp2.strategy.NormalCostStrategy;
 import co.edu.uniquindio.proyectofinalp2.strategy.PriorityCostStrategy;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MainTest {
 
     public static void main(String[] args) {
-        CompanyService companyService = CompanyService.getInstance();
-        ShippingService shippingService = ShippingService.getInstance();
-        ReportService reportService = ReportService.getInstance();
-        LoginService loginService = LoginService.getInstance();
+
+        // ✅ Se usa el Facade para centralizar todos los servicios
+        SystemFacade systemFacade = new SystemFacade();
 
         System.out.println("=== 🔹 INICIO DE PRUEBAS DEL SISTEMA DE ENVÍOS 🔹 ===\n");
 
@@ -45,15 +45,16 @@ public class MainTest {
                 .build();
 
         // registrarse como cliente
-        companyService.registerUser(cliente1);
-        UserService uService = new UserService(cliente1); // una vez registrado se "desbloquean" las funciones de user
-        companyService.registerUser(cliente2);
-        System.out.println(companyService.getCompany().getUsers());
+        systemFacade.registerUser(cliente1);
+        systemFacade.registerUser(cliente2);
+
+        System.out.println(systemFacade.getCompany().getUsers());
 
         //iniciar sesion
         //supongo que este es el que coje el controller
-        UserDTO udto = companyService.login("c1@gmail.com", "123");
-        if (udto != null) {
+        systemFacade.registerUserLogin("c1@gmail.com", "123");
+        boolean loginOk = systemFacade.verifyLoginCredentials("c1@gmail.com", "123");
+        if (loginOk) {
             System.out.println("inicio de sesion exitoso");
         }
 
@@ -62,9 +63,9 @@ public class MainTest {
         Address direccion2 = new Address("A2", "Bogota", "Cali", "LAVIA", "Cra 45 # 10-34", "Bogota", "021,051");
 
         // agrega las direcciones al cliente
-        uService.addAddressToUser(uService.getUser(), direccion1);
-        uService.addAddressToUser(uService.getUser(), direccion2);
-        System.out.println(uService.getUser().getAddresses());
+        cliente1.addAddress(direccion1);
+        cliente1.addAddress(direccion2);
+        System.out.println(cliente1.getAddresses());
 
         // 3️⃣ Crear paquetes
         PackageModel paquete1 = new PackageModel("P001", 2.5, 30.0);
@@ -79,10 +80,11 @@ public class MainTest {
         Shipment envioFragil = ShipmentFactory.createShipment("fragile", "S003", cliente1, "Zona Norte", direccion2, paquete1);
 
         // aca el userService hacel el procesos final
-        uService.createShipment(envioNormal);
-        uService.createShipment(envioPrioritario);
-        uService.createShipment(envioFragil);
-        System.out.println(uService.getUser().getShipments());
+        systemFacade.createShipment(envioNormal);
+        systemFacade.createShipment(envioPrioritario);
+        systemFacade.createShipment(envioFragil);
+
+        System.out.println(systemFacade.getCompany().getShipments());
 
         // 5️⃣ Asignar tarifa con STRATEGY
         System.out.println("\n💰 Calculando tarifas...");
