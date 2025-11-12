@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorMethodsController.AdminMetricsController">
+    <top>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <Label text="📊 Panel de Métricas - Administrador" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Label text="Visualice el rendimiento de su sistema de envíos" style="-fx-text-fill: #7f8c8d;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane>
+            <Tab text="⏱️ Tiempos de Entrega">
+                <content>
+                    <BarChart fx:id="deliveryTimeChart" title="Tiempo Promedio por Zona">
+                        <xAxis>
+                            <CategoryAxis label="Zona"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Horas promedio"/>
+                        </yAxis>
+                    </BarChart>
+                </content>
+            </Tab>
+
+            <Tab text="🎁 Servicios Adicionales">
+                <content>
+                    <PieChart fx:id="servicesPieChart" title="Servicios más usados"/>
+                </content>
+            </Tab>
+
+            <Tab text="💰 Ingresos">
+                <content>
+                    <LineChart fx:id="incomeLineChart" title="Ingresos por Periodo">
+                        <xAxis>
+                            <CategoryAxis label="Periodo"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Ingresos ($)"/>
+                        </yAxis>
+                    </LineChart>
+                </content>
+            </Tab>
+
+            <Tab text="⚠️ Incidencias">
+                <content>
+                    <BarChart fx:id="incidenceBarChart" title="Incidencias por Zona">
+                        <xAxis>
+                            <CategoryAxis label="Zona"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Cantidad de Incidencias"/>
+                        </yAxis>
+                    </BarChart>
+                </content>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>

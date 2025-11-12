@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="TOP_CENTER" prefHeight="500.0" prefWidth="650.0" spacing="25.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.UserViewControllers.ProfileController">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30" />
+    </padding>
+
+    <Label text="👤 Editar Información de Perfil" />
+    <Label text="Actualice su información personal" />
+
+    <GridPane hgap="20.0" vgap="20.0" prefWidth="550">
+        <columnConstraints>
+            <javafx.scene.layout.ColumnConstraints hgrow="NEVER" minWidth="150.0" prefWidth="150.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="350.0" />
+        </columnConstraints>
+
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtNombre" promptText="Ingrese su nombre" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="txtCorreo" promptText="Correo electrónico" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                   editable="false" />
+
+        <Label text="Nueva Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <PasswordField fx:id="txtPassword" promptText="Dejar en blanco para no cambiar" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Button fx:id="btnGuardar" text="💾 Guardar Cambios" onAction="#onGuardarPerfil"
+                prefWidth="200" prefHeight="40"
+                GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <GridPane.margin>
+                <Insets top="10" />
+            </GridPane.margin>
+        </Button>
+    </GridPane>
+</VBox>

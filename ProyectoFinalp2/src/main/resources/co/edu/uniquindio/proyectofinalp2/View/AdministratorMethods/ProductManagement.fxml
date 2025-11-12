@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox prefHeight="600.0" prefWidth="800.0" spacing="20.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.UserViewControllers.ProductManagementController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
+
+    <Label text="📦 Gestión de Productos / Paquetes" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+    <Label text="Administre sus paquetes y productos para envío" style="-fx-text-fill: #7f8c8d;" />
+
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
+        </columnConstraints>
+
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: bold;" />
+        <TextField fx:id="txtNombre" promptText="Caja de libros, Documentos" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Descripción:" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-font-weight: bold;" />
+        <TextField fx:id="txtDescripcion" promptText="Detalles del contenido" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+        <Label text="Valor Estimado:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-weight: bold;" />
+        <TextField fx:id="txtValor" promptText="50.00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Peso (kg):" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-font-weight: bold;" />
+        <TextField fx:id="txtPeso" promptText="0.5, 10.0, etc." GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+        <HBox spacing="15" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.rowIndex="2" alignment="CENTER">
+            <Button text="➕ Agregar" fx:id="btnAgregar" onAction="#onAgregarPaquete" prefWidth="130.0" />
+            <Button text="✏️ Actualizar" fx:id="btnActualizar" onAction="#onActualizarPaquete" prefWidth="130.0" />
+            <Button text="🗑️ Eliminar" fx:id="btnEliminar" onAction="#onEliminarPaquete" prefWidth="130.0" />
+            <Button text="🔄 Limpiar" onAction="#onLimpiarCampos" prefWidth="120.0" />
+        </HBox>
+    </GridPane>
+
+    <VBox VBox.vgrow="ALWAYS" spacing="10">
+        <Label text="📋 Mis Paquetes" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+        <TableView fx:id="tablaPaquetes" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNombre" prefWidth="150.0" text="Nombre" />
+                <TableColumn fx:id="colDescripcion" prefWidth="250.0" text="Descripción" />
+                <TableColumn fx:id="colValor" prefWidth="100.0" text="Valor Estimado" />
+                <TableColumn fx:id="colPeso" prefWidth="100.0" text="Peso" />
+                <TableColumn fx:id="colID" prefWidth="50.0" text="ID" visible="false" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </VBox>
+</VBox>
