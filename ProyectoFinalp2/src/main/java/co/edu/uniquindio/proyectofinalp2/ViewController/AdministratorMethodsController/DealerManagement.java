@@ -1,6 +1,7 @@
 package co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorMethodsController;
 
 import co.edu.uniquindio.proyectofinalp2.Model.Dealer;
+import co.edu.uniquindio.proyectofinalp2.service.DealerService;
 import co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -8,49 +9,50 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+
 import javafx.scene.control.*;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.List;
 
 /**
  * Controlador encargado de gestionar los Dealers (repartidores).
- * RF-011: Crear / Actualizar / Eliminar / Listar
+ * RF-011: Crear / Actualizar / Eliminar / Listar, con validación de correo único.
  */
-public class DealerManagement {
+public class DealerManagement implements Initializable {
 
-    @FXML
-    private TextField txtNombre;
+    // 1. Instancia del servicio Singleton (ÚNICA FUENTE DE VERDAD)
+    private final DealerService dealerService = DealerService.getInstance();
 
-    @FXML
-    private TextField txtCorreo;
+    // 2. La lista observable ahora estará vinculada a la lista del modelo
+    private ObservableList<Dealer> listaDealers;
 
-    @FXML
-    private TextField txtTelefono;
+    // --- Componentes FXML ---
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtCorreo;
+    @FXML private TextField txtTelefono;
+    @FXML private CheckBox chkDisponible;
+    @FXML private TableView<Dealer> tablaDealers;
+    @FXML private TableColumn<Dealer, String> colNombre;
+    @FXML private TableColumn<Dealer, String> colCorreo;
+    @FXML private TableColumn<Dealer, String> colTelefono;
+    @FXML private TableColumn<Dealer, Boolean> colDisponible;
+    @FXML private TableColumn<Dealer, Integer> colEntregas;
 
-    @FXML
-    private CheckBox chkDisponible;
-
-    @FXML
-    private TableView<Dealer> tablaDealers;
-
-    @FXML
-    private TableColumn<Dealer, String> colNombre;
-
-    @FXML
-    private TableColumn<Dealer, String> colCorreo;
-
-    @FXML
-    private TableColumn<Dealer, String> colTelefono;
-
-    @FXML
-    private TableColumn<Dealer, Boolean> colDisponible;
-
-    @FXML
-    private TableColumn<Dealer, Integer> colEntregas;
-
-    private final ObservableList<Dealer> listaDealers = FXCollections.observableArrayList();
     private AdministratorController administratorController;
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        // 3. OBTENER LA LISTA DE DEALERS DEL MODELO
+        // ❌ Línea original que fallaba: List<Dealer> dealersFromModel = companyService.getCompany().getDealers();
+
+        // ✅ CORRECCIÓN: Delegamos la obtención de la lista al DealerService.
+        // Asumimos que DealerService tiene un método para obtener la lista del modelo central.
+        List<Dealer> dealersFromModel = dealerService.listAllDealers();
+        this.listaDealers = FXCollections.observableArrayList(dealersFromModel);
+
         configurarTabla();
         tablaDealers.setItems(listaDealers);
 
@@ -66,6 +68,8 @@ public class DealerManagement {
         this.administratorController = administratorController;
     }
 
+    // --- MÉTODOS DE LÓGICA DE NEGOCIO ---
+
     /**
      * Configura las columnas de la tabla.
      */
@@ -77,10 +81,20 @@ public class DealerManagement {
         colTelefono.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getPhone()));
         colDisponible.setCellValueFactory(cellData ->
-                new SimpleBooleanProperty(cellData.getValue().getAvaliable()));
+                new SimpleBooleanProperty(cellData.getValue().getAvailable()));
         colEntregas.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getDeliveriesMade()).asObject());
     }
+
+    /**
+     * Verifica si ya existe un repartidor con el correo electrónico proporcionado.
+     * Usa la lista observable actual.
+     */
+    private boolean existeDealerConCorreo(String correo) {
+        return listaDealers.stream()
+                .anyMatch(dealer -> dealer.getEmail().equalsIgnoreCase(correo));
+    }
+
 
     /**
      * Agrega un nuevo dealer.
@@ -97,17 +111,31 @@ public class DealerManagement {
             return;
         }
 
+        if (existeDealerConCorreo(correo)) {
+            mostrarAlerta("Error de Validación", "Ya existe un repartidor registrado con el correo: " + correo, Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Se construye el Dealer
         Dealer nuevoDealer = new Dealer.Builder()
                 .name(nombre)
                 .email(correo)
                 .phone(telefono)
-                .avaliable(disponible)
+                .available(disponible)
                 .deliveriesMade(0)
                 .build();
 
-        listaDealers.add(nuevoDealer);
-        limpiarCampos();
-        mostrarAlerta("Éxito", "Dealer agregado correctamente.", Alert.AlertType.INFORMATION);
+        // CLAVE: Usar el método del servicio que también maneja la persistencia
+        boolean agregado = dealerService.addDealer(nuevoDealer);
+
+        if (agregado) {
+            // Actualizar la lista observable ligada a la tabla
+            listaDealers.add(nuevoDealer);
+            limpiarCampos();
+            mostrarAlerta("Éxito", "Dealer agregado correctamente.", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se pudo agregar el Dealer. Verifique ID/Correo.", Alert.AlertType.ERROR);
+        }
     }
 
     /**
@@ -122,9 +150,17 @@ public class DealerManagement {
             return;
         }
 
-        listaDealers.remove(seleccionado);
-        limpiarCampos();
-        mostrarAlerta("Éxito", "Dealer eliminado correctamente.", Alert.AlertType.INFORMATION);
+        // CLAVE: Usar el servicio Singleton para eliminarlo del modelo central
+        boolean eliminado = dealerService.deleteDealer(seleccionado.getId());
+
+        if (eliminado) {
+            // Si se elimina del modelo, se elimina de la lista observable
+            listaDealers.remove(seleccionado);
+            limpiarCampos();
+            mostrarAlerta("Éxito", "Dealer eliminado correctamente.", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se pudo eliminar el Dealer del modelo.", Alert.AlertType.ERROR);
+        }
     }
 
     /**
@@ -139,29 +175,37 @@ public class DealerManagement {
             return;
         }
 
-        String nuevoNombre = txtNombre.getText().trim();
-        String nuevoCorreo = txtCorreo.getText().trim();
-        String nuevoTelefono = txtTelefono.getText().trim();
-        boolean disponible = chkDisponible.isSelected();
+        // Crear un objeto DTO/Dealer temporal para pasar al servicio
+        Dealer dealerActualizado = new Dealer.Builder()
+                .id(seleccionado.getId()) // Mantener el ID original
+                .name(txtNombre.getText().trim())
+                .email(txtCorreo.getText().trim())
+                .phone(txtTelefono.getText().trim())
+                .available(chkDisponible.isSelected())
+                .deliveriesMade(seleccionado.getDeliveriesMade())
+                .build();
 
-        if (nuevoNombre.isEmpty() || nuevoCorreo.isEmpty() || nuevoTelefono.isEmpty()) {
-            mostrarAlerta("Campos incompletos", "Todos los campos son obligatorios.", Alert.AlertType.WARNING);
+        // --- VALIDACIÓN DE CORREO ÚNICO EN ACTUALIZACIÓN ---
+        if (!seleccionado.getEmail().equalsIgnoreCase(dealerActualizado.getEmail()) && existeDealerConCorreo(dealerActualizado.getEmail())) {
+            mostrarAlerta("Error de Validación", "El nuevo correo ya está en uso por otro repartidor.", Alert.AlertType.ERROR);
             return;
         }
 
-        seleccionado.setFullname(nuevoNombre);
-        seleccionado.setEmail(nuevoCorreo);
-        seleccionado.setPhone(nuevoTelefono);
-        seleccionado.setAvaliable(disponible);
+        // CLAVE: Usar el servicio Singleton para actualizar el modelo central
+        boolean actualizado = dealerService.updateDealer(dealerActualizado);
 
-        tablaDealers.refresh();
-        limpiarCampos();
-        mostrarAlerta("Éxito", "Dealer actualizado correctamente.", Alert.AlertType.INFORMATION);
+        if (actualizado) {
+            // Dado que el servicio actualiza el objeto en el modelo, solo necesitamos refrescar la tabla.
+            tablaDealers.refresh();
+            limpiarCampos();
+            mostrarAlerta("Éxito", "Dealer actualizado correctamente.", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se pudo actualizar el Dealer en el modelo.", Alert.AlertType.ERROR);
+        }
     }
 
-    /**
-     * Limpia los campos del formulario.
-     */
+    // --- MÉTODOS AUXILIARES ---
+
     @FXML
     private void limpiarCampos() {
         txtNombre.clear();
@@ -171,19 +215,13 @@ public class DealerManagement {
         tablaDealers.getSelectionModel().clearSelection();
     }
 
-    /**
-     * Carga los datos del dealer seleccionado en los campos de texto.
-     */
     private void cargarDatosDealer(Dealer dealer) {
         txtNombre.setText(dealer.getFullname());
         txtCorreo.setText(dealer.getEmail());
         txtTelefono.setText(dealer.getPhone());
-        chkDisponible.setSelected(dealer.getAvaliable());
+        chkDisponible.setSelected(dealer.getAvailable());
     }
 
-    /**
-     * Muestra una alerta informativa.
-     */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);

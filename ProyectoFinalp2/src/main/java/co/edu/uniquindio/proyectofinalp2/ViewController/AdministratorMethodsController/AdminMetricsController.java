@@ -21,7 +21,7 @@ public class AdminMetricsController {
     @FXML
     private BarChart<String, Number> incidenceBarChart;
 
-    private final AdminService adminService = new AdminService();
+    private final AdminService adminService = AdminService.getInstance();
 
     @FXML
     public void initialize() {

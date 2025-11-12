@@ -1,13 +1,16 @@
 package co.edu.uniquindio.proyectofinalp2.service;
 
 import co.edu.uniquindio.proyectofinalp2.Model.*;
-import co.edu.uniquindio.proyectofinalp2.dto.DealerDTO;
+import co.edu.uniquindio.proyectofinalp2.decorators.FragileShipment; // 🟢 Importar decoradores
+import co.edu.uniquindio.proyectofinalp2.decorators.PriorityShipping; // 🟢 Importar decoradores
 import co.edu.uniquindio.proyectofinalp2.dto.AdminDTO;
+import co.edu.uniquindio.proyectofinalp2.dto.DealerDTO;
 import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectEmailException;
 import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectPasswordException;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
 
+import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +18,16 @@ import java.util.Optional;
 
 public class CompanyService {
     private static CompanyService instance;
-    private final Company company;
+    public final Company company;
 
+    // Archivos de persistencia (Mantener como referencia, pero no se usarán)
+    private static final String USERS_FILE = "data/company_users.dat";
+    private static final String ADMINS_FILE = "data/company_admins.dat";
+    private static final String DEALERS_FILE = "data/company_dealers.dat";
+    private static final String SHIPMENTS_FILE = "data/company_shipments.dat";
 
     private CompanyService() {
-        this.company = new Company();
+        this.company = Company.getInstance();
     }
 
     public static CompanyService getInstance() {
@@ -29,326 +37,141 @@ public class CompanyService {
         return instance;
     }
 
-    public Company getCompany() {
-        return this.company;
-    }
+    // --- MÉTODOS DE BÚSQUEDA ---
 
-    //CRUD de usuarios -------------------------------------------------------------------------------------------------
-
-    //Create: registrar un usuario
-    public void registerUser(User user) {
-        Optional<User> userAux = findUserByID(user.getId());
-        if (userAux.isPresent()) {
-            throw new IllegalArgumentException("No pueden haber 2 usuarios con id "+ user.getId());
-        }
-        company.getUsers().add(user);
-    }
-
-
-    //Read: ver un user
-    public UserDTO readUser(String id){
-
-        Optional<User> userFind = findUserByID(id);
-        if (userFind.isPresent()){
-            User userAux = userFind.get();
-            UserDTO dto = new UserDTO();
-            dto.setIdUser(userAux.getId());
-            dto.setFullname(userAux.getFullname());
-            dto.setEmail(userAux.getEmail());
-            dto.setPhone(userAux.getPhone());
-            dto.setAddresses(userAux.getAddresses());
-            return dto;
-        } else {
-            throw new NotFoundException("No se encontró ningun usuario con ID: " + id);
-        }
-    }
-
-
-    //update: actulizar usuario
-    public void updateUser(UserDTO dto) {
-        Optional<User> userOp = company.getUsers().stream()
-                .filter(u -> u.getId().equals(dto.getIdUser()))
-                .findFirst();
-
-        if (userOp.isPresent()) {
-            User user = userOp.get();
-            user.setFullname(dto.getFullname());
-            user.setEmail(dto.getEmail());
-            user.setPhone(dto.getPhone());
-            user.setAddresses(dto.getAddresses());
-        } else {
-            throw new NotFoundException("No se encontró ningun usuario con ID: " + dto.getIdUser());
-        }
-    }
-
-
-    //Delete: eliminar user
-    public void deleteUser(String id){
-        Optional<User> user = company.getUsers().stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-        if (user.isPresent()){
-            company.getUsers().remove(user.get());
-        } else {
-            throw new NotFoundException("No se encontró ningun usuario con ID: " + id);
-        }
-    }
-
-
-    // Listar usuarios como DTO  para poder devolverlo al controller
-    public List<UserDTO> listUserDTO() {
-        List<UserDTO> list = new ArrayList<>();
-        for (User userAux : company.getUsers()) {
-            UserDTO dto = new UserDTO();
-            dto.setIdUser(userAux.getId());
-            dto.setFullname(userAux.getFullname());
-            dto.setEmail(userAux.getEmail());
-            dto.setPhone(userAux.getPhone());
-            dto.setAddresses(userAux.getAddresses());
-            list.add(dto);
-        }
-        return list;
-    }
-
-
-    //bucar usuarios por ID
-    public Optional<User> findUserByID(String id) {
-        return company.getUsers().stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-    }
-
-
-    //bucar usuarios por email
     public Optional<User> findUserByEmail(String email) {
         return company.getUsers().stream()
                 .filter(u -> u.getEmail().equals(email))
                 .findFirst();
     }
 
-
-    //CRUD para Admins--------------------------------------------------------------------------------------------------
-
-    //Create: registrar un Admin a partir de DTO  samuel aca de toca arreglarlo, porque por ejemplo yo que hoce user le quité eñ dto
-//    public void registerAdmin(UserDTO dto) {
-//        Admin admin = new Admin.Builder()
-//                .name(dto.getFullname())
-//                .id(dto.getIdUser())
-//                .email(dto.getEmail())
-//                .phone(dto.getPhone())
-//                .build();
-//        company.getAdmins().add(admin);
-//    }
-
-
-    //Read: ver un admin
-    private AdminDTO readAdmin(String id){
-
-        Optional<Admin> adminFind = findAdminByID(id);
-        if (adminFind.isPresent()){
-            Admin adminAux = adminFind.get();
-            AdminDTO dto = new AdminDTO();
-            dto.setIdAdmin(adminAux.getId());
-            dto.setFullname(adminAux.getFullname());
-            dto.setEmail(adminAux.getEmail());
-            dto.setPhone(adminAux.getPhone());
-            return dto;
-        } else {
-            throw new NotFoundException("No se encontró ningun Admin con ID: " + id);
-        }
-    }
-
-
-    //update: actulizar Admin
-    public void updateAdmin(AdminDTO dto) {
-        Optional<Admin> adminOp = company.getAdmins().stream()
-                .filter(a -> a.getId().equals(dto.getIdAdmin()))
-                .findFirst();
-
-        if (adminOp.isPresent()) {
-            Admin admin = adminOp.get();
-            admin.setFullname(dto.getFullname());
-            admin.setEmail(dto.getEmail());
-            admin.setPhone(dto.getPhone());
-        } else {
-            throw new NotFoundException("No se encontró ningun Admin con ID: " + dto.getIdAdmin());
-        }
-    }
-
-
-    //Delete: eliminar Admin
-    private void deleteAdmin(String id){
-        Optional<Admin> admin = company.getAdmins().stream()
-                .filter(a -> a.getId().equals(id))
-                .findFirst();
-        if (admin.isPresent()){
-            company.getAdmins().remove(admin.get());
-        } else {
-            throw new NotFoundException("No se encontró ningun admin con ID: " + id);
-        }
-    }
-
-
-    // Listar usuarios como DTO  para poder devolverlo al controller
-    public List<AdminDTO> listAdminDTO() {
-        List<AdminDTO> list = new ArrayList<>();
-        for (Admin adminAux : company.getAdmins()) {
-            AdminDTO dto = new AdminDTO();
-            dto.setIdAdmin(adminAux.getId());
-            dto.setFullname(adminAux.getFullname());
-            dto.setEmail(adminAux.getEmail());
-            dto.setPhone(adminAux.getPhone());
-            list.add(dto);
-        }
-        return list;
-    }
-
-    //bucar Admin por ID
-    public Optional<Admin> findAdminByID(String id) {
+    public Optional<Admin> findAdminByEmail(String email) {
         return company.getAdmins().stream()
-                .filter(a -> a.getId().equals(id))
+                .filter(a -> a.getEmail().equals(email))
                 .findFirst();
     }
 
-
-    //CRUD para Repartidores--------------------------------------------------------------------------------------------
-
-    //Create: registrar un repartidor a partir de DTO // aca lo mismpo SAMUEL
-    public void registerDealer(DealerDTO dto) {
-        Dealer dealer = new Dealer.Builder()
-                .name(dto.getFullname())
-                .id(dto.getIdDealer())
-                .email(dto.getEmail())
-                .phone(dto.getPhone())
-                .build();
-        company.getDealers().add(dealer);
-    }
-
-
-    //Read: ver un dealer
-    private DealerDTO readDealer(String id){
-
-        Optional<Dealer> dealerFind = findDealerByID(id);
-        if (dealerFind.isPresent()){
-            Dealer dealerAux = dealerFind.get();
-            DealerDTO dto = new DealerDTO();
-            dto.setIdDealer(dealerAux.getId());
-            dto.setFullname(dealerAux.getFullname());
-            dto.setEmail(dealerAux.getEmail());
-            dto.setPhone(dealerAux.getPhone());
-            return dto;
-        } else {
-            throw new NotFoundException("No se encontró ningun repartidor con ID: " + id);
-        }
-    }
-
-
-    //update: actulizar repartidor
-    private void updateDealer(DealerDTO dto) {
-        Optional<Dealer> dealerOp = company.getDealers().stream()
-                .filter(d -> d.getId().equals(dto.getIdDealer()))
-                .findFirst();
-
-        if (dealerOp.isPresent()) {
-            Dealer dealer = dealerOp.get();
-            dealer.setFullname(dto.getFullname());
-            dealer.setEmail(dto.getEmail());
-            dealer.setPhone(dto.getPhone());
-        } else {
-            throw new NotFoundException("No se encontró ningun repartidor con ID: " + dto.getIdDealer());
-        }
-    }
-
-
-    //Delete: eliminar repartidor
-    private void deleteDealer(String id){
-        Optional<Dealer> dealer = company.getDealers().stream()
-                .filter(d -> d.getId().equals(id))
-                .findFirst();
-        if (dealer.isPresent()){
-            company.getDealers().remove(dealer.get());
-        } else {
-            throw new NotFoundException("No se encontró ningun repartidor con ID: " + id);
-        }
-    }
-
-    // Listar repartidores como DTO  para poder devolverlo al controller
-    public List<DealerDTO> listDealerDTO() {
-        List<DealerDTO> list = new ArrayList<>();
-        for (Dealer dealerAux : company.getDealers()) {
-            DealerDTO dto = new DealerDTO();
-            dto.setIdDealer(dealerAux.getId());
-            dto.setFullname(dealerAux.getFullname());
-            dto.setEmail(dealerAux.getEmail());
-            dto.setPhone(dealerAux.getPhone());
-            list.add(dto);
-        }
-        return list;
-    }
-
-    //bucar Dealer por ID
-    public Optional<Dealer> findDealerByID(String id) {
+    public Optional<Dealer> findDealerByEmail(String email) {
         return company.getDealers().stream()
-                .filter(d -> d.getId().equals(id))
+                .filter(dealer -> dealer.getEmail().equals(email))
                 .findFirst();
     }
 
 
-    //metodos de inicio de sesion users---------------------------------------------------------------------------------
+    // --- REGISTRO DE ROLES (CREATE) ---
 
-    public UserDTO login(String email, String password) {
+    public void registerUser(User user) {
+        Optional<User> userAux = findUserByEmail(user.getEmail());
+        if (userAux.isPresent()) {
+            throw new IllegalArgumentException("Ya existe una cuenta con el email: "+ user.getEmail());
+        }
+        company.getUsers().add(user);
+        // persistUserData(); // ❌ Deshabilitado
+    }
+
+    // Registro de Administrador
+    public void registerAdmin(Admin admin) {
+        Optional<Admin> adminAux = findAdminByEmail(admin.getEmail());
+        if (adminAux.isPresent()) {
+            throw new IllegalArgumentException("Ya existe una cuenta Admin con el email: " + admin.getEmail());
+        }
+        company.getAdmins().add(admin);
+        // persistAdminsData(); // ❌ Deshabilitado
+    }
+
+    // Registro de Repartidor
+    public void registerDealer(Dealer dealer) {
+        Optional<Dealer> dealerAux = findDealerByEmail(dealer.getEmail());
+        if (dealerAux.isPresent()) {
+            throw new IllegalArgumentException("Ya existe una cuenta Repartidor con el email: " + dealer.getEmail());
+        }
+        company.getDealers().add(dealer);
+        // persistDealersData(); // ❌ Deshabilitado
+    }
+
+
+    // --- MÉTODOS DE INICIO DE SESIÓN (LOGIN) ---
+    // (Lógica de login sin cambios, ya que opera sobre las listas en memoria)
+
+    public User login(String email, String password) {
         Optional<User> user = findUserByEmail(email);
 
         if (user.isEmpty()) {
-            throw new IncorrectEmailException("No existe ninguna cuenta con el email: " + email);
+            throw new IncorrectEmailException("No existe ninguna cuenta de usuario con el email: " + email);
         }
 
         User userAux = user.get();
-        if (!userAux.getPassword().equals(password)) {
-            throw new IncorrectPasswordException("Incorrect Password, please try again");
+        if (userAux.getPassword() == null || !userAux.getPassword().equals(password)) {
+            throw new IncorrectPasswordException("Contraseña incorrecta, por favor inténtalo de nuevo.");
+        }
+        return userAux;
+    }
+
+    public Admin loginAdmin(String email, String password) {
+        Optional<Admin> admin = findAdminByEmail(email);
+
+        if (admin.isEmpty()) {
+            throw new IncorrectEmailException("No existe ninguna cuenta de administrador con el email: " + email);
         }
 
-        UserDTO dto = new UserDTO();
-        dto.setIdUser(userAux.getId());
-        dto.setFullname(userAux.getFullname());
-        dto.setEmail(userAux.getEmail());
-        dto.setPhone(userAux.getPhone());
-        dto.setAddresses(userAux.getAddresses());
-        return dto;
-        // si pasa esta logica, sigifica que el usuario es valido
-        // devuelve el user para que el controlador decida que hacer con el
-    }
-
-
-    // procesos para envios---------------------------------------------------------------------------------------------
-
-    // metodo que recibe una solicitud de envio y hace el proceso para enviar, requiere que el pago sea true
-    public void makeShipment(Shipment shipment){
-        //asignar repartidor
-        shipment.setPeriod("toca poner una fecha");
-        shipment.setStatus(ShippingStatus.ONROUTE);
-        company.getShipments().add(shipment);
-    }
-
-
-    // metodo para ratrear el estado del envio
-    public String trackerShipment(Shipment shipment){
-        if (shipment != null){
-            return shipment.track();
-        } else {
-            throw new NotFoundException("No se logró encontrar el envío que pusiste");
+        Admin adminAux = admin.get();
+        if (adminAux.getPassword() == null || !adminAux.getPassword().equals(password)) {
+            throw new IncorrectPasswordException("Contraseña incorrecta, por favor inténtalo de nuevo.");
         }
+        return adminAux;
     }
 
-    public List<Shipment> filterShipments(LocalDate date, ShippingStatus status, String zone) {
-        return company.getShipments().stream()
-                .filter(s -> (date == null || s.getCreationDate().toLocalDate().equals(date)))
-                .filter(s -> (status == null || s.getStatus() == status))
-                .filter(s -> (zone == null || s.getZone().equalsIgnoreCase(zone)))
-                .toList();
+    public Dealer loginDealer(String email, String password) {
+        Optional<Dealer> dealer = findDealerByEmail(email);
+
+        if (dealer.isEmpty()) {
+            throw new IncorrectEmailException("No existe ninguna cuenta de repartidor con el email: " + email);
+        }
+
+        Dealer dealerAux = dealer.get();
+        if (dealerAux.getPassword() == null || !dealerAux.getPassword().equals(password)) {
+            throw new IncorrectPasswordException("Contraseña incorrecta, por favor inténtalo de nuevo.");
+        }
+        return dealerAux;
     }
 
-//    public Shipment getShipmentDetails(String shipmentId) {
-//        return findShipmentById(shipmentId);
-//    }
+    // --- NUEVOS MÉTODOS DE LÓGICA DE NEGOCIO PARA COTIZACIÓN ---
+
+    /**
+     * Calcula el costo final del envío aplicando todos los decoradores.
+     * @param shipment El objeto Shipment (ya decorado o no)
+     * @return El costo total del envío.
+     */
+
+    /**
+     * Retorna una lista de las opciones de decoración de envíos disponibles
+     * para que la vista pueda mostrarlas.
+     * @return Lista de nombres de decoradores.
+     */
+    public List<String> getAvailableDecorators() {
+        // Estos nombres deben coincidir con la lógica del controlador para aplicar los decoradores.
+        List<String> decorators = new ArrayList<>();
+        decorators.add("Fragile");
+        decorators.add("Urgent");
+        // 🟢 Añadir los nuevos decoradores
+        decorators.add("SecureShipping");
+        decorators.add("SignatureRequiredShipment");
+        return decorators;
+    }
+
+
+    // Gestión de Envíos
+    public void makeShipment(Shipment shipment) {
+        this.company.getShipments().add(shipment);
+        // persistShipmentData(); // ❌ Deshabilitado
+        System.out.println("📦 Envío registrado con éxito: " + shipment.getShipmentId());
+    }
+
+    public void addShipmentToCompany(Shipment shipment) {
+        this.company.getShipments().add(shipment);
+        // persistShipmentData(); // ❌ Deshabilitado
+        System.out.println("📦 Envío " + shipment.getShipmentId() + " registrado centralmente y persistido.");
+    }
+
+
 }

@@ -1,0 +1,298 @@
+package co.edu.uniquindio.proyectofinalp2.ViewController.DealerViewController;
+
+import co.edu.uniquindio.proyectofinalp2.Model.*;
+import co.edu.uniquindio.proyectofinalp2.service.DealerService;
+import co.edu.uniquindio.proyectofinalp2.ViewController.ServiceInjectable;
+import co.edu.uniquindio.proyectofinalp2.ViewController.DealerDataInjectable; // ⬅️ IMPORTAR
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+/**
+ * Controlador para la gestión de envíos asignados al repartidor.
+ */
+public class DealerShipmentController implements Initializable,
+        ServiceInjectable<DealerService>,
+        DealerDataInjectable {  // ⬅️ AÑADIR ESTA INTERFAZ
+
+    // --- Servicios y Datos ---
+    private DealerService dealerService;
+    private Dealer currentDealer;
+
+    private final ObservableList<Shipment> shipmentsData = FXCollections.observableArrayList();
+
+    // --- Componentes FXML ---
+    @FXML private TableView<Shipment> tablaEnvios;
+    @FXML private TableColumn<Shipment, String> colShipmentId;
+    @FXML private TableColumn<Shipment, String> colCliente;
+    @FXML private TableColumn<Shipment, String> colOrigen;
+    @FXML private TableColumn<Shipment, String> colDestino;
+    @FXML private TableColumn<Shipment, String> colEstado;
+    @FXML private TableColumn<Shipment, String> colFecha;
+
+    @FXML private ComboBox<String> cmbFiltroEstado;
+    @FXML private ComboBox<String> cmbNuevoEstado;
+    @FXML private Label lblEnvioSeleccionado;
+    @FXML private TextArea txtIncidencia;
+
+    // -------------------------------------------------------------------------
+    // 1. INICIALIZACIÓN Y CONFIGURACIÓN
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        setupTable();
+        setupComboBoxes();
+
+        tablaEnvios.setItems(shipmentsData);
+
+        // Listener para actualizar el label cuando se selecciona un envío
+        tablaEnvios.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            if (selected != null) {
+                lblEnvioSeleccionado.setText("ID: " + selected.getShipmentId());
+            } else {
+                lblEnvioSeleccionado.setText("Ninguno");
+            }
+        });
+
+        System.out.println("✅ DealerShipmentController inicializado");
+    }
+
+    @Override
+    public void setService(DealerService service) {
+        this.dealerService = service;
+        System.out.println("✅ DealerService inyectado");
+    }
+
+    /**
+     * ⬇️ MÉTODO CRÍTICO: Ahora implementa correctamente la interfaz
+     */
+    @Override  // ⬅️ AÑADIR ESTA ANOTACIÓN
+    public void setDealer(Dealer dealer) {
+        this.currentDealer = dealer;
+        System.out.println("✅ Dealer establecido en Shipments: " + dealer.getFullname());
+        System.out.println("📦 Total envíos asignados: " +
+                (dealer.getAssignedShipments() != null ? dealer.getAssignedShipments().size() : 0));
+        cargarEnvios();
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. CONFIGURACIÓN DE TABLA Y COMBOS
+    // -------------------------------------------------------------------------
+
+    private void setupTable() {
+        colShipmentId.setCellValueFactory(new PropertyValueFactory<>("shipmentId"));
+
+        colCliente.setCellValueFactory(cellData -> {
+            User user = cellData.getValue().getUser();
+            return new SimpleStringProperty(user != null ? user.getFullname() : "N/A");
+        });
+
+        colOrigen.setCellValueFactory(cellData -> {
+            Address addr = cellData.getValue().getOriginAddress();
+            return new SimpleStringProperty(addr != null ? addr.getCity() : "N/A");
+        });
+
+        colDestino.setCellValueFactory(cellData -> {
+            Address addr = cellData.getValue().getDestinationAddress();
+            return new SimpleStringProperty(addr != null ? addr.getCity() : "N/A");
+        });
+
+        colEstado.setCellValueFactory(cellData -> {
+            ShippingStatus status = cellData.getValue().getStatus();
+            return new SimpleStringProperty(status != null ? status.toString() : "N/A");
+        });
+
+        colFecha.setCellValueFactory(cellData -> {
+            var date = cellData.getValue().getCreationDate();
+            if (date != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                return new SimpleStringProperty(date.format(formatter));
+            }
+            return new SimpleStringProperty("N/A");
+        });
+    }
+
+    private void setupComboBoxes() {
+        // Filtro de estados
+        cmbFiltroEstado.getItems().addAll(
+                "Todos",
+                "CREATED",
+                "IN_TRANSIT",
+                "DELIVERED",
+                "INCIDENCE_REPORTED",
+                "CANCELLED"
+        );
+        cmbFiltroEstado.getSelectionModel().select("Todos");
+
+        // Estados a los que puede cambiar el dealer
+        cmbNuevoEstado.getItems().addAll(
+                "IN_TRANSIT",
+                "DELIVERED",
+                "INCIDENCE_REPORTED"
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. MÉTODOS DE CARGA DE DATOS
+    // -------------------------------------------------------------------------
+
+    private void cargarEnvios() {
+        if (currentDealer == null) {
+            System.err.println("⚠️ No se puede cargar envíos: Dealer no establecido");
+            return;
+        }
+
+        shipmentsData.clear();
+
+        List<Shipment> enviosAsignados = currentDealer.getAssignedShipments();
+
+        if (enviosAsignados == null || enviosAsignados.isEmpty()) {
+            System.out.println("ℹ️ El repartidor no tiene envíos asignados");
+            return;
+        }
+
+        // Aplicar filtro si hay alguno seleccionado
+        String filtro = cmbFiltroEstado.getSelectionModel().getSelectedItem();
+        List<Shipment> enviosFiltrados;
+
+        if (filtro != null && !filtro.equals("Todos")) {
+            ShippingStatus statusFiltro = ShippingStatus.valueOf(filtro);
+            enviosFiltrados = enviosAsignados.stream()
+                    .filter(s -> s.getStatus() == statusFiltro)
+                    .collect(Collectors.toList());
+        } else {
+            enviosFiltrados = enviosAsignados;
+        }
+
+        shipmentsData.addAll(enviosFiltrados);
+
+        System.out.println("✅ Cargados " + enviosFiltrados.size() + " envíos (de " +
+                enviosAsignados.size() + " totales)");
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. MÉTODOS DE ACCIÓN
+    // -------------------------------------------------------------------------
+
+    @FXML
+    private void onActualizarLista() {
+        cargarEnvios();
+        mostrarAlerta("Información", "Lista de envíos actualizada", Alert.AlertType.INFORMATION);
+    }
+
+    @FXML
+    private void onMarcarEnRuta() {
+        Shipment selected = tablaEnvios.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            mostrarAlerta("Advertencia", "Debe seleccionar un envío", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Actualizar estado
+        selected.setStatus(ShippingStatus.IN_TRANSIT);
+
+        // Refrescar tabla
+        tablaEnvios.refresh();
+
+        mostrarAlerta("Éxito", "Envío marcado como EN RUTA", Alert.AlertType.INFORMATION);
+
+        System.out.println("✅ Envío " + selected.getShipmentId() + " marcado como EN_TRANSIT");
+    }
+
+    @FXML
+    private void onMarcarEntregado() {
+        Shipment selected = tablaEnvios.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            mostrarAlerta("Advertencia", "Debe seleccionar un envío", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Actualizar estado
+        selected.setStatus(ShippingStatus.DELIVERED);
+
+        // Incrementar contador de entregas del dealer
+        if (currentDealer != null) {
+            currentDealer.setDeliveriesMade(currentDealer.getDeliveriesMade() + 1);
+            currentDealer.setAvailable(true); // Quedar disponible nuevamente
+        }
+
+        // Refrescar tabla
+        tablaEnvios.refresh();
+
+        mostrarAlerta("Éxito",
+                "¡Envío entregado exitosamente! 🎉\nTotal de entregas: " +
+                        currentDealer.getDeliveriesMade(),
+                Alert.AlertType.INFORMATION);
+
+        System.out.println("✅ Envío " + selected.getShipmentId() + " marcado como DELIVERED");
+    }
+
+    @FXML
+    private void onReportarIncidencia() {
+        Shipment selected = tablaEnvios.getSelectionModel().getSelectedItem();
+        String incidenciaTexto = txtIncidencia.getText();
+
+        if (selected == null) {
+            mostrarAlerta("Advertencia", "Debe seleccionar un envío", Alert.AlertType.WARNING);
+            return;
+        }
+
+        if (incidenciaTexto == null || incidenciaTexto.trim().isEmpty()) {
+            mostrarAlerta("Advertencia", "Debe describir la incidencia", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Crear incidencia
+        Incidence incidence = new Incidence();
+        incidence.setIncidenceId("INC-" + selected.getShipmentId() + "-" + System.currentTimeMillis());
+        incidence.setCreationDate(LocalDate.now());
+        incidence.setDescription(incidenciaTexto);
+        incidence.setType("REPORTADO_DEALER");
+        incidence.setReporterId(currentDealer.getId());
+
+        // Asignar incidencia al envío
+        selected.setIncidence(incidence);
+        selected.setStatus(ShippingStatus.INCIDENCE_REPORTED);
+
+        // Liberar al dealer
+        if (currentDealer != null) {
+            currentDealer.setAvailable(true);
+        }
+
+        // Limpiar y refrescar
+        txtIncidencia.clear();
+        tablaEnvios.refresh();
+
+        mostrarAlerta("Éxito",
+                "Incidencia reportada correctamente.\nEl envío ha sido marcado para revisión.",
+                Alert.AlertType.INFORMATION);
+
+        System.out.println("⚠️ Incidencia reportada para envío " + selected.getShipmentId());
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. MÉTODOS AUXILIARES
+    // -------------------------------------------------------------------------
+
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+}

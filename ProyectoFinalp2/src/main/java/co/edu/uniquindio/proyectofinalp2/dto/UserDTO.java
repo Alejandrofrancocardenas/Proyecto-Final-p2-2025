@@ -11,11 +11,17 @@ public class UserDTO {
     private String email;
     private String phone;
     private List<Address> addresses;
-
+private String password;
 
     public UserDTO() {}
 
+    public String getPassword() {
+        return password;
+    }
 
+    public void setPassword(String password) { // 👈 Setter Agregado
+        this.password = password;
+    }
     public String getFullname() {
         return fullname;
     }

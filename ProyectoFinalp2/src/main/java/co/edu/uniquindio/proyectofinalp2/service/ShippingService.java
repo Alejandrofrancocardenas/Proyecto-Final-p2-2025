@@ -1,12 +1,10 @@
 package co.edu.uniquindio.proyectofinalp2.service;
 
-import co.edu.uniquindio.proyectofinalp2.Model.Rate;
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 import co.edu.uniquindio.proyectofinalp2.decorators.FragileShipment;
 import co.edu.uniquindio.proyectofinalp2.decorators.PriorityShipping;
 import co.edu.uniquindio.proyectofinalp2.decorators.SecureShipping;
 import co.edu.uniquindio.proyectofinalp2.decorators.SignatureRequiredShipment;
-import javafx.scene.layout.Priority;
 
 public class ShippingService {
 
@@ -20,42 +18,42 @@ public class ShippingService {
         return instance;
     }
 
+    // --------------------------------------------------------------------------------
+    // 1. ELIMINACIÓN DE calculateBasePrice
+    // --------------------------------------------------------------------------------
+    // 💡 NOTA: Se ha eliminado el método calculateBasePrice.
+    // Ahora, se asume que la tarifa base (Rate) ha sido calculada y asignada al envío
+    // por la Factory o el Strategy antes de llamar a este servicio.
+    // Para obtener el costo base, se debe usar directamente shipment.getRate().getBase().
+
+
+    // --------------------------------------------------------------------------------
+    // 2. CORRECCIÓN LÓGICA EN applyDecorators (Patrón Decorator)
+    // --------------------------------------------------------------------------------
+
     /**
-     * Calcula la tarifa de envío según origen, destino, peso, volumen y prioridad.
+     * Aplica decoradores al envío. La responsabilidad de sumar los costos adicionales
+     * recae en los objetos Decorator cuando se llama a su método getPrice(),
+     * no manipulando el objeto Rate base.
      */
-    public double calculateBasePrice(Shipment shipment) {
-        if (shipment.getRate() == null) {
-            throw new IllegalStateException("El envio no tiene una tarifa asignada");
-        }
-
-        // Precio base por peso y volumen
-        return shipment.getRate().calculateShipmentRate(shipment.getPackageModel(), shipment.getAddress());
-    }
-
-
-    // requiere que ya tenga la tarifa el envio osea que esto se hace despues de haber creado el envio con la tarifa
     public Shipment applyDecorators(Shipment shipment, boolean isPriority, boolean isFragile, boolean isSecure, boolean isSignatureRequired) {
+
+        // 💥 CORRECCIÓN CRÍTICA: Se eliminaron todas las llamadas a setBase() y setSurcharges()
+        // ya que la clase Rate no los soporta, y la lógica de costo debe ir en el Decorator.
+
         if (isPriority) {
-            shipment.getRate().setSurcharges("Prioridad");
-            shipment.getRate().setBase(shipment.getRate().getBase() + 2000);
             shipment = new PriorityShipping(shipment);
         }
 
         if (isFragile) {
-            shipment.getRate().setSurcharges("Frágil");
-            shipment.getRate().setBase(shipment.getRate().getBase() + 8000);
             shipment = new FragileShipment(shipment);
         }
 
         if (isSecure) {
-            shipment.getRate().setSurcharges("Seguro");
-            shipment.getRate().setBase(shipment.getRate().getBase() + 6200);
             shipment = new SecureShipping(shipment);
         }
 
         if (isSignatureRequired) {
-            shipment.getRate().setSurcharges("Firma requerida");
-            shipment.getRate().setBase(shipment.getRate().getBase() + 10000);
             shipment = new SignatureRequiredShipment(shipment);
         }
 
@@ -63,7 +61,12 @@ public class ShippingService {
     }
 
 
-    // esto de aca abajo es experimental--------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
+    // 3. MÉTODOS EXPERIMENTALES (Refinados)
+    // --------------------------------------------------------------------------------
+    // Estos métodos ahora simplemente envuelven el Shipment si el flag es true,
+    // siguiendo el patrón Decorator puro.
+
     public Shipment applyPriority(Shipment shipment, boolean isPriority) {
         if (isPriority) {
             return new PriorityShipping(shipment);
@@ -92,4 +95,3 @@ public class ShippingService {
         return shipment;
     }
 }
-

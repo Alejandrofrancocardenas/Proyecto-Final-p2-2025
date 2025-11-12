@@ -25,20 +25,28 @@ public class Sesion {
         usuariosRegistrados.add(user);
     }
 
-    public static boolean verificarCredenciales(String correo, String password, String rolSeleccionado) {
+    /**
+     * Verifica credenciales, establece el usuario actual y devuelve el objeto User.
+     * @param correo El correo ingresado.
+     * @param password La contraseña ingresada.
+     * @param rolSeleccionado El rol seleccionado.
+     * @return El objeto User si el login es exitoso, null si falla.
+     */
+    public static User verificarCredenciales(String correo, String password, String rolSeleccionado) {
         for (User user : usuariosRegistrados) {
             if (user.getEmail().equalsIgnoreCase(correo) &&
                     user.getPassword().equals(password) &&
-                    user.getRole().equalsIgnoreCase(rolSeleccionado))
-            {
+                    user.getRol().equalsIgnoreCase(rolSeleccionado)) {
+
                 usuarioActual = user;
-                return true;
+                return user; // Devuelve el objeto User
             }
         }
-        return false;
+        return null; // Devuelve null si no hay coincidencia
     }
 
     public static void cerrarSesion() {
         usuarioActual = null;
     }
+
 }

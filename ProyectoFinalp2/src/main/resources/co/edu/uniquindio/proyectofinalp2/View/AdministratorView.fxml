@@ -1,22 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.geometry.Insets?>
+
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.AdministratorController">
 
     <left>
-        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #2c3e50;">
-            <Button text="Gestionar Usuarios" fx:id="btnUsuarios" onAction="#onGestionUsuarios"/>
-            <Button text="Gestionar Repartidores" fx:id="btnRepartidores" onAction="#onGestionRepartidores"/>
-            <Button text="Asignar Envíos" fx:id="btnEnvios" onAction="#onAsignacionEnvios"/>
-            <Button text="Métricas" fx:id="btnMetricas" onAction="#onPanelMetricas"/>
-            <Button text ="Salir" fx:id="btnSalida" onAction="#onSalida"/>
+        <VBox spacing="10" prefWidth="240">
+            <padding>
+                <Insets top="25" bottom="20" left="15" right="15" />
+            </padding>
+
+            <Label text="⚙️ PANEL ADMIN">
+                <VBox.margin>
+                    <Insets bottom="20" />
+                </VBox.margin>
+            </Label>
+
+            <Label text="GESTIÓN">
+                <VBox.margin>
+                    <Insets bottom="5" />
+                </VBox.margin>
+            </Label>
+
+            <Button text="👥 Usuarios" fx:id="btnUsuarios" onAction="#onGestionUsuarios"
+                    prefWidth="210"/>
+            <Button text="🚚 Repartidores" fx:id="btnRepartidores" onAction="#onGestionRepartidores"
+                    prefWidth="210"/>
+            <Button text="📦 Asignar Envíos" fx:id="btnEnvios" onAction="#onAsignacionEnvios"
+                    prefWidth="210"/>
+
+            <Label text="ANÁLISIS">
+                <VBox.margin>
+                    <Insets top="15" bottom="5" />
+                </VBox.margin>
+            </Label>
+
+            <Button text="📊 Métricas" fx:id="btnMetricas" onAction="#onPanelMetricas"
+                    prefWidth="210"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button text="🚪 Salir" fx:id="btnSalida" onAction="#onSalida"
+                    prefWidth="210">
+                <VBox.margin>
+                    <Insets top="10" />
+                </VBox.margin>
+            </Button>
         </VBox>
     </left>
 
-    <!-- Contenedor central -->
     <center>
-        <StackPane fx:id="contenedorCentral"/>
+        <StackPane fx:id="contenedorCentral">
+            <VBox alignment="CENTER" spacing="15">
+                <Label text="⚙️ Panel de Administración" />
+                <Label text="Seleccione una opción del menú lateral" />
+            </VBox>
+        </StackPane>
     </center>
 </BorderPane>

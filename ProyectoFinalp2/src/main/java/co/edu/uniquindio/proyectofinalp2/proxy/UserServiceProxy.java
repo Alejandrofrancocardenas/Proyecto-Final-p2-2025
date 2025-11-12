@@ -13,7 +13,7 @@ public class UserServiceProxy {
 
 
     public void cancelShipment(String shipmentId, User currentUser) {
-        if ("cliente".equalsIgnoreCase(currentUser.getRole())) {
+        if ("cliente".equalsIgnoreCase(currentUser.getRol())) {
             userService.cancelShipment(shipmentId);
             System.out.println("[AUDITORÍA] " + currentUser.getFullname() + " canceló el envío " + shipmentId);
         } else {

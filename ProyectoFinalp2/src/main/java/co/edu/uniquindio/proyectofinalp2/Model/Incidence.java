@@ -1,19 +1,33 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.time.LocalDate; // Usamos LocalDate para la fecha (sin hora)
 
-public class Incidence {
-    private String incidenceId;
-    private String type;
-    private String description;
-    private LocalDate date;
+public class Incidence implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    public Incidence(String incidenceId, String type, String description, LocalDate date) {
-        this.incidenceId = incidenceId;
-        this.type = type;
-        this.description = description;
-        this.date = date;
+    // --- Nuevas Propiedades Requeridas por el Controlador ---
+    private String incidenceId; // Identificador único de la incidencia
+    private String description;   // Reemplaza a 'report' para mayor claridad
+    private LocalDate creationDate; // Fecha de creación (reemplaza a 'dateReported')
+    private String type;           // Tipo de incidencia (ej: REPORTADO_ADMIN, DAÑO_PAQUETE)
+    private String reporterId;     // ID del usuario/admin que la reportó
+    // --- Fin Nuevas Propiedades ---
+
+
+    // Constructor vacío (necesario para la serialización y para instanciar en el controlador)
+    public Incidence() {
     }
+
+    // Constructor de conveniencia (opcional, pero útil)
+    public Incidence(String description, LocalDate creationDate, String type, String reporterId) {
+        this.description = description;
+        this.creationDate = creationDate;
+        this.type = type;
+        this.reporterId = reporterId;
+    }
+
+    // --- Getters y Setters para todas las propiedades ---
 
     public String getIncidenceId() {
         return incidenceId;
@@ -21,14 +35,6 @@ public class Incidence {
 
     public void setIncidenceId(String incidenceId) {
         this.incidenceId = incidenceId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getDescription() {
@@ -39,19 +45,33 @@ public class Incidence {
         this.description = description;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getCreationDate() {
+        return creationDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
     }
 
-    @Override
-    public String toString() {
-        return incidenceId  + " " +
-                type        + " " +
-                description + " " +
-                date;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(String reporterId) {
+        this.reporterId = reporterId;
+    }
+
+    // Antiguo método getReport, mantenido por compatibilidad si es necesario,
+    // aunque ahora se recomienda usar getDescription()
+    public String getReport() {
+        return description;
     }
 }

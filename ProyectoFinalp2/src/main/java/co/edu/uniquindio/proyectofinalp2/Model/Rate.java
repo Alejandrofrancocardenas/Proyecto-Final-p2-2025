@@ -1,14 +1,13 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
 import co.edu.uniquindio.proyectofinalp2.strategy.ShippingCostStrategy;
+import java.io.Serializable;
 
-public class Rate {
+public class Rate implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String rateId;
-    private double base;
-    private double weightPrice;
-    private double volumePrice;
-    private String surcharges;
-
+    private double basePrice;
     private ShippingCostStrategy costStrategy;
 
     public Rate(String rateId, ShippingCostStrategy costStrategy) {
@@ -16,6 +15,20 @@ public class Rate {
         this.costStrategy = costStrategy;
     }
 
+    /**
+     * Delega el cálculo de la tarifa base a la estrategia de costos
+     * (PriorityCostStrategy, FragileCostStrategy, etc.) asignada a este Rate.
+     * * @param packageModel El paquete a enviar.
+     * @param originAddress La dirección de origen.
+     * @param destinationAddress La dirección de destino.
+     * @return El precio base calculado por la estrategia.
+     */
+    public double calculateShipmentRate(PackageModel packageModel, Address originAddress, Address destinationAddress) {
+        // Llama al método de la interfaz ShippingCostStrategy
+        return this.costStrategy.calculateShippingRate(packageModel, originAddress, destinationAddress);
+    }
+
+    // --- Getters and Setters ---
 
     public String getRateId() {
         return rateId;
@@ -25,50 +38,19 @@ public class Rate {
         this.rateId = rateId;
     }
 
-    public double getBase() {
-        return base;
+    public double getBasePrice() {
+        return basePrice;
     }
 
-    public void setBase(double base) {
-        this.base = base;
+    public void setBase(double basePrice) {
+        this.basePrice = basePrice;
     }
 
-    public double getWeightPrice() {
-        return weightPrice;
+    public ShippingCostStrategy getCostStrategy() {
+        return costStrategy;
     }
 
-    public void setWeightPrice(double weightPrice) {
-        this.weightPrice = weightPrice;
-    }
-
-    public double getVolumePrice() {
-        return volumePrice;
-    }
-
-    public void setVolumePrice(double volumePrice) {
-        this.volumePrice = volumePrice;
-    }
-
-    public String getSurcharges() {
-        return surcharges;
-    }
-
-    public void setSurcharges(String surcharges) {
-        this.surcharges = surcharges;
-    }
-
-
-    @Override
-    public String toString() {
-        return rateId       + " " +
-                base        + " " +
-                weightPrice + " " +
-                volumePrice + " " +
-                surcharges;
-    }
-
-
-    public double calculateShipmentRate(PackageModel packageModel, Address address) {
-        return costStrategy.calculateCost(packageModel, address);
+    public void setCostStrategy(ShippingCostStrategy costStrategy) {
+        this.costStrategy = costStrategy;
     }
 }

@@ -33,7 +33,7 @@ public class ReportService {
                         s.getUser().getFullname(),
                         s.getZone(),
                         s.getStatus(),
-                        s.getRate().getBase(),
+                        s.getRate().getBasePrice(),
                         s.getCreationDate()
                 ));
             }
@@ -64,7 +64,7 @@ public class ReportService {
                 table.addCell(s.getUser().getFullname());
                 table.addCell(s.getZone());
                 table.addCell(s.getStatus().toString());
-                table.addCell(String.valueOf(s.getRate().getBase()));
+                table.addCell(String.valueOf(s.getRate().getBasePrice()));
             }
 
             document.add(table);

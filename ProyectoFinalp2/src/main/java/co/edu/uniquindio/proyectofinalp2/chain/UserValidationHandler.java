@@ -6,7 +6,7 @@ public class UserValidationHandler extends PaymentHandler {
 
     @Override
     public void handlePayment(Payment payment) {
-        // Verifica si el usuario está asociado al pago
+        // Verifica si el usuario está asociado al pago usando el getter correcto
         if (payment.getUser() == null) {
             System.out.println("❌ Error: El pago no tiene un usuario asociado.");
             return;

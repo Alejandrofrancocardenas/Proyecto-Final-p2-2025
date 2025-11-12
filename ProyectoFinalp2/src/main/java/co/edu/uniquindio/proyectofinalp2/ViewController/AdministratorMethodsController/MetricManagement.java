@@ -52,7 +52,7 @@ public class MetricManagement {
 
         for (Shipment s : shipments) {
             String periodo = s.getPeriod(); // ejemplo: "Octubre 2025"
-            ingresos.put(periodo, ingresos.getOrDefault(periodo, 0.0) + s.getRate().getBase());
+            ingresos.put(periodo, ingresos.getOrDefault(periodo, 0.0) + s.getRate().getBasePrice());
         }
         return ingresos;
     }

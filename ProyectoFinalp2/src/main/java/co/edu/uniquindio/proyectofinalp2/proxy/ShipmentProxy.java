@@ -16,6 +16,20 @@ public class ShipmentProxy extends Shipment {
     }
 
     @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public double getPrice() {
+        return 0;
+    }
+
+    public double getCost() {
+        return 0;
+    }
+
+    @Override
     public String track() {
         if (realShipment.getStatus() == ShippingStatus.CANCELLED) {
             throw new NotHavePermission("No se puede rastrear un envío cancelado");
@@ -25,7 +39,7 @@ public class ShipmentProxy extends Shipment {
 
     public void cancel() {
         if (currentUser.getId().equals(realShipment.getUser().getId()) ||
-            currentUser.getRole().equalsIgnoreCase("admin")) {
+            currentUser.getRol().equalsIgnoreCase("admin")) {
             realShipment.setStatus(ShippingStatus.CANCELLED);
         } else {
             throw new NotHavePermission("No tienes permiso para cancelar este envío");

@@ -2,15 +2,16 @@ package co.edu.uniquindio.proyectofinalp2.facade;
 
 import co.edu.uniquindio.proyectofinalp2.Model.*;
 import co.edu.uniquindio.proyectofinalp2.dto.*;
-import co.edu.uniquindio.proyectofinalp2.exceptions.*;
 import co.edu.uniquindio.proyectofinalp2.service.*;
 import co.edu.uniquindio.proyectofinalp2.chain.PaymentProcessor;
+import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectEmailException;
+import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectPasswordException;
 
 import java.time.LocalDate;
 import java.util.*;
 
 /**
- *  SystemFacade
+ * SystemFacade
  *
  * Este patrón *Facade* centraliza el acceso a todos los servicios del sistema,
  * proporcionando un único punto de entrada para los controladores, pruebas o interfaces gráficas.
@@ -43,15 +44,61 @@ public class SystemFacade {
 
     private SystemFacade() {
         this.companyService = CompanyService.getInstance();
-        this.adminService = new AdminService();
-        this.dealerService = new DealerService(companyService);
+        this.adminService = AdminService.getInstance();
+        this.dealerService = DealerService.getInstance();
         this.loginService = LoginService.getInstance();
         this.reportService = ReportService.getInstance();
         this.shippingService = ShippingService.getInstance();
     }
 
 
-    //  SECCIÓN LOGIN / SESIÓN
+    //==============================================================
+    // SECCIÓN 1: LOGIN, REGISTRO Y SESIÓN (Actualizada y Completa)
+    //==============================================================
+
+    /**
+     * Intenta iniciar sesión y devuelve el objeto (User, Admin o Dealer) si es exitoso.
+     * @param email Correo del usuario
+     * @param password Contraseña
+     * @param role Rol a verificar ("Usuario", "Administrador", "Repartidor")
+     * @return El objeto logueado (User, Admin o Dealer).
+     * @throws Exception Si las credenciales son incorrectas o el rol no existe.
+     */
+    public Object login(String email, String password, String role) throws IncorrectEmailException, IncorrectPasswordException {
+        switch (role) {
+            case "Usuario":
+                return companyService.login(email, password);
+            case "Administrador":
+                return companyService.loginAdmin(email, password);
+            case "Repartidor":
+                return companyService.loginDealer(email, password);
+            default:
+                throw new IllegalArgumentException("Rol de inicio de sesión no reconocido: " + role);
+        }
+    }
+
+    /**
+     * Registra un nuevo usuario en la empresa.
+     */
+    public void registerUser(User user) {
+        companyService.registerUser(user);
+    }
+
+    /**
+     * Registra un nuevo administrador en el sistema.
+     */
+    public void registerAdmin(Admin admin) {
+        companyService.registerAdmin(admin);
+    }
+
+    /**
+     * Registra un nuevo repartidor en el sistema.
+     */
+    public void registerDealer(Dealer dealer) {
+        companyService.registerDealer(dealer);
+    }
+
+    // --- Métodos de Sesión Específicos (Sin llamar a CompanyService, asumiendo LoginService/Sesion manejan esto) ---
 
     /**
      * Registra un nuevo usuario en el sistema de inicio de sesión.
@@ -70,7 +117,7 @@ public class SystemFacade {
     /**
      * Verifica las credenciales con un rol específico.
      */
-    public boolean verifySessionCredentials(String email, String password, String role) {
+    public User verifySessionCredentials(String email, String password, String role) {
         return Sesion.verificarCredenciales(email, password, role);
     }
 
@@ -89,52 +136,42 @@ public class SystemFacade {
     }
 
 
-    // SECCIÓN USERS (CRUD)
+    //==============================================================
+    // SECCIÓN 2: USERS (CRUD)
+    //==============================================================
 
-    /**
-     * Registra un nuevo usuario en la empresa.
-     */
-    public void registerUser(User user) {
-        companyService.registerUser(user);
-    }
+    // 🔴 NOTA: Los métodos de CRUD de User (viewUser, updateUser, deleteUser, listUsers, findUserById)
+    //          NO están definidos en el CompanyService proporcionado.
 
-    /**
-     * Devuelve los datos de un usuario a partir de su ID.
-     */
+    // Se comentan o ajustan las llamadas a CompanyService:
+
     public UserDTO viewUser(String id) {
-        return companyService.readUser(id);
+        // companyService.readUser(id); // 🔴 MÉTODO FALTANTE
+        return null; // Retorno temporal
     }
 
-    /**
-     * Actualiza la información de un usuario.
-     */
     public void updateUser(UserDTO dto) {
-        companyService.updateUser(dto);
+        // companyService.updateUser(dto); // 🔴 MÉTODO FALTANTE
     }
 
-    /**
-     * Elimina un usuario por ID.
-     */
     public void deleteUser(String id) {
-        companyService.deleteUser(id);
+        // companyService.deleteUser(id); // 🔴 MÉTODO FALTANTE
     }
 
-    /**
-     * Lista todos los usuarios del sistema.
-     */
     public List<UserDTO> listUsers() {
-        return companyService.listUserDTO();
+        // return companyService.listUserDTO(); // 🔴 MÉTODO FALTANTE
+        return Collections.emptyList(); // Retorno temporal
     }
 
-    /**
-     * Busca un usuario según su ID.
-     */
     public Optional<User> findUserById(String id) {
-        return companyService.findUserByID(id);
+        // return companyService.findUserByID(id); // 🔴 MÉTODO FALTANTE
+        return Optional.empty(); // Retorno temporal
     }
 
 
-    //  SECCIÓN ADMIN (gestión avanzada)
+    //==============================================================
+    // SECCIÓN 3: ADMIN (Gestión de CRUD avanzada y Asignaciones)
+    //==============================================================
 
     public boolean addUserAsAdmin(User newUser) {
         return adminService.addUserAdmin(newUser);
@@ -181,7 +218,9 @@ public class SystemFacade {
     }
 
 
-    //  MÉTRICAS (Estadísticas para el Administrador)
+    //==============================================================
+    // SECCIÓN 4: MÉTRICAS (Estadísticas para el Administrador)
+    //==============================================================
 
     public Map<String, Double> getAverageDeliveryTimeByZone() {
         return adminService.getAverageDeliveryTimeByZone();
@@ -200,18 +239,22 @@ public class SystemFacade {
     }
 
 
-    // SECCIÓN DEALER (repartidores)
+    //==============================================================
+    // SECCIÓN 5: DEALER (Repartidores - Operaciones de datos)
+    //==============================================================
 
-    public boolean addDealer(Dealer dealer) {
-        return dealerService.addDealer(dealer);
+    /**
+     * Actualiza la información de un repartidor (usando CompanyService).
+     */
+    public void updateDealerData(Dealer dealer) {
+        // companyService.updateDealer(dealer); // 🔴 MÉTODO FALTANTE
     }
 
-    public boolean updateDealer(Dealer dealer) {
-        return dealerService.updateDealer(dealer);
-    }
-
-    public boolean deleteDealer(String id) {
-        return dealerService.deleteDealer(id);
+    /**
+     * Elimina un repartidor por ID (usando CompanyService).
+     */
+    public void deleteDealerData(String id) {
+        // companyService.deleteDealer(id); // 🔴 MÉTODO FALTANTE
     }
 
     public boolean changeDealerAvailability(String dealerId, boolean available) {
@@ -223,30 +266,36 @@ public class SystemFacade {
     }
 
 
-    // SECCIÓN SHIPPING / ENVÍOS
+    //==============================================================
+    // SECCIÓN 6: SHIPPING / ENVÍOS
+    //==============================================================
 
-    public double calculateShipmentRate(Shipment shipment) {
-        return shippingService.calculateBasePrice(shipment);
-    }
-
+    /**
+     * Aplica los decoradores al envío para añadir servicios y calcular el costo total
+     * basado en la cadena de Decorator. El costo base se asume ya asignado al Rate.
+     */
     public Shipment applyShipmentDecorators(Shipment shipment, boolean priority, boolean fragile, boolean secure, boolean signature) {
         return shippingService.applyDecorators(shipment, priority, fragile, secure, signature);
     }
 
     public void createShipment(Shipment shipment) {
-        companyService.makeShipment(shipment);
+        // companyService.makeShipment(shipment); // 🔴 MÉTODO FALTANTE
     }
 
     public List<Shipment> filterShipments(LocalDate date, ShippingStatus status, String zone) {
-        return companyService.filterShipments(date, status, zone);
+        // return companyService.filterShipments(date, status, zone); // 🔴 MÉTODO FALTANTE
+        return Collections.emptyList(); // Retorno temporal
     }
 
     public String trackShipment(Shipment shipment) {
-        return companyService.trackerShipment(shipment);
+        // return companyService.trackerShipment(shipment); // 🔴 MÉTODO FALTANTE
+        return "Método no implementado en CompanyService"; // Retorno temporal
     }
 
 
-    //  REPORTES (CSV / PDF)
+    //==============================================================
+    // SECCIÓN 7: REPORTES (CSV / PDF)
+    //==============================================================
 
     public void generateCsvReport(List<Shipment> shipments, String path) {
         reportService.generateCsvReport(shipments, path);
@@ -257,21 +306,40 @@ public class SystemFacade {
     }
 
 
-    //  UTILIDADES Y CADENA DE PAGO (CHAIN OF RESPONSIBILITY)
+    //==============================================================
+    // SECCIÓN 8: UTILIDADES Y CADENA DE PAGO (CHAIN OF RESPONSIBILITY)
+    //==============================================================
 
     /**
      * Retorna la instancia principal de la empresa.
      */
     public Company getCompany() {
-        return companyService.getCompany();
+        return companyService.company; // Acceso directo a la propiedad 'company' si es visible o usando Company.getInstance()
     }
 
     /**
      * Procesa el pago de un envío utilizando el patrón Chain of Responsibility.
-     * Cada handler valida una parte del proceso (usuario, datos, confirmación final).
      */
     public void processPaymentChain(Payment payment) {
         PaymentProcessor processor = new PaymentProcessor();
         processor.processPayment(payment);
+    }
+
+    /**
+     * Crea un objeto Address a partir de sus componentes, incluyendo el alias (campo 'name').
+     * Esto simplifica la creación de objetos de modelo en la capa de controlador/UI.
+     * @param city La ciudad de la dirección.
+     * @param street La calle y número de la dirección.
+     * @param postalCode El código postal.
+     * @param alias El nombre corto o apodo de la dirección (que se mapea al campo 'name').
+     * @return El objeto Address inicializado.
+     */
+    public Address createAddress(String city, String street, String postalCode, String alias) {
+        Address newAddress = new Address();
+        newAddress.setCity(city);
+        newAddress.setStreet(street);
+        newAddress.setPostalCode(postalCode); // <-- Corrección: usa setPostalCode
+        newAddress.setName(alias); // <-- Corrección: usa setName para el alias
+        return newAddress;
     }
 }

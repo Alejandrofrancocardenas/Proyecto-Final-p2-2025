@@ -1,179 +1,365 @@
- package co.edu.uniquindio.proyectofinalp2.service;
+package co.edu.uniquindio.proyectofinalp2.service;
 
 import co.edu.uniquindio.proyectofinalp2.Model.*;
+import co.edu.uniquindio.proyectofinalp2.dto.UserDTO;
 import co.edu.uniquindio.proyectofinalp2.exceptions.NotFoundException;
 import co.edu.uniquindio.proyectofinalp2.strategy.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
- public class UserService {
+public class UserService {
 
-     private final User user;
+    private final CompanyService companyService;
+    private final User user;
 
-     public User getUser() {
-        return user;
-     }
+    /**
+     * Constructor que inicializa el servicio y asegura la integridad de los datos del usuario.
+     * @param user El usuario logueado.
+     */
+    public UserService(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("El usuario asociado al UserService no puede ser nulo.");
+        }
 
-     public UserService(User user) {
         this.user = user;
-     }
+        this.companyService = CompanyService.getInstance();
+
+        // 💡 Inicialización de colecciones para evitar NullPointerExceptions
+        if (this.user.getAddresses() == null) {
+            this.user.setAddresses(new ArrayList<>());
+        }
+        if (this.user.getPayments() == null) {
+            this.user.setPayments(new ArrayList<>());
+        }
+        if (this.user.getShipments() == null) {
+            this.user.setShipments(new ArrayList<>());
+        }
+        if (this.user.getPackages() == null) {
+            this.user.setPackages(new ArrayList<>());
+        }
+
+        System.out.println("✅ UserService inicializado y listas de datos verificadas.");
+    }
+
+    public User getCurrentUser() {
+        return user;
+    }
+
+    // -----------------------------------------------------------------------------------
+    // --- MÉTODO AÑADIDO: Obtención de Rate (Estrategia) para el Controller ---
+    // -----------------------------------------------------------------------------------
+
+    /**
+     * Define la ShippingCostStrategy apropiada para el tipo de servicio y la envuelve en un objeto Rate.
+     * Esto permite al Controller usar el Factory con la tarifa ya configurada.
+     * @param serviceType El tipo de servicio solicitado (e.g., "priority", "fragile").
+     * @return Un objeto Rate con la estrategia de costo correspondiente.
+     */
+    public Rate getRateForService(String serviceType) {
+        ShippingCostStrategy costStrategy;
+        String rateId = "RT-" + serviceType.toUpperCase() + "-" + java.util.UUID.randomUUID().toString().substring(0, 4);
+
+        switch (serviceType.toLowerCase()) {
+            case "priority":
+                costStrategy = new PriorityCostStrategy();
+                break;
+            case "fragile":
+                costStrategy = new FragileCostStrategy();
+                break;
+            case "secure":
+                // Los Decoradores Secure/Signature se manejan en el Factory/Controller,
+                // pero si el servicio tiene una tarifa base específica, se define aquí.
+                costStrategy = new SecureCostStrategy();
+                break;
+            case "signature":
+                costStrategy = new SignatureCostStrategy();
+                break;
+            case "normal":
+            default:
+                costStrategy = new NormalCostStrategy();
+                break;
+        }
+
+        return new Rate(rateId, costStrategy);
+    }
+
+    // --- Métodos de Gestión de Perfil (RF-014) ---
+    public UserDTO getCurrentUserProfileDTO() {
+        if (this.user != null) {
+            UserDTO dto = new UserDTO();
+            dto.setEmail(this.user.getEmail());
+            dto.setFullname(this.user.getFullname());
+            dto.setPhone(this.user.getPhone());
+            return dto;
+        }
+        return null;
+    }
+
+    public void updateUserProfile(UserDTO userDTO) {
+        if (userDTO == null || userDTO.getFullname() == null || userDTO.getFullname().trim().isEmpty()) {
+            throw new IllegalArgumentException("Datos del DTO incompletos (Nombre Requerido).");
+        }
+
+        User userToUpdate = this.user;
+
+        userToUpdate.setFullname(userDTO.getFullname());
+        userToUpdate.setPhone(userDTO.getPhone());
+
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            userToUpdate.setPassword(userDTO.getPassword());
+            System.out.println("DEBUG: Contraseña actualizada.");
+        }
+        System.out.println("✅ Perfil de usuario actualizado en memoria.");
+    }
+
+    // -----------------------------------------------------------------------------------
+    // --- Métodos de Gestión de Paquetes ---
+    // -----------------------------------------------------------------------------------
+
+    public List<PackageModel> listUserPackages() {
+        return this.user.getPackages();
+    }
+
+    public void addPackageToUser(PackageModel newPackage) {
+        if (newPackage == null) {
+            throw new IllegalArgumentException("Paquete inválido.");
+        }
+        if (newPackage.getIdPackage() == null || newPackage.getIdPackage().isEmpty()) {
+            newPackage.setIdPackage(java.util.UUID.randomUUID().toString());
+        }
+        this.user.getPackages().add(newPackage);
+    }
+
+    public void updatePackage(PackageModel updatedPackage) {
+        if (updatedPackage == null || updatedPackage.getIdPackage() == null) {
+            throw new IllegalArgumentException("Paquete de actualización o ID inválidos");
+        }
+
+        PackageModel existingPackage = this.user.getPackages().stream()
+                .filter(p -> p.getIdPackage().equals(updatedPackage.getIdPackage()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Paquete no encontrado: " + updatedPackage.getIdPackage()));
+
+        existingPackage.setName(updatedPackage.getName());
+        existingPackage.setDescription(updatedPackage.getDescription());
+        existingPackage.setHeightCm(updatedPackage.getHeightCm());
+        existingPackage.setWeight(updatedPackage.getWeight());
+    }
+
+    public void deletePackage(String idPackage) {
+        if (idPackage == null) {
+            throw new IllegalArgumentException("ID de paquete inválido");
+        }
+
+        boolean removed = this.user.getPackages().removeIf(p -> p.getIdPackage().equals(idPackage));
+
+        if (!removed) {
+            throw new NotFoundException("No se encontró ningún paquete con ID: " + idPackage);
+        }
+    }
+
+    // -----------------------------------------------------------------------------------
+    // --- Métodos de Gestión de Dirección (RF-015) ---
+    // -----------------------------------------------------------------------------------
+
+    public void addAddressToUser(Address newAddress) {
+        if (newAddress == null) {
+            throw new IllegalArgumentException("Dirección inválida");
+        }
+        if (newAddress.getIdAddress() == null || newAddress.getIdAddress().isEmpty()) {
+            newAddress.setIdAddress(java.util.UUID.randomUUID().toString());
+        }
+        this.user.getAddresses().add(newAddress);
+    }
+
+    public void updateAddress(String idAddress, Address updatedAddress) {
+        if (idAddress == null || updatedAddress == null) {
+            throw new IllegalArgumentException("ID de dirección o dirección de actualización inválidos");
+        }
+
+        Address address = this.user.getAddresses().stream()
+                .filter(a -> a.getIdAddress().equals(idAddress))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Dirección no encontrada: " + idAddress));
+
+        address.setIdAddress(updatedAddress.getIdAddress());
+        address.setStreet(updatedAddress.getStreet());
+        address.setCity(updatedAddress.getCity());
+        address.setPostalCode(updatedAddress.getPostalCode());
+    }
+
+    public void deleteAddress(String idAddress) {
+        if (idAddress == null) {
+            throw new IllegalArgumentException("ID de dirección inválido");
+        }
+
+        boolean removed = this.user.getAddresses().removeIf(a -> a.getIdAddress().equals(idAddress));
+
+        if (!removed) {
+            throw new NotFoundException("No se encontró ninguna dirección con ID: " + idAddress);
+        }
+    }
+
+    public List<Address> listAddresses() {
+        return this.user.getAddresses();
+    }
+
+    // --- Métodos de Gestión de Pagos ---
+    public List<Payment> listPayments() {
+        return this.user.getPayments();
+    }
 
 
-     // metodo para crear una direccion
-     public void addAddressToUser(User user, Address newAddress) {
-         if (user == null || newAddress == null) {
-             throw new IllegalArgumentException("Usuario o dirección inválidos");
-         }
-         user.getAddresses().add(newAddress);
-     }
+    // -----------------------------------------------------------------------------------
+    // --- Métodos de Gestión de Envío (RF-016, RF-017, RF-018) ---
+    // -----------------------------------------------------------------------------------
 
-     // metodo para actualizar una drireccion
-     public void updateAddress(User user, String idAddress, Address updatedAddress) {
-         if (user == null || idAddress == null) {
-             throw new IllegalArgumentException("Usuario o dirección inválidos");
-         }
-
-         Address address = user.getAddresses()
-                 .stream()
-                 .filter(a -> a.getIdAddress().equals(idAddress))
-                 .findFirst()
-                 .orElseThrow(() -> new NotFoundException("Dirección no encontrada: " + idAddress));
-
-         address.setAlias(updatedAddress.getAlias());
-         address.setStreet(updatedAddress.getStreet());
-         address.setCity(updatedAddress.getCity());
-         address.setCoordinates(updatedAddress.getCoordinates());
-     }
-
-
-     // metodo para eliminar una direccion
-     public void deleteAddress(User user, String idAddress) {
-         if (user == null || idAddress == null) {
-             throw new IllegalArgumentException("Usuario o dirección inválidos");
-         }
-
-         boolean removed = user.getAddresses().removeIf(a -> a.getIdAddress().equals(idAddress));
-
-         if (!removed) {
-             throw new NotFoundException("No se encontró ninguna dirección con ID: " + idAddress);
-         }
-     }
-
-
-     // metodo para consultar direcciones
-     public List<Address> listAddresses(User user) {
-         if (user == null) {
-             throw new IllegalArgumentException("Usuario inválido");
-         }
-         return user.getAddresses();
-     }
-
-
-    // metodo cotize la tarifa de envio según origen, destino, peso, volumen y prioridad.
     public double getPrice(Shipment shipment) {
-        return ShippingService.getInstance().calculateBasePrice(shipment);
+        if (shipment.getRate() == null) {
+            throw new IllegalStateException("El envío no tiene una tarifa base asignada (Rate).");
+        }
 
+        return shipment.getPrice();
     }
 
-
-    //metodo para crear solicitudes de envío antes de ser asignadas.
-     // este envio llega aca, pero primero el controller lo crea con el factory
     public void createShipment(Shipment shipment) {
+        // Validación crítica: Verificar que las direcciones estén configuradas
+        if (shipment.getOriginAddress() == null) {
+            throw new IllegalStateException("❌ El envío debe tener una dirección de origen (originAddress).");
+        }
+
+        if (shipment.getDestinationAddress() == null) {
+            throw new IllegalStateException("❌ El envío debe tener una dirección de destino (destinationAddress).");
+        }
+
+        // Configurar datos básicos
         shipment.setCreationDate(LocalDateTime.now());
-        user.getShipments().add(shipment);
+        shipment.setUser(this.user);
+
+        if (shipment.getShipmentId() == null || shipment.getShipmentId().isEmpty()) {
+            shipment.setShipmentId(java.util.UUID.randomUUID().toString());
+        }
+
+        // Establecer estado inicial
+        if (shipment.getStatus() == null) {
+            shipment.setStatus(ShippingStatus.PENDING_PICKUP);
+        }
+
+        // Agregar a la lista temporal del usuario
+        this.user.getShipments().add(shipment);
+
+        // Agregar a la lista central de la compañía para que el admin lo vea
+        companyService.addShipmentToCompany(shipment);
+
+        System.out.println("✅ Envío creado: " + shipment.getShipmentId() +
+                " con estado " + shipment.getStatus());
+        System.out.println("   📍 Origen: " + shipment.getOriginAddress().getCity());
+        System.out.println("   📍 Destino: " + shipment.getDestinationAddress().getCity());
     }
 
+// -----------------------------------------------------------------------------------
+// --- MÉTODO OPCIONAL AUXILIAR: Para setear direcciones post-creación ---
+// -----------------------------------------------------------------------------------
 
-    // metodo para modificar solicitudes de envio antes de ser asignadas
-    public Shipment updateShipment(String shipmentId, User newSenderId, String newZone, String newPeriod){
+    /**
+     * Método auxiliar para establecer direcciones en un envío ya creado.
+     * Útil si el Controller no puede usar el Builder correctamente.
+     *
+     * @param shipmentId ID del envío
+     * @param originAddress Dirección de origen
+     * @param destinationAddress Dirección de destino
+     */
+    public void setShipmentAddresses(String shipmentId, Address originAddress, Address destinationAddress) {
+        if (originAddress == null || destinationAddress == null) {
+            throw new IllegalArgumentException("Las direcciones no pueden ser nulas");
+        }
+
+        Shipment shipment = findShipmentTempById(shipmentId);
+        shipment.setOriginAddress(originAddress);
+        shipment.setDestinationAddress(destinationAddress);
+
+        System.out.println("✅ Direcciones establecidas para envío " + shipmentId);
+    }
+
+    public Shipment updateShipment(String shipmentId, String newZone, String newPeriod){
         Shipment shipmentAux = findShipmentTempById(shipmentId);
-        shipmentAux.setUser(newSenderId);
         shipmentAux.setZone(newZone);
         shipmentAux.setPeriod(newPeriod);
         return shipmentAux;
     }
 
-
-    // metodo para cancelar solicitudes de envio (la elimina de una vez)
     public void cancelShipment(String shipmentId){
         Shipment shipmentAux = findShipmentTempById(shipmentId);
-        user.getShipments().remove(shipmentAux);
+        this.user.getShipments().remove(shipmentAux);
     }
 
-
-    // metodo para confirmar solicitud de envio cuando ya esta seguro
     public void confirmShipment(String shipmentId) {
         Shipment shipmentAux = findShipmentTempById(shipmentId);
 
-        ShippingCostStrategy costStrategy;
-
-        if (shipmentAux.getAdditionalServices().contains("prioryty")) {
-            costStrategy = new PriorityCostStrategy();
-        } else if (shipmentAux.getAdditionalServices().contains("fragile")) {
-            costStrategy = new FragileCostStrategy();
-        } else if (shipmentAux.getAdditionalServices().contains("secure")) {
-            costStrategy = new SecureCostStrategy();
-        } else if (shipmentAux.getAdditionalServices().contains("signature")) {
-            costStrategy = new SignatureCostStrategy();
-        } else {
-            costStrategy = new NormalCostStrategy();
+        if (shipmentAux.getRate() == null) {
+            throw new IllegalStateException("El envío debe tener un Rate calculado por el Factory para ser confirmado.");
         }
 
-        Rate rate = new Rate("R-" + shipmentId, costStrategy);
+        if (shipmentAux.getCreationDate() == null) {
+            shipmentAux.setCreationDate(LocalDateTime.now());
+        }
 
-        double price = ShippingService.getInstance().calculateBasePrice(shipmentAux);
-
-        shipmentAux.setRate(rate);
-        shipmentAux.getRate().setBase(price);
-        shipmentAux.setCreationDate(LocalDateTime.now());
+        System.out.println("✅ Envío " + shipmentId + " confirmado y tarifado en memoria.");
     }
 
+    public void payShipment(String shipmentId, double amount) {
+        Shipment shipment = findShipmentTempById(shipmentId);
 
-    // metodo para buscar una solicitud de envio en la lista de envios de usuario
-    private Shipment findShipmentTempById(String shipmentId){
-        for (Shipment shipment : user.getShipments()){
-            if (shipment.getShipmentId().equals(shipmentId)){
-                return shipment;
-            }
-        }
-        throw new NotFoundException("Shipment with ID: " + shipmentId + " not found");
-    }
+        double finalShipmentCost = shipment.getPrice();
 
-
-    // metodo para pagar un envío, el envio que llega aca es el que sale de confirmShipment
-    public void payShipment(User user, String shipmentId, double amount) {
-         Shipment shipment = findShipmentTempById(shipmentId);
-         if (user == null) {
-            throw new IllegalArgumentException("Usuario");
+        if (finalShipmentCost <= 0) {
+            throw new IllegalStateException("El envío no ha sido confirmado (costo no calculado o es cero).");
         }
 
-        if (amount >= shipment.getRate().getBase()) {
+        if (amount >= finalShipmentCost) {
             Payment payment = new Payment(
                     "PAY-" + System.currentTimeMillis(),
                     amount,
-                    java.time.LocalDateTime.now(),
-                    true
+                    LocalDateTime.now(),
+                    true, user
             );
-            user.getPayments().add(payment);
+            this.user.getPayments().add(payment);
             shipment.setPayment(payment);
 
+            // ✅ FIX: Cambiar estado a CREATED cuando se paga (listo para asignar repartidor)
+            shipment.setStatus(ShippingStatus.CREATED);
+
+            // ✅ FIX: Ya no necesitamos transferir porque ya está en company.getShipments()
+            // Solo removemos de la lista temporal del usuario
+            this.user.getShipments().remove(shipment);
+
+            // ❌ ELIMINAR esta línea porque el envío YA está en Company desde createShipment()
+            // companyService.addShipmentToCompany(shipment);
+
+            System.out.println("✅ Envío " + shipmentId + " pagado. Estado actualizado a CREATED (listo para asignación).");
+        } else {
+            throw new IllegalArgumentException("Monto insuficiente para pagar el envío.");
         }
-        CompanyService.getInstance().makeShipment(shipment);
     }
 
 
-    // metodo para consultar el historial de envios con filtro por fecha y estado
-     public ArrayList<Shipment> shipmentsHistory(User user, LocalDateTime date, ShippingStatus shippingStatus){
-         ArrayList<Shipment> shipmentsHistory = new ArrayList<>();
-         for  (Shipment shipment : user.getShipments()){
-             if (shipment.getCreationDate().isBefore(date)){
-                if (shipment.getStatus().equals(shippingStatus)){
-                    shipmentsHistory.add(shipment);
-                }
-             }
-         }
-         return shipmentsHistory;
-     }
+    private Shipment findShipmentTempById(String shipmentId){
+        return this.user.getShipments().stream()
+                .filter(s -> s.getShipmentId().equals(shipmentId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Shipment with ID: " + shipmentId + " not found in user's temporary list"));
+    }
+
+
+    public List<Shipment> shipmentsHistory(LocalDateTime date, ShippingStatus shippingStatus){
+        return this.user.getShipments().stream()
+                .filter(shipment -> shipment.getCreationDate().isBefore(date))
+                .filter(shipment -> shipment.getStatus().equals(shippingStatus))
+                .collect(Collectors.toList());
+    }
+
 }

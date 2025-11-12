@@ -7,11 +7,11 @@ public class MethodValidationHandler extends PaymentHandler {
     @Override
     public void handlePayment(Payment payment) {
         // Verifica si el método de pago fue seleccionado
-        if (payment.getPayMethod() == null || payment.getPayMethod().isEmpty()) {
+        if (payment.getPaymentMethod() == null || payment.getPaymentMethod().isEmpty()) {
             System.out.println("❌ Error: Método de pago no especificado.");
             return;
         }
-        System.out.println("✅ Método de pago verificado: " + payment.getPayMethod());
+        System.out.println("✅ Método de pago verificado: " + payment.getPaymentMethod());
         if (nextHandler != null) nextHandler.handlePayment(payment);
     }
 }

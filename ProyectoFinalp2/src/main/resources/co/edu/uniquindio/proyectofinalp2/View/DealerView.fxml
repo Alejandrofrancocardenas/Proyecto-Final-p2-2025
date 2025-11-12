@@ -1,18 +1,65 @@
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.StackPane?>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.DealerController">
 
     <left>
-        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #2c3e50;">
-            <Button text="Entregas realizadas" fx:id="btnEntregasRealizadas" onAction="#onEntregasRealizadas"/>
+        <VBox spacing="10" prefWidth="240">
+            <padding>
+                <Insets top="25" bottom="20" left="15" right="15" />
+            </padding>
+
+            <Label text="🚚 PANEL REPARTIDOR">
+                <VBox.margin>
+                    <Insets bottom="20" />
+                </VBox.margin>
+            </Label>
+
+            <Separator />
+
+            <Label text="ENVÍOS">
+                <VBox.margin>
+                    <Insets top="10" bottom="5" />
+                </VBox.margin>
+            </Label>
+
+            <Button text="📦 Mis Envíos" fx:id="btnMisEnvios" onAction="#onMisEnvios"
+                    prefWidth="210"/>
+            <Button text="✅ Entregas Realizadas" fx:id="btnEntregasRealizadas" onAction="#onEntregasRealizadas"
+                    prefWidth="210"/>
+
+            <Label text="CUENTA">
+                <VBox.margin>
+                    <Insets top="15" bottom="5" />
+                </VBox.margin>
+            </Label>
+
+            <Button text="👤 Mi Perfil" fx:id="btnMiPerfil" onAction="#onMiPerfil"
+                    prefWidth="210"/>
+            <Button text="📊 Mis Estadísticas" fx:id="btnEstadisticas" onAction="#onEstadisticas"
+                    prefWidth="210"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button text="🚪 Cerrar Sesión" fx:id="btnSalir" onAction="#onCerrarSesion"
+                    prefWidth="210">
+                <VBox.margin>
+                    <Insets top="10" />
+                </VBox.margin>
+            </Button>
         </VBox>
     </left>
 
-    <!-- Contenedor central -->
     <center>
-        <StackPane fx:id="contenedorCentral"/>
+        <StackPane fx:id="contenedorCentral">
+            <VBox alignment="CENTER" spacing="15">
+                <Label text="🚚 Panel de Repartidor" />
+                <Label text="Seleccione una opción del menú lateral" />
+            </VBox>
+        </StackPane>
     </center>
 </BorderPane>

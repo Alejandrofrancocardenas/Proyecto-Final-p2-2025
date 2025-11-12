@@ -1,90 +1,61 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-public class Address {
-    private String idAddress;
-    private String origin;
-    private String destination;
-    private String alias;
-    private String street;
+import java.io.Serializable;
+
+public class Address implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    // Atributos de gestión (para identificar y nombrar la dirección)
+    private String idAddress; // Identificador único de la dirección (clave para UserService)
+    private String name;      // Alias o nombre de la dirección (e.g., "Casa", "Trabajo")
+
+    // Atributos de ubicación
     private String city;
-    private String coordinates;
+    private String street;
+    private String postalCode;
 
-    public Address(){}
-    public Address(String idAddress, String origin, String destination, String alias, String street, String city, String coordinates){
+    /**
+     * Constructor por defecto.
+     */
+    public Address() {
+    }
+
+    /**
+     * Constructor completo para inicialización.
+     */
+    public Address(String idAddress, String name, String city, String street, String postalCode) {
         this.idAddress = idAddress;
-        this.origin = origin;
-        this.destination = destination;
-        this.alias = alias;
-        this.street = street;
+        this.name = name;
         this.city = city;
-        this.coordinates = coordinates;
-    }
-
-    public String getIdAddress() {
-        return idAddress;
-    }
-
-    public void setIdAddress(String idAddress) {
-        this.idAddress = idAddress;
-    }
-
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
         this.street = street;
+        this.postalCode = postalCode;
     }
 
-    public String getCity() {
-        return city;
-    }
+    // --- Getters y Setters para idAddress ---
+    public String getIdAddress() { return idAddress; }
+    public void setIdAddress(String idAddress) { this.idAddress = idAddress; }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+    // --- Getters y Setters para name ---
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getCoordinates() {
-        return coordinates;
-    }
+    // --- Getters y Setters para city ---
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
 
-    public void setCoordinates(String coordinates) {
-        this.coordinates = coordinates;
-    }
+    // --- Getters y Setters para street ---
+    public String getStreet() { return street; }
+    public void setStreet(String street) { this.street = street; }
 
+    // --- Getters y Setters para postalCode ---
+    public String getPostalCode() { return postalCode; }
+    public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
 
+    /**
+     * Representación de la dirección como una cadena legible.
+     */
     @Override
     public String toString() {
-        return idAddress    + " " +
-                origin      + " " +
-                destination + " " +
-                alias       + " " +
-                street      + " " +
-                city        + " " +
-                coordinates;
+        return (name != null ? name + ": " : "") + street + ", " + city + " (" + postalCode + ")";
     }
 }

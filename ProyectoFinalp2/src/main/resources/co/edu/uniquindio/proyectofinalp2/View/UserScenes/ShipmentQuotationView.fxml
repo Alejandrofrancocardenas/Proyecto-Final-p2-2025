@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox prefHeight="650.0" prefWidth="900.0" spacing="25.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.UserViewControllers.ShipmentQuotationController">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25" />
+    </padding>
+
+    <VBox spacing="8">
+        <Label text="💰 Cotización de Nuevo Envío" />
+        <Label text="RF-003 | Calcule el costo de su envío según origen, destino y servicios adicionales" />
+    </VBox>
+
+    <VBox spacing="15">
+        <Label text="📦 Información del Paquete" />
+
+        <GridPane hgap="20" vgap="15">
+            <columnConstraints>
+                <javafx.scene.layout.ColumnConstraints hgrow="NEVER" minWidth="120.0" prefWidth="120.0" />
+                <javafx.scene.layout.ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="250.0" />
+                <javafx.scene.layout.ColumnConstraints hgrow="NEVER" minWidth="120.0" prefWidth="120.0" />
+                <javafx.scene.layout.ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="250.0" />
+            </columnConstraints>
+
+            <Label text="Origen:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cmbOrigen" promptText="Seleccionar Dirección" prefWidth="250"
+                      GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label text="Destino:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cmbDestino" promptText="Seleccionar Dirección" prefWidth="250"
+                      GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+            <Label text="Peso (kg):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="txtPeso" promptText="Ej: 5.2" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label text="Dimensiones (cm):" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="txtDimensiones" promptText="L x A x H" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+            <Label text="Servicio:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <VBox spacing="8" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2">
+                <ComboBox fx:id="cmbServicio" promptText="Seleccionar Estrategia de Costo" prefWidth="620" />
+                <TextArea fx:id="txtDescripcion" promptText="Descripción del paquete (Opcional)"
+                          wrapText="true" prefHeight="60" />
+            </VBox>
+        </GridPane>
+    </VBox>
+
+    <VBox spacing="15">
+        <Label text="🎁 Servicios Opcionales (Decoradores)" />
+        <Label text="Agregue servicios adicionales para proteger mejor su envío" />
+
+        <HBox spacing="30">
+            <padding>
+                <Insets top="10" />
+            </padding>
+            <VBox spacing="8">
+                <CheckBox fx:id="chkSecureShipping" text="🔒 Envío Asegurado" />
+                <Label text="Costo adicional: +$50,000 COP">
+                    <padding>
+                        <Insets left="25" />
+                    </padding>
+                </Label>
+            </VBox>
+
+            <VBox spacing="8">
+                <CheckBox fx:id="chkSignatureRequired" text="✍️ Firma Requerida" />
+                <Label text="Costo adicional: +$1,000 COP">
+                    <padding>
+                        <Insets left="25" />
+                    </padding>
+                </Label>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="15">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <Button text="🧮 Calcular Costo" onAction="#onCalcularCosto"
+                    prefWidth="180" prefHeight="45" />
+
+            <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                <Label text="💵 Costo Estimado:" />
+                <Label fx:id="lblCostoEstimado" text="\$0,0 COP" />
+            </VBox>
+        </HBox>
+
+        <Button text="✅ Confirmar Envío y Proceder al Pago" onAction="#onConfirmarEnvioYtoPagar"
+                prefWidth="320" prefHeight="45" />
+    </VBox>
+</VBox>

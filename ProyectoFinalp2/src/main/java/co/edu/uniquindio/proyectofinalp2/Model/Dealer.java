@@ -1,36 +1,51 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Dealer extends Person {
 
-    private boolean avaliable;
+    private boolean available;
     private int deliveriesMade;
+    private List<Shipment> assignedShipments;
 
     // Constructor con builder
     protected Dealer(Builder builder) {
         super(builder);
-        this.avaliable = builder.avaliable;
+        this.available = builder.available;
         this.deliveriesMade = builder.deliveriesMade;
+        // Inicialización de la lista de envíos asignados
+        this.assignedShipments = builder.assignedShipments != null ? builder.assignedShipments : new ArrayList<>();
     }
 
-    private List<Shipment> assignedShipments;
+    // --- Métodos de Asignación de Envíos ---
 
     public List<Shipment> getAssignedShipments() {
         return assignedShipments;
     }
 
     public void addShipment(Shipment shipment) {
+        if (assignedShipments == null) {
+            assignedShipments = new ArrayList<>();
+        }
         assignedShipments.add(shipment);
     }
 
-    // Getters y Setters
-    public boolean getAvaliable() {
-        return avaliable;
+    // --- Getters y Setters de 'available' ---
+
+    // 🟢 Convención estándar de Java para booleanos (is)
+    public boolean isAvailable() {
+        return available;
     }
 
-    public void setAvaliable(boolean avaliable) {
-        this.avaliable = avaliable;
+    // ✅ Getter 'getAvailable()' añadido (Opción solicitada)
+    public boolean getAvailable() {
+        return available;
+    }
+
+    // ✅ Setter con la ortografía correcta (setAvailable)
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public int getDeliveriesMade() {
@@ -41,6 +56,8 @@ public class Dealer extends Person {
         this.deliveriesMade = deliveriesMade;
     }
 
+    // --- Lógica de Negocio ---
+
     public double calcularTiempoPromedioEntregas() {
         if (assignedShipments == null || assignedShipments.isEmpty()) {
             return 0.0;
@@ -50,7 +67,8 @@ public class Dealer extends Person {
         int entregasValidas = 0;
 
         for (Shipment s : assignedShipments) {
-            if (s.getEstimatedDeliveryDate() > 0) { // solo cuenta las entregas completadas
+            // Asumo que getEstimatedDeliveryDate devuelve el tiempo en horas que tomó la entrega
+            if (s.getEstimatedDeliveryDate() > 0 && s.getStatus() == ShippingStatus.DELIVERED) {
                 totalHoras += s.getEstimatedDeliveryDate();
                 entregasValidas++;
             }
@@ -59,13 +77,14 @@ public class Dealer extends Person {
         return entregasValidas > 0 ? totalHoras / entregasValidas : 0.0;
     }
 
-    // Builder estático
+    // --- Builder estático ---
     public static class Builder extends Person.Builder<Builder> {
-        private boolean avaliable;
-        private int deliveriesMade;
+        private boolean available = false;
+        private int deliveriesMade = 0;
+        private List<Shipment> assignedShipments;
 
-        public Builder avaliable(boolean avaliable) {
-            this.avaliable = avaliable;
+        public Builder available(boolean available) {
+            this.available = available;
             return this;
         }
 
@@ -73,6 +92,12 @@ public class Dealer extends Person {
             this.deliveriesMade = deliveriesMade;
             return this;
         }
+
+        public Builder assignedShipments(List<Shipment> assignedShipments) {
+            this.assignedShipments = assignedShipments;
+            return this;
+        }
+
 
         @Override
         protected Builder self() {
@@ -85,13 +110,16 @@ public class Dealer extends Person {
         }
 
     }
+
+    // --- Método toString() ---
+
     @Override
     public String toString() {
         return "Dealer{" +
-                "nombre='" + fullname + '\'' +
-                ", correo='" + email + '\'' +
-                ", telefono='" + phone + '\'' +
-                ", disponible=" + avaliable +
+                "nombre='" + getFullname() + '\'' +
+                ", correo='" + getEmail() + '\'' +
+                ", telefono='" + getPhone() + '\'' +
+                ", disponible=" + isAvailable() +
                 ", entregasRealizadas=" + deliveriesMade +
                 '}';
     }

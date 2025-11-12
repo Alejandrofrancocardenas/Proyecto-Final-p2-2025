@@ -1,19 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+
+<BorderPane prefHeight="700.0" prefWidth="1000.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="co.edu.uniquindio.proyectofinalp2.ViewController.UserController">
 
     <left>
-        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #2c3e50;">
-            <Button text="Mostrar Perfil" fx:id="btnMostrarPerfil" onAction="#onMostrarPerfil"/>
-            <Button text="mostrar Direcciones" fx:id="btnMostrarDirecciones" onAction="#onMostrarDirecciones"/>
+        <VBox alignment="TOP_CENTER" prefWidth="240" spacing="8" style="-fx-background-color: #2c3e50;">
+            <padding>
+                <Insets top="25" bottom="20" left="15" right="15" />
+            </padding>
+
+            <Label text="🎯 PANEL DE USUARIO"
+                   style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                <VBox.margin>
+                    <Insets bottom="20" />
+                </VBox.margin>
+            </Label>
+
+            <Label text="PERFIL" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px; -fx-font-weight: bold;">
+                <VBox.margin>
+                    <Insets top="5" bottom="5" />
+                </VBox.margin>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#onMostrarPerfil"
+                    text="👤 Mi Perfil" prefWidth="210" />
+            <Button mnemonicParsing="false" onAction="#onMostrarDirecciones"
+                    text="📍 Mis Direcciones" prefWidth="210" />
+            <Button mnemonicParsing="false" onAction="#onMostrarProductos"
+                    text="📦 Gestión de Productos" prefWidth="210" />
+
+            <Label text="ENVÍOS" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px; -fx-font-weight: bold;">
+                <VBox.margin>
+                    <Insets top="15" bottom="5" />
+                </VBox.margin>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#mostrarCotizacion"
+                    text="💰 Cotizar Tarifa" prefWidth="210" />
+            <Button mnemonicParsing="false" onAction="#mostrarEnvios"
+                    text="📋 Mis Solicitudes" prefWidth="210" />
+
+            <Label text="FINANZAS" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px; -fx-font-weight: bold;">
+                <VBox.margin>
+                    <Insets top="15" bottom="5" />
+                </VBox.margin>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#onMostrarPagos"
+                    text="💳 Gestión de Pagos" prefWidth="210" />
+            <Button mnemonicParsing="false" onAction="#mostrarHistorialPagos"
+                    text="📊 Historial de Envíos" prefWidth="210" />
+            <Button mnemonicParsing="false" onAction="#mostrarReportes"
+                    text="📄 Descargar Reportes" prefWidth="210" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button mnemonicParsing="false" onAction="#cerrarSesion"
+                    text="🚪 Cerrar Sesión" prefWidth="210">
+                <VBox.margin>
+                    <Insets top="10" />
+                </VBox.margin>
+            </Button>
         </VBox>
     </left>
 
-    <!-- Contenedor central -->
     <center>
-        <StackPane fx:id="contenedorCentral"/>
+        <StackPane fx:id="contenedorCentral" style="-fx-background-color: #ecf0f1;">
+            <VBox alignment="CENTER" spacing="20">
+                <Label text="👋 Bienvenido al Panel de Usuario"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+                <Label text="Selecciona una opción del menú lateral para comenzar"
+                       style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d;" />
+            </VBox>
+        </StackPane>
     </center>
 </BorderPane>

@@ -9,31 +9,62 @@ import java.util.stream.Collectors;
 
 public class AdminService {
 
-    private CompanyService companyService;
+    // ✅ 1. Instancia única (Singleton)
+    private static AdminService instance;
 
-    public AdminService() {
-        this.companyService = companyService;
+    private final CompanyService companyService;
+    private final Company company;
+
+    // ✅ 2. Constructor privado (Patrón Singleton)
+    private AdminService() {
+        this.companyService = CompanyService.getInstance();
+        this.company = Company.getInstance();
     }
 
+    // ✅ 3. Método getInstance() para obtener la instancia única
+    public static AdminService getInstance() {
+        if (instance == null) {
+            instance = new AdminService();
+        }
+        return instance;
+    }
 
-    // Buscar usuario
+    // --- MÉTODOS DE BÚSQUEDA A NIVEL LOCAL ---
+    public Company getCompany(){
+        return company;
+    }
+
     public Optional<User> findUserByID(String id) {
-        return companyService.findUserByID(id);
+        return company.getUsers().stream()
+                .filter(user -> user.getId() != null && user.getId().equals(id))
+                .findFirst();
     }
 
-    //Buscar Dealer
     public Optional<Dealer> findDealerByID(String id) {
-        return companyService.findDealerByID(id);
+        return company.getDealers().stream()
+                .filter(d -> d.getId() != null && d.getId().equals(id))
+                .findFirst();
     }
 
-    // Metodos Administrador: GestionarUsuarios
+    public Optional<User> findUserByEmail(String email) {
+        return company.getUsers().stream()
+                .filter(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+    }
+
+
+    // --- Metodos Administrador: GestionarUsuarios (RF-010) ---
+
+    public List<User> listAllUsers() {
+        return company.getUsers();
+    }
+
     public boolean addUserAdmin(User newUser) {
         if (findUserByID(newUser.getId()).isPresent()) {
             System.out.println("⚠️ El usuario ya existe con ID: " + newUser.getId());
             return false;
         }
-
-        companyService.getCompany().getUsers().add(newUser);
+        company.getUsers().add(newUser);
         System.out.println("✅ Usuario añadido correctamente: " + newUser.getFullname());
         return true;
     }
@@ -46,7 +77,7 @@ public class AdminService {
             return false;
         }
 
-        companyService.getCompany().getUsers().remove(userOpt.get());
+        company.getUsers().remove(userOpt.get());
         System.out.println("🗑️ Usuario eliminado correctamente: " + newUser.getFullname());
         return true;
     }
@@ -66,14 +97,14 @@ public class AdminService {
         existingUser.setEmail(newUser.getEmail());
         existingUser.setPhone(newUser.getPhone());
         existingUser.setPassword(newUser.getPassword());
-        existingUser.setRol(newUser.getRole());
+        existingUser.setRol(newUser.getRol());
 
         System.out.println("✅ Usuario actualizado correctamente: " + existingUser.getFullname());
         return true;
     }
 
     public void showAllUsersAdmin() {
-        List<User> users = companyService.getCompany().getUsers();
+        List<User> users = company.getUsers();
 
         if (users.isEmpty()) {
             System.out.println("⚠️ No hay usuarios registrados actualmente.");
@@ -83,23 +114,24 @@ public class AdminService {
         System.out.println("📋 Lista de usuarios registrados:");
         for (User user : users) {
             System.out.println("----------------------------------------");
-            System.out.println("🆔 ID: " + user.getId());
+            System.out.println("🆔 ID: " + (user.getId() != null ? user.getId() : "N/A"));
             System.out.println("👤 Nombre completo: " + user.getFullname());
             System.out.println("📧 Correo: " + user.getEmail());
             System.out.println("📞 Teléfono: " + user.getPhone());
-            System.out.println("🎭 Rol: " + user.getRole());
+            System.out.println("🎭 Rol: " + user.getRol());
         }
         System.out.println("----------------------------------------");
     }
 
-    // Metodos Administrador: GestionarDealers
+    // --- Metodos Administrador: GestionarDealers (RF-011) ---
+
     public boolean addDealerAdmin(Dealer newDealer) {
         if (findDealerByID(newDealer.getId()).isPresent()) {
             System.out.println("⚠️ El repartidor ya existe con ID: " + newDealer.getId());
             return false;
         }
 
-        companyService.getCompany().getDealers().add(newDealer);
+        company.getDealers().add(newDealer);
         System.out.println("✅ Repartidor añadido correctamente: " + newDealer.getFullname());
         return true;
     }
@@ -112,7 +144,7 @@ public class AdminService {
             return false;
         }
 
-        companyService.getCompany().getDealers().remove(dealerOpt.get());
+        company.getDealers().remove(dealerOpt.get());
         System.out.println("🗑️ Repartidor eliminado correctamente: " + newDealer.getFullname());
         return true;
     }
@@ -131,7 +163,7 @@ public class AdminService {
         existingDealer.setFullname(newDealer.getFullname());
         existingDealer.setEmail(newDealer.getEmail());
         existingDealer.setPhone(newDealer.getPhone());
-        existingDealer.setAvaliable(newDealer.getAvaliable());
+        existingDealer.setAvailable(newDealer.getAvailable());
         existingDealer.setDeliveriesMade(newDealer.getDeliveriesMade());
 
         System.out.println("✅ Repartidor actualizado correctamente: " + existingDealer.getFullname());
@@ -139,7 +171,7 @@ public class AdminService {
     }
 
     public void showAllDealersAdmin() {
-        List<Dealer> dealers = companyService.getCompany().getDealers();
+        List<Dealer> dealers = company.getDealers();
 
         if (dealers.isEmpty()) {
             System.out.println("⚠️ No hay repartidores registrados actualmente.");
@@ -153,60 +185,125 @@ public class AdminService {
             System.out.println("👤 Nombre completo: " + dealer.getFullname());
             System.out.println("📧 Correo: " + dealer.getEmail());
             System.out.println("📞 Teléfono: " + dealer.getPhone());
-            System.out.println("🚦 Disponibilidad: " + dealer.getAvaliable());
+            System.out.println("🚦 Disponibilidad: " + dealer.getAvailable());
             System.out.println("📦 Entregas realizadas: " + dealer.getDeliveriesMade());
         }
         System.out.println("----------------------------------------");
     }
 
-// Metodos Asignar/reasignar envíos a repartidores, registrar incidencias y cambios de estado
+    // --- Metodos Asignar/reasignar envíos, registrar incidencias y cambios de estado (RF-012) ---
 
     public boolean assignOrReassignShipment(String idShipment, String idDealer) {
-        Optional<Shipment> shipmentOpt = companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getShipmentId().equals(idShipment))
+        Optional<Shipment> shipmentOpt = company.getShipments().stream()
+                .filter(s -> s.getShipmentId() != null && s.getShipmentId().equals(idShipment))
                 .findFirst();
 
-        Optional<Dealer> dealerOpt = companyService.getCompany().getDealers().stream()
-                .filter(d -> d.getId().equals(idDealer))
-                .findFirst();
+        Optional<Dealer> dealerOpt = findDealerByID(idDealer);
 
-        if (shipmentOpt.isEmpty()) {
-            System.out.println("⚠️ No se encontró el envío con ID: " + idShipment);
-            return false;
-        }
-
-        if (dealerOpt.isEmpty()) {
-            System.out.println("⚠️ No se encontró el repartidor con ID: " + idDealer);
+        if (shipmentOpt.isEmpty() || dealerOpt.isEmpty()) {
+            System.out.println("⚠️ Error: Envío o repartidor no encontrado.");
             return false;
         }
 
         Shipment shipment = shipmentOpt.get();
         Dealer newDealer = dealerOpt.get();
-
         Dealer previousDealer = shipment.getAssignedDealer();
 
-        // Si ya tenía repartidor, reasignamos
-        if (previousDealer != null && !previousDealer.equals(newDealer)) {
-            previousDealer.setAvaliable(true); // liberar al anterior
-            System.out.println("🔄 Envío " + idShipment + " reasignado de "
-                    + previousDealer.getFullname() + " a " + newDealer.getFullname());
-        } else if (previousDealer != null && previousDealer.equals(newDealer)) {
-            System.out.println("⚠️ El envío ya está asignado a este mismo repartidor.");
+        // =========================================================================
+        // 🔧 FIX CRÍTICO: Validar y establecer direcciones si están ausentes
+        // =========================================================================
+        if (shipment.getOriginAddress() == null || shipment.getDestinationAddress() == null) {
+            User user = shipment.getUser();
+
+            if (user == null) {
+                System.err.println("❌ ERROR: El envío " + idShipment + " no tiene usuario asociado.");
+                return false;
+            }
+
+            if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
+                System.err.println("❌ ERROR: El usuario " + user.getFullname() +
+                        " no tiene direcciones registradas.");
+                System.err.println("❌ El usuario debe registrar al menos 2 direcciones antes de crear envíos.");
+                return false;
+            }
+
+            System.out.println("⚠️ ADVERTENCIA: Envío " + idShipment + " sin direcciones.");
+            System.out.println("⚠️ Estableciendo direcciones del usuario automáticamente...");
+
+            // Establecer dirección de origen (primera dirección del usuario)
+            if (shipment.getOriginAddress() == null) {
+                Address origin = user.getAddresses().get(0);
+                shipment.setOriginAddress(origin);
+                System.out.println("✅ Origen establecido: " + origin.getCity() + ", " + origin.getStreet());
+            }
+
+            // Establecer dirección de destino
+            if (shipment.getDestinationAddress() == null) {
+                if (user.getAddresses().size() > 1) {
+                    // Si hay más de una dirección, usar la segunda como destino
+                    Address destination = user.getAddresses().get(1);
+                    shipment.setDestinationAddress(destination);
+                    System.out.println("✅ Destino establecido: " + destination.getCity() + ", " + destination.getStreet());
+                } else {
+                    // Si solo hay una dirección, también usarla como destino (no ideal pero funcional)
+                    Address destination = user.getAddresses().get(0);
+                    shipment.setDestinationAddress(destination);
+                    System.out.println("⚠️ Solo hay una dirección. Usando como origen Y destino temporalmente.");
+                    System.out.println("⚠️ Se recomienda que el usuario registre una segunda dirección.");
+                }
+            }
+        }
+
+        // =========================================================================
+        // Validación adicional: Verificar que ahora sí tenga direcciones
+        // =========================================================================
+        if (shipment.getOriginAddress() == null || shipment.getDestinationAddress() == null) {
+            System.err.println("❌ ERROR CRÍTICO: No se pudieron establecer las direcciones del envío.");
             return false;
+        }
+
+        // =========================================================================
+        // Lógica de asignación/reasignación
+        // =========================================================================
+        if (previousDealer != null) {
+            if (previousDealer.equals(newDealer)) {
+                System.out.println("⚠️ El envío ya está asignado a este mismo repartidor.");
+                return false;
+            }
+
+            // Remover del dealer anterior (relación bidireccional)
+            previousDealer.getAssignedShipments().remove(shipment);
+            previousDealer.setAvailable(true);
+            System.out.println("🔄 Envío " + idShipment + " reasignado de " +
+                    previousDealer.getFullname() + " a " + newDealer.getFullname());
         } else {
             System.out.println("🚚 Envío " + idShipment + " asignado a " + newDealer.getFullname());
         }
 
-        shipment.setAssignedDealer(newDealer);
-        shipment.setStatus(ShippingStatus.ASSIGNED);
-        newDealer.setAvaliable(false);
+        // =========================================================================
+        // Establecer relación bidireccional Shipment ↔ Dealer
+        // =========================================================================
+        shipment.setAssignedDealer(newDealer);  // Shipment → Dealer
+        newDealer.addShipment(shipment);         // Dealer → Shipment (CRÍTICO)
+
+        shipment.setStatus(ShippingStatus.CREATED);
+        newDealer.setAvailable(false);
+
+        System.out.println("✅ Asignación exitosa:");
+        System.out.println("   📦 Envío: " + shipment.getShipmentId());
+        System.out.println("   👤 Usuario: " + shipment.getUser().getFullname());
+        System.out.println("   📍 Origen: " + shipment.getOriginAddress().getCity());
+        System.out.println("   📍 Destino: " + shipment.getDestinationAddress().getCity());
+        System.out.println("   🚚 Repartidor: " + newDealer.getFullname());
+        System.out.println("   📊 Total envíos del repartidor: " + newDealer.getAssignedShipments().size());
+
         return true;
     }
 
 
     public boolean registerShipmentIncidence(String idShipment, Incidence incidence) {
-        Optional<Shipment> shipmentOpt = companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getShipmentId().equals(idShipment))
+        Optional<Shipment> shipmentOpt = company.getShipments().stream()
+                .filter(s -> s.getShipmentId() != null && s.getShipmentId().equals(idShipment))
                 .findFirst();
 
         if (shipmentOpt.isEmpty()) {
@@ -215,30 +312,28 @@ public class AdminService {
         }
 
         Shipment shipment = shipmentOpt.get();
-
-        // Verificamos si ya tenía una incidencia previa
         if (shipment.getIncidence() != null) {
             System.out.println("⚠️ El envío " + idShipment + " ya tenía una incidencia registrada.");
         }
 
         shipment.setIncidence(incidence);
-        shipment.setStatus(ShippingStatus.INCIDENCE);
-
-        System.out.println("⚠️ Nueva incidencia registrada para el envío " + idShipment + ": " + incidence.getDescription());
+        shipment.setStatus(ShippingStatus.INCIDENCE_REPORTED);
+        System.out.println("⚠️ Nueva incidencia registrada para el envío " + idShipment);
 
         Dealer dealer = shipment.getAssignedDealer();
         if (dealer != null) {
-            dealer.setAvaliable(false); // bloquea temporalmente al repartidor
-            System.out.println("🚫 Repartidor " + dealer.getFullname() + " marcado como no disponible por incidencia.");
+            // El envío permanece en la lista del dealer para seguimiento
+            dealer.setAvailable(true); // Se libera para recibir nuevos envíos
+            System.out.println("🚫 Repartidor " + dealer.getFullname() +
+                    " marcado como disponible. Envío permanece en su lista para seguimiento.");
         }
-
         return true;
     }
 
 
     public boolean updateShipmentStatus(String idShipment, ShippingStatus newStatus) {
-        Optional<Shipment> shipmentOpt = companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getShipmentId().equals(idShipment))
+        Optional<Shipment> shipmentOpt = company.getShipments().stream()
+                .filter(s -> s.getShipmentId() != null && s.getShipmentId().equals(idShipment))
                 .findFirst();
 
         if (shipmentOpt.isEmpty()) {
@@ -257,45 +352,43 @@ public class AdminService {
         // Cambiamos disponibilidad del repartidor según el estado del envío
         if (dealer != null) {
             switch (newStatus) {
-                case DELIVERED -> {
-                    dealer.setAvaliable(true);
-                    System.out.println("✅ Envío entregado. Repartidor " + dealer.getFullname() + " ahora está disponible.");
+                case DELIVERED, CANCELLED -> {
+                    dealer.setAvailable(true);
+                    // El envío permanece en la lista para historial/estadísticas
+                    System.out.println("✅ Repartidor " + dealer.getFullname() +
+                            " ahora está disponible. Envío permanece en historial.");
                 }
-                case CANCELLED, INCIDENCE -> {
-                    dealer.setAvaliable(true);
-                    System.out.println("🚫 Envío cancelado/incidencia. Repartidor liberado.");
+                case IN_TRANSIT -> {
+                    dealer.setAvailable(false);
+                    System.out.println("🚚 Repartidor " + dealer.getFullname() + " en ruta.");
                 }
-                case ONROUTE, ASSIGNED -> dealer.setAvaliable(false);
+                case CREATED -> {
+                    dealer.setAvailable(false);
+                    System.out.println("📦 Envío creado, repartidor ocupado.");
+                }
+                case INCIDENCE_REPORTED -> {
+                    dealer.setAvailable(true);
+                    System.out.println("⚠️ Incidencia reportada, repartidor disponible.");
+                }
             }
         }
-
         return true;
     }
 
 
-// Metodos metricas
+    // --- Metodos metricas (RF-013) ---
 
-    /**
-     * Calcula el tiempo promedio de entrega por zona.
-     * Usa el campo estimatedDeliveryDate del envío (horas estimadas de entrega).
-     * Retorna un Map con zona -> promedio en horas.
-     */
     public Map<String, Double> getAverageDeliveryTimeByZone() {
-        return companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getStatus() == ShippingStatus.DELIVERED && s.getEstimatedDeliveryDate() > 0)
+        return company.getShipments().stream()
+                .filter(s -> s.getStatus() == ShippingStatus.DELIVERED && s.getEstimatedDeliveryDate() > 0 && s.getZone() != null)
                 .collect(Collectors.groupingBy(
                         Shipment::getZone,
                         Collectors.averagingDouble(Shipment::getEstimatedDeliveryDate)
                 ));
     }
 
-    /**
-     * Cuenta los servicios adicionales más usados.
-     * Usa la lista additionalServices de cada envío.
-     * Retorna un Map con nombre del servicio -> cantidad de veces usado.
-     */
     public Map<String, Long> getMostUsedAdditionalServices() {
-        return companyService.getCompany().getShipments().stream()
+        return company.getShipments().stream()
                 .flatMap(s -> s.getAdditionalServices().stream())
                 .collect(Collectors.groupingBy(
                         service -> service,
@@ -303,34 +396,21 @@ public class AdminService {
                 ));
     }
 
-    /**
-     * Calcula los ingresos totales agrupados por periodo (por ejemplo: "Octubre 2025").
-     * Usa el atributo period de Shipment y el precio total del envío.
-     * Retorna un Map con periodo -> suma de precios.
-     */
     public Map<String, Double> getIncomeByPeriod() {
-        return companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getPeriod() != null && s.getRate().getBase() > 0)
+        return company.getShipments().stream()
+                .filter(s -> s.getPeriod() != null && s.getRate() != null && s.getRate().getBasePrice() > 0)
                 .collect(Collectors.groupingBy(
                         Shipment::getPeriod,
-                        Collectors.summingDouble(s -> s.getRate().getBase())
+                        Collectors.summingDouble(Shipment::getPrice)
                 ));
     }
 
-    /**
-     * Cuenta cuántas incidencias existen por zona.
-     * Usa el atributo zone y que el estado sea INCIDENCE.
-     * Retorna un Map con zona -> cantidad de incidencias.
-     */
     public Map<String, Long> getIncidencesByZone() {
-        return companyService.getCompany().getShipments().stream()
-                .filter(s -> s.getStatus() == ShippingStatus.INCIDENCE && s.getZone() != null)
+        return company.getShipments().stream()
+                .filter(s -> s.getStatus() == ShippingStatus.INCIDENCE_REPORTED && s.getZone() != null)
                 .collect(Collectors.groupingBy(
                         Shipment::getZone,
                         Collectors.counting()
                 ));
     }
-
-
-
 }

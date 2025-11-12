@@ -1,11 +1,22 @@
 package co.edu.uniquindio.proyectofinalp2.Model;
 
-public abstract class Person {
+import java.io.Serializable;
+
+/**
+ * Clase abstracta que representa a una persona en el sistema,
+ * de la cual heredan User, Admin y Dealer.
+ */
+public abstract class Person implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected String id;
     protected String fullname;
     protected String email;
     protected String phone;
+    protected String password;
+    // 🟢 Atributo para definir el rol (CLIENT, ADMIN, DEALER)
+    protected String rol;
 
 
     protected Person(Builder<?>  builder) {
@@ -13,8 +24,13 @@ public abstract class Person {
         this.fullname = builder.name;
         this.email = builder.email;
         this.phone = builder.phone;
-        }
+        this.password = builder.password;
+        // 🟢 Inicializar el rol
+        this.rol = builder.rol;
+    }
 
+
+    // --- Getters y Setters ---
 
     public String getFullname() {
         return fullname;
@@ -48,12 +64,36 @@ public abstract class Person {
         this.phone = phone;
     }
 
-    public abstract static class Builder<T extends Builder<T>>{
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    // 🟢 Getter y Setter para el Rol
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+
+    // El Builder también debe ser Serializable
+    public abstract static class Builder<T extends Builder<T>> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private String id;
         private String name;
         private String email;
         private String phone;
+        private String password;
+        // 🟢 Campo 'rol' añadido al Builder
+        private String rol;
 
         public T name(String name) {
             this.name = name;
@@ -72,6 +112,17 @@ public abstract class Person {
 
         public T phone(String phone) {
             this.phone = phone;
+            return self();
+        }
+
+        public T password(String password) {
+            this.password = password;
+            return self();
+        }
+
+        // 🟢 Método para establecer el Rol
+        public T rol(String rol) {
+            this.rol = rol;
             return self();
         }
 
