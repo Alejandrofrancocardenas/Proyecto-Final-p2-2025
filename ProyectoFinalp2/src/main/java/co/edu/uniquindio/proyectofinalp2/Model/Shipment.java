@@ -8,63 +8,44 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Clase abstracta que representa un envío dentro del sistema.
- * Es el componente base del patrón Decorator y utiliza el patrón Builder para su construcción.
- * La información de costo base se obtiene del objeto Rate.
- */
+
 public abstract class Shipment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected String shipmentId;               // Identificador único del envío
-    protected Rate rate;                       // La tarifa que incluye el costo base
-    protected Incidence incidence;             // Posibles incidencias
-    protected Payment payment;                 // El pago asociado al envío
+    protected String shipmentId;
+    protected Rate rate;
+    protected Incidence incidence;
+    protected Payment payment;
 
-    protected Address originAddress;          // Dirección de origen
-    protected Address destinationAddress;     // Dirección de destino
+    protected Address originAddress;
+    protected Address destinationAddress;
 
-    protected PackageModel packageModel;       // El paquete/modelo del envío
-    protected ShippingStatus status;           // Estado actual: "Pendiente", "En Camino", "Entregado", etc.
-    protected LocalDateTime creationDate;       // Fecha de creación
-    protected double estimatedDeliveryDate;    // Tiempo estimado de entrega (en horas)
-    protected User user;                       // Usuario que realiza el envío
-    protected Dealer assignedDealer;           // Repartidor asignado
-    protected String zone;                     // Zona de entrega
-    protected String period;                   // Periodo de entrega (ej: "Octubre 2025")
-    protected List<String> additionalServices = new ArrayList<>(); // Servicios adicionales (Decoradores)
-    protected String productName;              // Nombre del producto enviado
+    protected PackageModel packageModel;
+    protected ShippingStatus status;
+    protected LocalDateTime creationDate;
+    protected double estimatedDeliveryDate;
+    protected User user;
+    protected Dealer assignedDealer;
+    protected String zone;
+    protected String period;
+    protected List<String> additionalServices = new ArrayList<>();
+    protected String productName;
 
     private final ShipmentNotifier notifier = new ShipmentNotifier();
 
 
-    // -------------------------------------------------------------------
-    // MÉTODOS CLAVE PARA EL PATRÓN DECORATOR
-    // -------------------------------------------------------------------
 
-    /**
-     * Devuelve la descripción del envío, incluyendo todos los servicios adicionales.
-     */
     public abstract String getDescription();
 
-    /**
-     * Calcula el costo total del envío (base + decoradores).
-     * RENOMBRADO de getCost() a getPrice() para la consistencia con UserService.
-     */
+
     public abstract double getPrice(); // ⬅️ CAMBIADO A getPrice()
 
-    /**
-     * Obtiene el costo base del envío directamente desde el objeto Rate.
-     * Este es el precio inicial antes de aplicar decoradores.
-     */
+
     public double getRateBaseCost() {
         return rate != null ? rate.getBasePrice() : 0.0;
     }
-    // -------------------------------------------------------------------
 
-
-    // Métodos para gestionar observadores
     public void addObserver(ShipmentObserver observer) {
         notifier.addObserver(observer);
     }
@@ -73,7 +54,7 @@ public abstract class Shipment implements Serializable {
         notifier.removeObserver(observer);
     }
 
-    // Constructor que usa el Builder
+
     protected Shipment(Builder<?> builder) {
         this.shipmentId = builder.shipmentId;
         this.user = builder.user;
@@ -85,26 +66,19 @@ public abstract class Shipment implements Serializable {
         this.status = ShippingStatus.CREATED;
         this.creationDate = LocalDateTime.now();
 
-        // 🟢 FIX CRÍTICO (Anteriormente alrededor de la línea 88)
-        // El error ocurría al intentar usar el campo 'rate' (que aún era null)
-        // en la lógica de fallback. Ahora forzamos su existencia.
         if (builder.rate == null) {
             throw new IllegalStateException("Error de Builder: El objeto Rate (Tarifa base) es obligatorio para construir un Shipment.");
         }
 
-        // Asignar el Rate recibido
         this.rate = builder.rate;
 
-        // El Payment se inicializa usando el costo base de la tarifa
+
         this.payment = builder.payment != null ? builder.payment : new Payment(this.getRateBaseCost(), false);
     }
 
-    // Constructor vacío para uso en el patrón Decorator
     protected Shipment() {}
 
-    // -------------------------------------------------------------------
-    // Getters y Setters
-    // -------------------------------------------------------------------
+
 
     public String getShipmentId() { return shipmentId; }
     public void setShipmentId(String shipmentId) { this.shipmentId = shipmentId; }

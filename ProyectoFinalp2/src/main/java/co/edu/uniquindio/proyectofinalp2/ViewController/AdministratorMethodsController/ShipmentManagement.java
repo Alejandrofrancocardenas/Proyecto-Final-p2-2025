@@ -16,20 +16,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-/**
- * Clase controladora para la vista de Asignación y Gestión de Envíos (RF-012).
- * Implementa la lógica de la interfaz definida en el FXML.
- */
+
 public class ShipmentManagement implements Initializable, ServiceInjectable<AdminService> {
 
-    // --- Dependencia del Servicio ---
+
     private AdminService adminService;
 
-    // Listas observables para alimentar las tablas
     private final ObservableList<Shipment> shipmentData = FXCollections.observableArrayList();
     private final ObservableList<Dealer> dealersData = FXCollections.observableArrayList();
 
-    // --- Componentes FXML ---
     @FXML private TableView<Shipment> tablaEnvios;
     @FXML private TableColumn<Shipment, String> colEnvioTracking;
     @FXML private TableColumn<Shipment, String> colEnvioCliente;
@@ -46,23 +41,14 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
     @FXML private TableColumn<Dealer, String> colDealerDisponibilidad;
 
 
-    // -------------------------------------------------------------------------
-    // 1. INYECCIÓN DE SERVICIO (Este método debe ser llamado desde la clase principal)
-    // -------------------------------------------------------------------------
-
     @Override
     public void setService(AdminService service) {
         this.adminService = service;
         System.out.println("DIAGNÓSTICO: (1) Servicio AdminService inyectado. Procediendo a cargar datos.");
-        // Cargar datos después de que el servicio esté disponible
         cargarEnviosPendientes();
         cargarRepartidores();
     }
 
-
-    // -------------------------------------------------------------------------
-    // 2. CICLO DE VIDA E INICIALIZACIÓN
-    // -------------------------------------------------------------------------
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -74,7 +60,6 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
         tablaEnvios.setItems(shipmentData);
         tablaRepartidores.setItems(dealersData);
 
-        // ✅ CORREGIDO: Usar los nombres exactos del enum ShippingStatus
         cmbNuevoEstado.getItems().addAll(
                 "IN_TRANSIT",          // En ruta
                 "DELIVERED",           // Entregado
@@ -82,7 +67,6 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
                 "CANCELLED"            // Cancelado
         );
 
-        // Configurar Listeners (se mantienen)
         tablaEnvios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 lblEnvioSeleccionado.setText("Envío: " + newSelection.getShipmentId());
@@ -100,14 +84,10 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
             }
         });
 
-        // Se elimina la lógica de carga directa, ya que depende de setService.
         System.out.println("DIAGNÓSTICO: (3) initialize finalizado. La carga de datos debe ser en setService().");
     }
 
 
-    // -------------------------------------------------------------------------
-    // 3. MÉTODOS DE CONFIGURACIÓN Y CARGA DE DATOS
-    // -------------------------------------------------------------------------
 
     private void setupShipmentTable() {
         colEnvioTracking.setCellValueFactory(new PropertyValueFactory<>("shipmentId"));
@@ -155,9 +135,8 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
 
         System.out.println("DIAGNÓSTICO: (4) Se encontraron " + loadedDealers.size() + " repartidores en la Company.");
 
-        // ✅ Filtrar solo repartidores disponibles
         List<Dealer> availableDealers = loadedDealers.stream()
-                .filter(Dealer::isAvailable)  // Solo los que están disponibles
+                .filter(Dealer::isAvailable)
                 .collect(Collectors.toList());
 
         System.out.println("DIAGNÓSTICO: De los " + loadedDealers.size() + " repartidores, "
@@ -171,7 +150,7 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
             System.out.println("DIAGNÓSTICO: ⚠️ No hay repartidores DISPONIBLES. Asegúrate de marcar el checkbox 'Disponible' al crearlos.");
         }
 
-        // ✅ Agregar solo los disponibles a la tabla
+
         dealersData.addAll(availableDealers);
 
         System.out.println("DIAGNÓSTICO: (5) ObservableList de Repartidores tiene " + dealersData.size() + " elementos DISPONIBLES.");
@@ -194,7 +173,7 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
 
         System.out.println("DIAGNÓSTICO ENVÍOS: (1) Total de envíos en Company: " + allShipments.size());
 
-        // Mostrar todos los envíos y sus estados
+
         if (!allShipments.isEmpty()) {
             System.out.println("DIAGNÓSTICO ENVÍOS: (2) Listado de todos los envíos:");
             for (Shipment s : allShipments) {
@@ -204,7 +183,7 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
             }
         }
 
-        // ✅ Filtrar envíos pendientes (incluye PENDING_PICKUP, CREATED, IN_TRANSIT)
+
         List<Shipment> pending = allShipments.stream()
                 .filter(s -> s.getStatus() == ShippingStatus.CREATED ||
                         s.getStatus() == ShippingStatus.IN_TRANSIT ||
@@ -224,9 +203,6 @@ public class ShipmentManagement implements Initializable, ServiceInjectable<Admi
     }
 
 
-    // -------------------------------------------------------------------------
-    // 4. MÉTODOS DE ACCIÓN
-    // -------------------------------------------------------------------------
 
     private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);

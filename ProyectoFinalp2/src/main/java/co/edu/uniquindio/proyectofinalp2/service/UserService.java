@@ -16,10 +16,6 @@ public class UserService {
     private final CompanyService companyService;
     private final User user;
 
-    /**
-     * Constructor que inicializa el servicio y asegura la integridad de los datos del usuario.
-     * @param user El usuario logueado.
-     */
     public UserService(User user) {
         if (user == null) {
             throw new IllegalArgumentException("El usuario asociado al UserService no puede ser nulo.");
@@ -28,7 +24,6 @@ public class UserService {
         this.user = user;
         this.companyService = CompanyService.getInstance();
 
-        // 💡 Inicialización de colecciones para evitar NullPointerExceptions
         if (this.user.getAddresses() == null) {
             this.user.setAddresses(new ArrayList<>());
         }
@@ -48,18 +43,7 @@ public class UserService {
     public User getCurrentUser() {
         return user;
     }
-
-    // -----------------------------------------------------------------------------------
-    // --- MÉTODO AÑADIDO: Obtención de Rate (Estrategia) para el Controller ---
-    // -----------------------------------------------------------------------------------
-
-    /**
-     * Define la ShippingCostStrategy apropiada para el tipo de servicio y la envuelve en un objeto Rate.
-     * Esto permite al Controller usar el Factory con la tarifa ya configurada.
-     * @param serviceType El tipo de servicio solicitado (e.g., "priority", "fragile").
-     * @return Un objeto Rate con la estrategia de costo correspondiente.
-     */
-    public Rate getRateForService(String serviceType) {
+   public Rate getRateForService(String serviceType) {
         ShippingCostStrategy costStrategy;
         String rateId = "RT-" + serviceType.toUpperCase() + "-" + java.util.UUID.randomUUID().toString().substring(0, 4);
 
@@ -71,8 +55,7 @@ public class UserService {
                 costStrategy = new FragileCostStrategy();
                 break;
             case "secure":
-                // Los Decoradores Secure/Signature se manejan en el Factory/Controller,
-                // pero si el servicio tiene una tarifa base específica, se define aquí.
+
                 costStrategy = new SecureCostStrategy();
                 break;
             case "signature":
@@ -87,7 +70,6 @@ public class UserService {
         return new Rate(rateId, costStrategy);
     }
 
-    // --- Métodos de Gestión de Perfil (RF-014) ---
     public UserDTO getCurrentUserProfileDTO() {
         if (this.user != null) {
             UserDTO dto = new UserDTO();
@@ -116,9 +98,6 @@ public class UserService {
         System.out.println("✅ Perfil de usuario actualizado en memoria.");
     }
 
-    // -----------------------------------------------------------------------------------
-    // --- Métodos de Gestión de Paquetes ---
-    // -----------------------------------------------------------------------------------
 
     public List<PackageModel> listUserPackages() {
         return this.user.getPackages();
@@ -162,10 +141,6 @@ public class UserService {
         }
     }
 
-    // -----------------------------------------------------------------------------------
-    // --- Métodos de Gestión de Dirección (RF-015) ---
-    // -----------------------------------------------------------------------------------
-
     public void addAddressToUser(Address newAddress) {
         if (newAddress == null) {
             throw new IllegalArgumentException("Dirección inválida");
@@ -208,15 +183,11 @@ public class UserService {
         return this.user.getAddresses();
     }
 
-    // --- Métodos de Gestión de Pagos ---
     public List<Payment> listPayments() {
         return this.user.getPayments();
     }
 
 
-    // -----------------------------------------------------------------------------------
-    // --- Métodos de Gestión de Envío (RF-016, RF-017, RF-018) ---
-    // -----------------------------------------------------------------------------------
 
     public double getPrice(Shipment shipment) {
         if (shipment.getRate() == null) {
@@ -227,7 +198,6 @@ public class UserService {
     }
 
     public void createShipment(Shipment shipment) {
-        // Validación crítica: Verificar que las direcciones estén configuradas
         if (shipment.getOriginAddress() == null) {
             throw new IllegalStateException("❌ El envío debe tener una dirección de origen (originAddress).");
         }
@@ -236,7 +206,6 @@ public class UserService {
             throw new IllegalStateException("❌ El envío debe tener una dirección de destino (destinationAddress).");
         }
 
-        // Configurar datos básicos
         shipment.setCreationDate(LocalDateTime.now());
         shipment.setUser(this.user);
 
@@ -244,15 +213,11 @@ public class UserService {
             shipment.setShipmentId(java.util.UUID.randomUUID().toString());
         }
 
-        // Establecer estado inicial
         if (shipment.getStatus() == null) {
             shipment.setStatus(ShippingStatus.PENDING_PICKUP);
         }
-
-        // Agregar a la lista temporal del usuario
         this.user.getShipments().add(shipment);
 
-        // Agregar a la lista central de la compañía para que el admin lo vea
         companyService.addShipmentToCompany(shipment);
 
         System.out.println("✅ Envío creado: " + shipment.getShipmentId() +
@@ -260,19 +225,6 @@ public class UserService {
         System.out.println("   📍 Origen: " + shipment.getOriginAddress().getCity());
         System.out.println("   📍 Destino: " + shipment.getDestinationAddress().getCity());
     }
-
-// -----------------------------------------------------------------------------------
-// --- MÉTODO OPCIONAL AUXILIAR: Para setear direcciones post-creación ---
-// -----------------------------------------------------------------------------------
-
-    /**
-     * Método auxiliar para establecer direcciones en un envío ya creado.
-     * Útil si el Controller no puede usar el Builder correctamente.
-     *
-     * @param shipmentId ID del envío
-     * @param originAddress Dirección de origen
-     * @param destinationAddress Dirección de destino
-     */
     public void setShipmentAddresses(String shipmentId, Address originAddress, Address destinationAddress) {
         if (originAddress == null || destinationAddress == null) {
             throw new IllegalArgumentException("Las direcciones no pueden ser nulas");
@@ -330,15 +282,11 @@ public class UserService {
             this.user.getPayments().add(payment);
             shipment.setPayment(payment);
 
-            // ✅ FIX: Cambiar estado a CREATED cuando se paga (listo para asignar repartidor)
+
             shipment.setStatus(ShippingStatus.CREATED);
 
-            // ✅ FIX: Ya no necesitamos transferir porque ya está en company.getShipments()
-            // Solo removemos de la lista temporal del usuario
-            this.user.getShipments().remove(shipment);
 
-            // ❌ ELIMINAR esta línea porque el envío YA está en Company desde createShipment()
-            // companyService.addShipmentToCompany(shipment);
+            this.user.getShipments().remove(shipment);
 
             System.out.println("✅ Envío " + shipmentId + " pagado. Estado actualizado a CREATED (listo para asignación).");
         } else {

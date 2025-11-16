@@ -15,20 +15,12 @@ import javafx.scene.control.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.List;
-
-/**
- * Controlador encargado de gestionar los Dealers (repartidores).
- * RF-011: Crear / Actualizar / Eliminar / Listar, con validación de correo único.
- */
 public class DealerManagement implements Initializable {
 
-    // 1. Instancia del servicio Singleton (ÚNICA FUENTE DE VERDAD)
     private final DealerService dealerService = DealerService.getInstance();
 
-    // 2. La lista observable ahora estará vinculada a la lista del modelo
     private ObservableList<Dealer> listaDealers;
 
-    // --- Componentes FXML ---
     @FXML private TextField txtNombre;
     @FXML private TextField txtCorreo;
     @FXML private TextField txtTelefono;
@@ -45,18 +37,12 @@ public class DealerManagement implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        // 3. OBTENER LA LISTA DE DEALERS DEL MODELO
-        // ❌ Línea original que fallaba: List<Dealer> dealersFromModel = companyService.getCompany().getDealers();
-
-        // ✅ CORRECCIÓN: Delegamos la obtención de la lista al DealerService.
-        // Asumimos que DealerService tiene un método para obtener la lista del modelo central.
         List<Dealer> dealersFromModel = dealerService.listAllDealers();
         this.listaDealers = FXCollections.observableArrayList(dealersFromModel);
 
         configurarTabla();
         tablaDealers.setItems(listaDealers);
 
-        // Evento para cargar datos al seleccionar un dealer
         tablaDealers.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
             if (newSel != null) {
                 cargarDatosDealer(newSel);
@@ -68,11 +54,6 @@ public class DealerManagement implements Initializable {
         this.administratorController = administratorController;
     }
 
-    // --- MÉTODOS DE LÓGICA DE NEGOCIO ---
-
-    /**
-     * Configura las columnas de la tabla.
-     */
     private void configurarTabla() {
         colNombre.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getFullname()));
@@ -85,20 +66,12 @@ public class DealerManagement implements Initializable {
         colEntregas.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getDeliveriesMade()).asObject());
     }
-
-    /**
-     * Verifica si ya existe un repartidor con el correo electrónico proporcionado.
-     * Usa la lista observable actual.
-     */
-    private boolean existeDealerConCorreo(String correo) {
+private boolean existeDealerConCorreo(String correo) {
         return listaDealers.stream()
                 .anyMatch(dealer -> dealer.getEmail().equalsIgnoreCase(correo));
     }
 
 
-    /**
-     * Agrega un nuevo dealer.
-     */
     @FXML
     private void onAgregarDealer() {
         String nombre = txtNombre.getText().trim();
@@ -115,8 +88,6 @@ public class DealerManagement implements Initializable {
             mostrarAlerta("Error de Validación", "Ya existe un repartidor registrado con el correo: " + correo, Alert.AlertType.ERROR);
             return;
         }
-
-        // Se construye el Dealer
         Dealer nuevoDealer = new Dealer.Builder()
                 .name(nombre)
                 .email(correo)
@@ -125,11 +96,11 @@ public class DealerManagement implements Initializable {
                 .deliveriesMade(0)
                 .build();
 
-        // CLAVE: Usar el método del servicio que también maneja la persistencia
+
         boolean agregado = dealerService.addDealer(nuevoDealer);
 
         if (agregado) {
-            // Actualizar la lista observable ligada a la tabla
+
             listaDealers.add(nuevoDealer);
             limpiarCampos();
             mostrarAlerta("Éxito", "Dealer agregado correctamente.", Alert.AlertType.INFORMATION);
@@ -138,9 +109,6 @@ public class DealerManagement implements Initializable {
         }
     }
 
-    /**
-     * Elimina el dealer seleccionado.
-     */
     @FXML
     private void onEliminarDealer() {
         Dealer seleccionado = tablaDealers.getSelectionModel().getSelectedItem();
@@ -150,11 +118,9 @@ public class DealerManagement implements Initializable {
             return;
         }
 
-        // CLAVE: Usar el servicio Singleton para eliminarlo del modelo central
         boolean eliminado = dealerService.deleteDealer(seleccionado.getId());
 
         if (eliminado) {
-            // Si se elimina del modelo, se elimina de la lista observable
             listaDealers.remove(seleccionado);
             limpiarCampos();
             mostrarAlerta("Éxito", "Dealer eliminado correctamente.", Alert.AlertType.INFORMATION);
@@ -163,9 +129,7 @@ public class DealerManagement implements Initializable {
         }
     }
 
-    /**
-     * Actualiza los datos del dealer seleccionado.
-     */
+
     @FXML
     private void onActualizarDealer() {
         Dealer seleccionado = tablaDealers.getSelectionModel().getSelectedItem();
@@ -174,10 +138,8 @@ public class DealerManagement implements Initializable {
             mostrarAlerta("Advertencia", "Seleccione un dealer para actualizar.", Alert.AlertType.WARNING);
             return;
         }
-
-        // Crear un objeto DTO/Dealer temporal para pasar al servicio
         Dealer dealerActualizado = new Dealer.Builder()
-                .id(seleccionado.getId()) // Mantener el ID original
+                .id(seleccionado.getId())
                 .name(txtNombre.getText().trim())
                 .email(txtCorreo.getText().trim())
                 .phone(txtTelefono.getText().trim())
@@ -185,17 +147,13 @@ public class DealerManagement implements Initializable {
                 .deliveriesMade(seleccionado.getDeliveriesMade())
                 .build();
 
-        // --- VALIDACIÓN DE CORREO ÚNICO EN ACTUALIZACIÓN ---
         if (!seleccionado.getEmail().equalsIgnoreCase(dealerActualizado.getEmail()) && existeDealerConCorreo(dealerActualizado.getEmail())) {
             mostrarAlerta("Error de Validación", "El nuevo correo ya está en uso por otro repartidor.", Alert.AlertType.ERROR);
             return;
         }
-
-        // CLAVE: Usar el servicio Singleton para actualizar el modelo central
         boolean actualizado = dealerService.updateDealer(dealerActualizado);
 
         if (actualizado) {
-            // Dado que el servicio actualiza el objeto en el modelo, solo necesitamos refrescar la tabla.
             tablaDealers.refresh();
             limpiarCampos();
             mostrarAlerta("Éxito", "Dealer actualizado correctamente.", Alert.AlertType.INFORMATION);
@@ -204,7 +162,6 @@ public class DealerManagement implements Initializable {
         }
     }
 
-    // --- MÉTODOS AUXILIARES ---
 
     @FXML
     private void limpiarCampos() {

@@ -8,20 +8,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AdminService {
-
-    // ✅ 1. Instancia única (Singleton)
     private static AdminService instance;
 
     private final CompanyService companyService;
     private final Company company;
 
-    // ✅ 2. Constructor privado (Patrón Singleton)
     private AdminService() {
         this.companyService = CompanyService.getInstance();
         this.company = Company.getInstance();
     }
-
-    // ✅ 3. Método getInstance() para obtener la instancia única
     public static AdminService getInstance() {
         if (instance == null) {
             instance = new AdminService();
@@ -29,7 +24,6 @@ public class AdminService {
         return instance;
     }
 
-    // --- MÉTODOS DE BÚSQUEDA A NIVEL LOCAL ---
     public Company getCompany(){
         return company;
     }
@@ -53,7 +47,7 @@ public class AdminService {
     }
 
 
-    // --- Metodos Administrador: GestionarUsuarios (RF-010) ---
+
 
     public List<User> listAllUsers() {
         return company.getUsers();
@@ -92,7 +86,6 @@ public class AdminService {
 
         User existingUser = userOpt.get();
 
-        // Actualizar los datos del usuario
         existingUser.setFullname(newUser.getFullname());
         existingUser.setEmail(newUser.getEmail());
         existingUser.setPhone(newUser.getPhone());
@@ -123,7 +116,6 @@ public class AdminService {
         System.out.println("----------------------------------------");
     }
 
-    // --- Metodos Administrador: GestionarDealers (RF-011) ---
 
     public boolean addDealerAdmin(Dealer newDealer) {
         if (findDealerByID(newDealer.getId()).isPresent()) {
@@ -191,8 +183,6 @@ public class AdminService {
         System.out.println("----------------------------------------");
     }
 
-    // --- Metodos Asignar/reasignar envíos, registrar incidencias y cambios de estado (RF-012) ---
-
     public boolean assignOrReassignShipment(String idShipment, String idDealer) {
         Optional<Shipment> shipmentOpt = company.getShipments().stream()
                 .filter(s -> s.getShipmentId() != null && s.getShipmentId().equals(idShipment))
@@ -209,9 +199,6 @@ public class AdminService {
         Dealer newDealer = dealerOpt.get();
         Dealer previousDealer = shipment.getAssignedDealer();
 
-        // =========================================================================
-        // 🔧 FIX CRÍTICO: Validar y establecer direcciones si están ausentes
-        // =========================================================================
         if (shipment.getOriginAddress() == null || shipment.getDestinationAddress() == null) {
             User user = shipment.getUser();
 
@@ -230,22 +217,18 @@ public class AdminService {
             System.out.println("⚠️ ADVERTENCIA: Envío " + idShipment + " sin direcciones.");
             System.out.println("⚠️ Estableciendo direcciones del usuario automáticamente...");
 
-            // Establecer dirección de origen (primera dirección del usuario)
             if (shipment.getOriginAddress() == null) {
                 Address origin = user.getAddresses().get(0);
                 shipment.setOriginAddress(origin);
                 System.out.println("✅ Origen establecido: " + origin.getCity() + ", " + origin.getStreet());
             }
 
-            // Establecer dirección de destino
             if (shipment.getDestinationAddress() == null) {
                 if (user.getAddresses().size() > 1) {
-                    // Si hay más de una dirección, usar la segunda como destino
                     Address destination = user.getAddresses().get(1);
                     shipment.setDestinationAddress(destination);
                     System.out.println("✅ Destino establecido: " + destination.getCity() + ", " + destination.getStreet());
                 } else {
-                    // Si solo hay una dirección, también usarla como destino (no ideal pero funcional)
                     Address destination = user.getAddresses().get(0);
                     shipment.setDestinationAddress(destination);
                     System.out.println("⚠️ Solo hay una dirección. Usando como origen Y destino temporalmente.");
@@ -254,24 +237,17 @@ public class AdminService {
             }
         }
 
-        // =========================================================================
-        // Validación adicional: Verificar que ahora sí tenga direcciones
-        // =========================================================================
         if (shipment.getOriginAddress() == null || shipment.getDestinationAddress() == null) {
             System.err.println("❌ ERROR CRÍTICO: No se pudieron establecer las direcciones del envío.");
             return false;
         }
 
-        // =========================================================================
-        // Lógica de asignación/reasignación
-        // =========================================================================
         if (previousDealer != null) {
             if (previousDealer.equals(newDealer)) {
                 System.out.println("⚠️ El envío ya está asignado a este mismo repartidor.");
                 return false;
             }
 
-            // Remover del dealer anterior (relación bidireccional)
             previousDealer.getAssignedShipments().remove(shipment);
             previousDealer.setAvailable(true);
             System.out.println("🔄 Envío " + idShipment + " reasignado de " +
@@ -280,9 +256,6 @@ public class AdminService {
             System.out.println("🚚 Envío " + idShipment + " asignado a " + newDealer.getFullname());
         }
 
-        // =========================================================================
-        // Establecer relación bidireccional Shipment ↔ Dealer
-        // =========================================================================
         shipment.setAssignedDealer(newDealer);  // Shipment → Dealer
         newDealer.addShipment(shipment);         // Dealer → Shipment (CRÍTICO)
 
@@ -348,13 +321,10 @@ public class AdminService {
         System.out.println("🔄 Estado del envío " + idShipment + " cambiado de " + oldStatus + " a " + newStatus);
 
         Dealer dealer = shipment.getAssignedDealer();
-
-        // Cambiamos disponibilidad del repartidor según el estado del envío
         if (dealer != null) {
             switch (newStatus) {
                 case DELIVERED, CANCELLED -> {
                     dealer.setAvailable(true);
-                    // El envío permanece en la lista para historial/estadísticas
                     System.out.println("✅ Repartidor " + dealer.getFullname() +
                             " ahora está disponible. Envío permanece en historial.");
                 }
@@ -376,7 +346,6 @@ public class AdminService {
     }
 
 
-    // --- Metodos metricas (RF-013) ---
 
     public Map<String, Double> getAverageDeliveryTimeByZone() {
         return company.getShipments().stream()

@@ -5,7 +5,7 @@ import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 public class SignatureRequiredShipment extends ShipmentDecorate {
 
     private static final long serialVersionUID = 1L;
-    private static final double SIGNATURE_COST = 1000.0; // Costo en pesos
+    private static final double SIGNATURE_COST = 1000.0;
 
     public SignatureRequiredShipment(Shipment shipment) {
         super(shipment);

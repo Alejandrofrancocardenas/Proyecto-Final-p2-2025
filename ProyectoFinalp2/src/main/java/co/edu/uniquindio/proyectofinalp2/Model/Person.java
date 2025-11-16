@@ -15,7 +15,7 @@ public abstract class Person implements Serializable {
     protected String email;
     protected String phone;
     protected String password;
-    // 🟢 Atributo para definir el rol (CLIENT, ADMIN, DEALER)
+
     protected String rol;
 
 
@@ -25,12 +25,10 @@ public abstract class Person implements Serializable {
         this.email = builder.email;
         this.phone = builder.phone;
         this.password = builder.password;
-        // 🟢 Inicializar el rol
+
         this.rol = builder.rol;
     }
 
-
-    // --- Getters y Setters ---
 
     public String getFullname() {
         return fullname;
@@ -72,7 +70,6 @@ public abstract class Person implements Serializable {
         this.password = password;
     }
 
-    // 🟢 Getter y Setter para el Rol
     public String getRol() {
         return rol;
     }
@@ -82,7 +79,7 @@ public abstract class Person implements Serializable {
     }
 
 
-    // El Builder también debe ser Serializable
+
     public abstract static class Builder<T extends Builder<T>> implements Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -92,7 +89,6 @@ public abstract class Person implements Serializable {
         private String email;
         private String phone;
         private String password;
-        // 🟢 Campo 'rol' añadido al Builder
         private String rol;
 
         public T name(String name) {
