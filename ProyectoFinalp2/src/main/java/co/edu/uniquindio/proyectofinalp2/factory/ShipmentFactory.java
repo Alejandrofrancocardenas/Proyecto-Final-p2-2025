@@ -9,18 +9,6 @@ import co.edu.uniquindio.proyectofinalp2.strategy.*;
 
 public class ShipmentFactory {
 
-    /**
-     * Crea un Shipment base utilizando la Rate (Strategy) pre-calculada y luego aplica el Decorador si es necesario.
-     * @param type El tipo de servicio base (Priority, Fragile, Normal).
-     * @param shipmentId El ID del envío.
-     * @param user El usuario.
-     * @param zone La zona de envío.
-     * @param originAddress La dirección de origen.
-     * @param destinationAddress La dirección de destino.
-     * @param packageModel El paquete.
-     * @param baseRate La Rate (con Strategy) calculada por el UserService.
-     * @return El Shipment (posiblemente decorado).
-     */
     public static Shipment createShipment(
             String type,
             String shipmentId,
@@ -29,13 +17,11 @@ public class ShipmentFactory {
             Address originAddress,
             Address destinationAddress,
             PackageModel packageModel,
-            Rate baseRate) { // 🟢 ACEPTA 8 PARÁMETROS
+            Rate baseRate) {
 
-        // 1. Calcular el precio base usando la estrategia del Rate proporcionado
         double price = baseRate.calculateShipmentRate(packageModel, originAddress, destinationAddress);
         baseRate.setBase(price);
 
-        // 2. Crear la instancia BASE (NormalShipment) usando el Builder
         Shipment shipment = new NormalShipment.Builder()
                 .shipmentId(shipmentId)
                 .user(user)
@@ -43,11 +29,9 @@ public class ShipmentFactory {
                 .originAddress(originAddress)
                 .destinationAddress(destinationAddress)
                 .packageModel(packageModel)
-                .rate(baseRate) // ⬅️ FIX CRÍTICO: Se pasa la Rate obligatoria al Builder ANTES de .build()
+                .rate(baseRate)
                 .build();
 
-        // 3. Aplicar Decoradores (si aplica)
-        // La Rate ya fue asignada en el paso 2.
         switch (type.toLowerCase()) {
             case "priority":
                 shipment = new PriorityShipping(shipment);

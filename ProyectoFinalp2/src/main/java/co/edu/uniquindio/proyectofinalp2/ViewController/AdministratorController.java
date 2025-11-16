@@ -22,14 +22,10 @@ public class AdministratorController {
     @FXML private StackPane contenedorCentral;
     @FXML private Button btnUsuarios, btnRepartidores, btnEnvios, btnMetricas, btnSalida;
 
-    /**
-     * Inicializa el controlador con los datos del Administrador logueado.
-     */
     public void initData(Admin adminLogueado) {
         this.adminLogueado = adminLogueado;
         System.out.println("✅ Administrador logueado: " + adminLogueado.getEmail());
 
-        // Mensaje de bienvenida
         Label lblBienvenida = new Label("⚙️ Bienvenido Administrador(a) " + adminLogueado.getFullname());
 
         if (contenedorCentral != null) {
@@ -41,7 +37,6 @@ public class AdministratorController {
 
     @FXML
     public void initialize() {
-        // Cargar vista por defecto
         cargarVista("/co/edu/uniquindio/proyectofinalp2/View/AdministratorMethods/UserManagement.fxml");
     }
 
@@ -71,7 +66,6 @@ public class AdministratorController {
             System.out.println("🚪 Cerrando sesión del administrador: " +
                     (adminLogueado != null ? adminLogueado.getFullname() : "Desconocido"));
 
-            // Usar App.setRoot para mantener la ventana maximizada
             App.setRoot("LoginView.fxml");
 
         } catch (IOException e) {
@@ -80,9 +74,6 @@ public class AdministratorController {
         }
     }
 
-    /**
-     * Carga una vista FXML en el contenedor central.
-     */
     private void cargarVista(String rutaFXML) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(rutaFXML));
@@ -94,7 +85,6 @@ public class AdministratorController {
             Parent vista = loader.load();
             Object controller = loader.getController();
 
-            // Inyección de dependencias
             if (controller instanceof UserManagement) {
                 ((UserManagement) controller).setAdministratorController(this);
             }
@@ -112,7 +102,6 @@ public class AdministratorController {
                 System.out.println("✅ AdminService inyectado correctamente en ShipmentManagement");
             }
 
-            // Cargar en el contenedor
             if (mainPane != null) {
                 mainPane.setCenter(vista);
             } else if (contenedorCentral != null) {

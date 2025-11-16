@@ -5,7 +5,7 @@ import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 public class SecureShipping extends ShipmentDecorate {
 
     private static final long serialVersionUID = 1L;
-    private static final double SECURE_COST = 50000.0; // Costo en pesos
+    private static final double SECURE_COST = 50000.0;
 
     public SecureShipping(Shipment shipment) {
         super(shipment);

@@ -37,8 +37,6 @@ public class LoginController {
         rdbRepartidor.setToggleGroup(rol);
     }
 
-
-    // --- 1. LÓGICA DE REGISTRO CORREGIDA ---
     @FXML
     private void handleRegistro() {
         System.out.println("Botón de registro presionado");
@@ -51,17 +49,13 @@ public class LoginController {
             mostrarAlerta("Por favor, complete todos los campos y seleccione un rol.");
             return;
         }
-
-        // 🔥 SOLUCIÓN: Usar el ID del RadioButton en lugar del texto
         String rolId = seleccionado.getId();
 
-        // 🐛 DEBUG: Imprime el ID real para verificar
         System.out.println("ID del rol seleccionado: " + rolId);
 
         try {
             String idGenerado = "REG-" + correo.split("@")[0] + "-" + String.valueOf(System.currentTimeMillis()).substring(7);
 
-            // Compara con los IDs definidos en tu FXML
             if (rolId.equals("rdbUsuario")) {
                 User nuevoUser = new User.Builder()
                         .id(idGenerado)
@@ -118,10 +112,8 @@ public class LoginController {
             mostrarAlerta("Por favor, complete todos los campos y seleccione un rol.");
             return;
         }
-
-        // 🔥 SOLUCIÓN: Usar el ID del RadioButton
         String rolId = seleccionado.getId();
-        String rolParaMostrar = seleccionado.getText(); // Para mensajes
+        String rolParaMostrar = seleccionado.getText();
 
         System.out.println("ID del rol seleccionado: " + rolId);
 
@@ -184,13 +176,13 @@ public class LoginController {
                 }
             }
 
-            // 🔥 CAMBIO: Usar el Stage actual en lugar de crear uno nuevo
+
             Stage stage = (Stage) txtCorreo.getScene().getWindow();
             Scene scene = new Scene(root);
 
             stage.setScene(scene);
             stage.setTitle("Panel de Usuario");
-            stage.setMaximized(true); // Mantener maximizado
+            stage.setMaximized(true);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -200,7 +192,6 @@ public class LoginController {
             mostrarAlerta("Error al inicializar el controlador. Revisa el initData(): " + e.getMessage());
         }
     }
-    // --- Métodos Auxiliares ---
 
     private void mostrarAlerta(String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

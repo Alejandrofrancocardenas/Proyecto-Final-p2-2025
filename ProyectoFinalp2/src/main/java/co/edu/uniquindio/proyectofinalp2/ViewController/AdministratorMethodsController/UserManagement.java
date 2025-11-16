@@ -15,39 +15,42 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Optional;
 
-/**
- * Controlador encargado de gestionar los usuarios (RF-010).
- * Permite crear, actualizar, eliminar y listar usuarios.
- */
 public class UserManagement implements Initializable {
 
-    // 1. Instancia del servicio
-    private final AdminService adminService =AdminService.getInstance();
+    private final AdminService adminService = AdminService.getInstance();
 
-    // Campos de texto y tabla (vinculados desde el FXML)
-    @FXML private TextField txtNombre;
-    @FXML private TextField txtCorreo;
-    @FXML private TextField txtTelefono;
-    @FXML private PasswordField txtPassword;
-    @FXML private TableView<User> tablaUsuarios;
-    @FXML private TableColumn<User, String> colNombre;
-    @FXML private TableColumn<User, String> colCorreo;
-    @FXML private TableColumn<User, String> colPassword;
 
-    // Lista observable para la tabla
+    @FXML
+    private TextField txtNombre;
+    @FXML
+    private TextField txtCorreo;
+    @FXML
+    private TextField txtTelefono;
+    @FXML
+    private PasswordField txtPassword;
+    @FXML
+    private TableView<User> tablaUsuarios;
+    @FXML
+    private TableColumn<User, String> colNombre;
+    @FXML
+    private TableColumn<User, String> colCorreo;
+    @FXML
+    private TableColumn<User, String> colPassword;
+
+
     private ObservableList<User> listaUsuarios;
 
     private AdministratorController administratorController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Carga inicial de datos
+
         this.listaUsuarios = FXCollections.observableArrayList(adminService.listAllUsers());
 
         configurarTabla();
         tablaUsuarios.setItems(listaUsuarios);
 
-        // Cargar datos al seleccionar para permitir la edición
+
         tablaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
             if (newSel != null) {
                 cargarDatosUsuario(newSel);
@@ -55,33 +58,23 @@ public class UserManagement implements Initializable {
         });
     }
 
-    // Método para inyectar el controlador padre (si es necesario)
+
     public void setAdministratorController(AdministratorController administratorController) {
         this.administratorController = administratorController;
     }
 
-    /**
-     * Configura las columnas de la tabla para enlazar las propiedades del objeto User.
-     */
     private void configurarTabla() {
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFullname()));
         colCorreo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
         colPassword.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPassword()));
     }
 
-    /**
-     * Verifica si ya existe un usuario con el correo electrónico proporcionado.
-     */
     private boolean existeUsuarioConCorreo(String correo) {
         return listaUsuarios.stream()
                 .anyMatch(user -> user.getEmail().equalsIgnoreCase(correo));
     }
 
 
-    /**
-     * Agrega un nuevo usuario.
-     */
-    // Dentro de UserManagement.java
     @FXML
     private void onAgregarUsuario() {
         String nombre = txtNombre.getText();
@@ -89,8 +82,6 @@ public class UserManagement implements Initializable {
         String telefono = txtTelefono.getText();
         String password = txtPassword.getText();
 
-        // 🟢 CORRECCIÓN DE ID: Usar el correo o una combinación única
-        // Esto previene colisiones de System.currentTimeMillis() y asegura que el ID tiene un formato conocido.
         String idGenerado = "USR-" + correo.split("@")[0] + "-" + String.valueOf(System.currentTimeMillis()).substring(7);
 
         if (nombre.isEmpty() || correo.isEmpty() || password.isEmpty() || telefono.isEmpty()) {
@@ -103,7 +94,6 @@ public class UserManagement implements Initializable {
             return;
         }
 
-        // Creación del nuevo usuario
         User nuevoUsuario = new User.Builder()
                 .id(idGenerado) // 🟢 Usar el ID más robusto
                 .name(nombre)
@@ -112,13 +102,10 @@ public class UserManagement implements Initializable {
                 .password(password)
                 .rol("CLIENT")
                 .build();
-
-        // 🟢 CLAVE: Llamada al servicio
         boolean agregado = false;
         try {
             agregado = adminService.addUserAdmin(nuevoUsuario);
         } catch (Exception e) {
-            // Capturar errores de persistencia si los hay
             System.err.println("Error durante la persistencia: " + e.getMessage());
             mostrarAlerta("Error Crítico", "Fallo al guardar en el sistema: " + e.getMessage(), Alert.AlertType.ERROR);
             return;
@@ -129,14 +116,9 @@ public class UserManagement implements Initializable {
             limpiarCampos();
             mostrarAlerta("Éxito", "Usuario agregado correctamente. ID: " + idGenerado, Alert.AlertType.INFORMATION);
         } else {
-            // Este error ocurre si el ID ya existe.
             mostrarAlerta("Error", "No se pudo agregar el Usuario. Es probable que el ID generado (" + idGenerado + ") ya exista o que el servicio fallara.", Alert.AlertType.ERROR);
         }
     }
-
-    /**
-     * Elimina el usuario seleccionado.
-     */
     @FXML
     private void onEliminarUsuario() {
         User seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
@@ -157,9 +139,7 @@ public class UserManagement implements Initializable {
         }
     }
 
-    /**
-     * 🟢 ACTUALIZACIÓN CRÍTICA: Actualiza la información del usuario seleccionado, preservando el Rol.
-     */
+
     @FXML
     private void onActualizarUsuario() {
         User seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
@@ -179,18 +159,18 @@ public class UserManagement implements Initializable {
             return;
         }
 
-        // 1. Crear el objeto con la información actualizada, PRESERVANDO el Rol
+
         User usuarioActualizado = new User.Builder()
                 .id(seleccionado.getId())
                 .name(nuevoNombre)
                 .email(nuevoCorreo)
                 .password(nuevoPassword)
                 .phone(nuevoTelefono)
-                .rol(seleccionado.getRol()) // 🟢 CLAVE: PRESERVA EL ROL como String
+                .rol(seleccionado.getRol())
                 .build();
 
 
-        // 2. Validación de Correo Único (solo si el correo ha cambiado)
+
         if (!seleccionado.getEmail().equalsIgnoreCase(nuevoCorreo)) {
             Optional<User> userOpt = adminService.findUserByEmail(nuevoCorreo);
 
@@ -200,14 +180,12 @@ public class UserManagement implements Initializable {
             }
         }
 
-        // 3. Llamada al servicio para actualizar
+
         boolean actualizado = adminService.updateUserAdmin(usuarioActualizado);
 
         if (actualizado) {
-            // Actualiza la lista observable
             int index = listaUsuarios.indexOf(seleccionado);
             if (index != -1) {
-                // Reemplaza el objeto antiguo con el nuevo objeto modificado
                 listaUsuarios.set(index, usuarioActualizado);
             }
             tablaUsuarios.refresh();
@@ -218,8 +196,6 @@ public class UserManagement implements Initializable {
             mostrarAlerta("Error", "No se pudo actualizar el usuario en el modelo.", Alert.AlertType.ERROR);
         }
     }
-
-    // --- MÉTODOS AUXILIARES ---
 
     private void cargarDatosUsuario(User user) {
         txtNombre.setText(user.getFullname());

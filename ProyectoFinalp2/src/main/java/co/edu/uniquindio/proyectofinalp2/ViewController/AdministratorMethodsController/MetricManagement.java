@@ -13,11 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Clase encargada de generar y manejar las métricas del sistema.
- * RF-013: Panel de métricas.
- * RF-014: Visualización de métricas con JavaFX Charts.
- */
 public class MetricManagement {
 
     private final List<Shipment> shipments;
@@ -28,11 +23,7 @@ public class MetricManagement {
         this.dealers = dealers;
     }
     private AdministratorController administratorController;
-    // ======================================================
-    // MÉTODOS DE CÁLCULO DE MÉTRICAS
-    // ======================================================
 
-    /** Calcula el tiempo promedio de entrega de los envíos completados. */
     public double calcularTiempoPromedioEntrega() {
         double totalTiempo = 0;
         int count = 0;
@@ -46,7 +37,6 @@ public class MetricManagement {
         return count > 0 ? totalTiempo / count : 0.0;
     }
 
-    /** Calcula los ingresos totales por periodo (por ejemplo, mes o semana). */
     public Map<String, Double> calcularIngresosPorPeriodo() {
         Map<String, Double> ingresos = new HashMap<>();
 
@@ -57,12 +47,11 @@ public class MetricManagement {
         return ingresos;
     }
 
-    /** Calcula el número de incidencias reportadas por zona. */
     public Map<String, Integer> calcularIncidenciasPorZona() {
         Map<String, Integer> incidencias = new HashMap<>();
 
         for (Shipment s : shipments) {
-            // Verifica si el envío tiene una incidencia asociada
+
             if (s.getIncident() != null) {
                 String zona = s.getZone();
                 incidencias.put(zona, incidencias.getOrDefault(zona, 0) + 1);
@@ -72,8 +61,6 @@ public class MetricManagement {
         return incidencias;
     }
 
-
-    /** Calcula la frecuencia de servicios adicionales usados (por ejemplo, "Seguro", "Entrega exprés"). */
     public Map<String, Integer> calcularServiciosMasUsados() {
         Map<String, Integer> servicios = new HashMap<>();
 
@@ -85,11 +72,7 @@ public class MetricManagement {
         return servicios;
     }
 
-    // ======================================================
-    // MÉTODOS DE VISUALIZACIÓN CON JAVAFX CHARTS
-    // ======================================================
 
-    /** Genera un gráfico de pastel con los servicios adicionales más usados. */
     public PieChart generarGraficoServicios() {
         ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
         Map<String, Integer> servicios = calcularServiciosMasUsados();
@@ -103,7 +86,7 @@ public class MetricManagement {
         return chart;
     }
 
-    /** Genera un gráfico de barras de ingresos por periodo. */
+
     public XYChart.Series<String, Number> generarGraficoIngresos() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Ingresos por periodo");
@@ -116,7 +99,7 @@ public class MetricManagement {
         return series;
     }
 
-    /** Genera un gráfico de líneas para los tiempos promedio de entrega por repartidor. */
+
     public XYChart.Series<String, Number> generarGraficoTiemposPromedioPorDealer() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Tiempo promedio por repartidor");

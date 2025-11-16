@@ -19,21 +19,15 @@ public class UserController {
     private UserService userService;
     private User userLogueado;
 
-    /**
-     * Inicializa el controlador principal de la vista de usuario.
-     * @param userLogueado La instancia de User persistida y logueada.
-     */
     public void initData(User userLogueado) {
         this.userLogueado = userLogueado;
         this.userService = new UserService(userLogueado);
         System.out.println("✅ DEBUG: UserService creado para el usuario: " + userLogueado.getFullname());
 
-        // Mensaje de bienvenida
         Label lblBienvenida = new Label("👋 Bienvenido(a) " + userLogueado.getFullname());
         contenedorCentral.getChildren().setAll(lblBienvenida);
     }
 
-    // --- MÉTODOS DEL MENÚ ---
 
     @FXML
     private void onMostrarPerfil() {
@@ -77,9 +71,6 @@ public class UserController {
         contenedorCentral.getChildren().setAll(lbl);
     }
 
-    /**
-     * Carga una vista FXML en el contenedor central.
-     */
     private void cargarVista(String fxmlPath) {
         if (userService == null) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
@@ -99,7 +90,6 @@ public class UserController {
             FXMLLoader loader = new FXMLLoader(resource);
             Parent root = loader.load();
 
-            // Inyección de dependencias
             Object subController = loader.getController();
 
             if (subController == null) {
@@ -109,7 +99,6 @@ public class UserController {
                 return;
             }
 
-            // Inyectar servicio si implementa ServiceInjectable
             if (subController instanceof ServiceInjectable) {
                 @SuppressWarnings("unchecked")
                 ServiceInjectable<UserService> injectable = (ServiceInjectable<UserService>) subController;
@@ -117,7 +106,6 @@ public class UserController {
                 System.out.println("✅ DEBUG: Inyección de UserService completada para: " + fxmlPath);
             }
 
-            // Reemplazar contenido
             contenedorCentral.getChildren().setAll(root);
 
         } catch (IOException e) {
@@ -133,7 +121,6 @@ public class UserController {
             System.out.println("🚪 Cerrando sesión del usuario: " +
                     (userLogueado != null ? userLogueado.getFullname() : "Desconocido"));
 
-            // Usar App.setRoot para mantener la ventana maximizada
             App.setRoot("LoginView.fxml");
 
         } catch (IOException e) {

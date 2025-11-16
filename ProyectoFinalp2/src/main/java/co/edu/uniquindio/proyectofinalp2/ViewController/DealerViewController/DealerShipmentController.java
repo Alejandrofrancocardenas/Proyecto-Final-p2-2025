@@ -19,20 +19,16 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-/**
- * Controlador para la gestión de envíos asignados al repartidor.
- */
+
 public class DealerShipmentController implements Initializable,
         ServiceInjectable<DealerService>,
         DealerDataInjectable {  // ⬅️ AÑADIR ESTA INTERFAZ
 
-    // --- Servicios y Datos ---
     private DealerService dealerService;
     private Dealer currentDealer;
 
     private final ObservableList<Shipment> shipmentsData = FXCollections.observableArrayList();
 
-    // --- Componentes FXML ---
     @FXML private TableView<Shipment> tablaEnvios;
     @FXML private TableColumn<Shipment, String> colShipmentId;
     @FXML private TableColumn<Shipment, String> colCliente;
@@ -46,10 +42,6 @@ public class DealerShipmentController implements Initializable,
     @FXML private Label lblEnvioSeleccionado;
     @FXML private TextArea txtIncidencia;
 
-    // -------------------------------------------------------------------------
-    // 1. INICIALIZACIÓN Y CONFIGURACIÓN
-    // -------------------------------------------------------------------------
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTable();
@@ -57,7 +49,6 @@ public class DealerShipmentController implements Initializable,
 
         tablaEnvios.setItems(shipmentsData);
 
-        // Listener para actualizar el label cuando se selecciona un envío
         tablaEnvios.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
                 lblEnvioSeleccionado.setText("ID: " + selected.getShipmentId());
@@ -75,10 +66,7 @@ public class DealerShipmentController implements Initializable,
         System.out.println("✅ DealerService inyectado");
     }
 
-    /**
-     * ⬇️ MÉTODO CRÍTICO: Ahora implementa correctamente la interfaz
-     */
-    @Override  // ⬅️ AÑADIR ESTA ANOTACIÓN
+    @Override
     public void setDealer(Dealer dealer) {
         this.currentDealer = dealer;
         System.out.println("✅ Dealer establecido en Shipments: " + dealer.getFullname());
@@ -87,9 +75,6 @@ public class DealerShipmentController implements Initializable,
         cargarEnvios();
     }
 
-    // -------------------------------------------------------------------------
-    // 2. CONFIGURACIÓN DE TABLA Y COMBOS
-    // -------------------------------------------------------------------------
 
     private void setupTable() {
         colShipmentId.setCellValueFactory(new PropertyValueFactory<>("shipmentId"));
@@ -125,7 +110,7 @@ public class DealerShipmentController implements Initializable,
     }
 
     private void setupComboBoxes() {
-        // Filtro de estados
+
         cmbFiltroEstado.getItems().addAll(
                 "Todos",
                 "CREATED",
@@ -136,7 +121,7 @@ public class DealerShipmentController implements Initializable,
         );
         cmbFiltroEstado.getSelectionModel().select("Todos");
 
-        // Estados a los que puede cambiar el dealer
+
         cmbNuevoEstado.getItems().addAll(
                 "IN_TRANSIT",
                 "DELIVERED",
@@ -144,9 +129,6 @@ public class DealerShipmentController implements Initializable,
         );
     }
 
-    // -------------------------------------------------------------------------
-    // 3. MÉTODOS DE CARGA DE DATOS
-    // -------------------------------------------------------------------------
 
     private void cargarEnvios() {
         if (currentDealer == null) {
@@ -163,7 +145,7 @@ public class DealerShipmentController implements Initializable,
             return;
         }
 
-        // Aplicar filtro si hay alguno seleccionado
+
         String filtro = cmbFiltroEstado.getSelectionModel().getSelectedItem();
         List<Shipment> enviosFiltrados;
 
@@ -182,10 +164,6 @@ public class DealerShipmentController implements Initializable,
                 enviosAsignados.size() + " totales)");
     }
 
-    // -------------------------------------------------------------------------
-    // 4. MÉTODOS DE ACCIÓN
-    // -------------------------------------------------------------------------
-
     @FXML
     private void onActualizarLista() {
         cargarEnvios();
@@ -201,10 +179,8 @@ public class DealerShipmentController implements Initializable,
             return;
         }
 
-        // Actualizar estado
         selected.setStatus(ShippingStatus.IN_TRANSIT);
 
-        // Refrescar tabla
         tablaEnvios.refresh();
 
         mostrarAlerta("Éxito", "Envío marcado como EN RUTA", Alert.AlertType.INFORMATION);
@@ -220,17 +196,13 @@ public class DealerShipmentController implements Initializable,
             mostrarAlerta("Advertencia", "Debe seleccionar un envío", Alert.AlertType.WARNING);
             return;
         }
-
-        // Actualizar estado
         selected.setStatus(ShippingStatus.DELIVERED);
 
-        // Incrementar contador de entregas del dealer
         if (currentDealer != null) {
             currentDealer.setDeliveriesMade(currentDealer.getDeliveriesMade() + 1);
             currentDealer.setAvailable(true); // Quedar disponible nuevamente
         }
 
-        // Refrescar tabla
         tablaEnvios.refresh();
 
         mostrarAlerta("Éxito",
@@ -256,7 +228,6 @@ public class DealerShipmentController implements Initializable,
             return;
         }
 
-        // Crear incidencia
         Incidence incidence = new Incidence();
         incidence.setIncidenceId("INC-" + selected.getShipmentId() + "-" + System.currentTimeMillis());
         incidence.setCreationDate(LocalDate.now());
@@ -264,16 +235,13 @@ public class DealerShipmentController implements Initializable,
         incidence.setType("REPORTADO_DEALER");
         incidence.setReporterId(currentDealer.getId());
 
-        // Asignar incidencia al envío
         selected.setIncidence(incidence);
         selected.setStatus(ShippingStatus.INCIDENCE_REPORTED);
 
-        // Liberar al dealer
         if (currentDealer != null) {
             currentDealer.setAvailable(true);
         }
 
-        // Limpiar y refrescar
         txtIncidencia.clear();
         tablaEnvios.refresh();
 
@@ -283,10 +251,6 @@ public class DealerShipmentController implements Initializable,
 
         System.out.println("⚠️ Incidencia reportada para envío " + selected.getShipmentId());
     }
-
-    // -------------------------------------------------------------------------
-    // 5. MÉTODOS AUXILIARES
-    // -------------------------------------------------------------------------
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);

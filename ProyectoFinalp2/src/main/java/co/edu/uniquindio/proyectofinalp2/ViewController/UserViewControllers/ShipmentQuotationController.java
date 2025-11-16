@@ -27,23 +27,32 @@ import co.edu.uniquindio.proyectofinalp2.decorators.SignatureRequiredShipment;
 
 public class ShipmentQuotationController implements ServiceInjectable<UserService>, Initializable {
 
-    // --- Campos FXML ---
-    @FXML private ComboBox<Address> cmbOrigen;
-    @FXML private ComboBox<Address> cmbDestino;
-    @FXML private TextField txtPeso;
-    @FXML private TextField txtDimensiones;
-    @FXML private ComboBox<String> cmbServicio;
-    @FXML private TextArea txtDescripcion;
 
-    @FXML private Label lblCostoEstimado;
-    @FXML private Button btnCalcularCosto;
-    @FXML private Button btnConfirmarEnvioYtoPagar;
+    @FXML
+    private ComboBox<Address> cmbOrigen;
+    @FXML
+    private ComboBox<Address> cmbDestino;
+    @FXML
+    private TextField txtPeso;
+    @FXML
+    private TextField txtDimensiones;
+    @FXML
+    private ComboBox<String> cmbServicio;
+    @FXML
+    private TextArea txtDescripcion;
 
-    @FXML private CheckBox chkSecureShipping;
-    @FXML private CheckBox chkSignatureRequired;
+    @FXML
+    private Label lblCostoEstimado;
+    @FXML
+    private Button btnCalcularCosto;
+    @FXML
+    private Button btnConfirmarEnvioYtoPagar;
 
+    @FXML
+    private CheckBox chkSecureShipping;
+    @FXML
+    private CheckBox chkSignatureRequired;
 
-    // --- Dependencias y Datos ---
     private UserService userService;
     private Shipment currentShipment;
     private final ObservableList<Address> addressList = FXCollections.observableArrayList();
@@ -52,9 +61,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             "Normal", "Priority", "Fragile"
     );
 
-    // -------------------------------------------------------------------------
-    // 1. INYECCIÓN DE DEPENDENCIA Y CICLO DE VIDA
-    // -------------------------------------------------------------------------
 
     @Override
     public void setService(UserService service) {
@@ -75,8 +81,10 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         cmbOrigen.valueProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
         cmbDestino.valueProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
 
-        if (chkSecureShipping != null) chkSecureShipping.selectedProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
-        if (chkSignatureRequired != null) chkSignatureRequired.selectedProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
+        if (chkSecureShipping != null)
+            chkSecureShipping.selectedProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
+        if (chkSignatureRequired != null)
+            chkSignatureRequired.selectedProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
 
         txtPeso.textProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
         txtDimensiones.textProperty().addListener((obs, old, nev) -> lblCostoEstimado.setText("$ 0.00"));
@@ -88,6 +96,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             public String toString(Address address) {
                 return address != null ? address.getCity() + " (" + address.getStreet() + ")" : "Seleccionar Dirección";
             }
+
             @Override
             public Address fromString(String string) {
                 return addressList.stream()
@@ -117,10 +126,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         }
     }
 
-    // -------------------------------------------------------------------------
-    // 2. MÉTODOS DE ACCIÓN
-    // -------------------------------------------------------------------------
-
     @FXML
     private void onCalcularCosto() {
         if (userService == null) {
@@ -128,7 +133,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             return;
         }
 
-        // Validación completa
         if (cmbOrigen.getValue() == null) {
             mostrarAlerta("Datos Incompletos", "Debe seleccionar una dirección de ORIGEN.", Alert.AlertType.WARNING);
             return;
@@ -150,18 +154,16 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         }
 
         try {
-            // 1. Crear y DECORAR el objeto Shipment
             currentShipment = createShipmentFromInputs();
 
-            // 2. Verificación de seguridad
+
             if (currentShipment.getOriginAddress() == null || currentShipment.getDestinationAddress() == null) {
                 throw new IllegalStateException("Error interno: El envío se creó sin direcciones.");
             }
 
-            // 3. Llamar al servicio para obtener el precio FINAL
+
             double costo = userService.getPrice(currentShipment);
 
-            // 4. Mostrar el resultado
             lblCostoEstimado.setText("$ " + String.format("%,.2f", costo));
 
             System.out.println("✅ Costo calculado exitosamente:");
@@ -207,9 +209,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             return;
         }
 
-        // =========================================================================
-        // 🔧 VALIDACIÓN FINAL CRÍTICA: Verificar direcciones antes de confirmar
-        // =========================================================================
         if (currentShipment.getOriginAddress() == null) {
             System.err.println("❌ ERROR CRÍTICO: currentShipment no tiene dirección de origen");
             mostrarAlerta("Error Interno",
@@ -242,7 +241,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             System.out.println("   📍 Origen: " + currentShipment.getOriginAddress().getCity());
             System.out.println("   📍 Destino: " + currentShipment.getDestinationAddress().getCity());
 
-            // Crear el envío en el servicio
+
             userService.createShipment(currentShipment);
 
             String mensajeDetallado = "✅ Envío registrado para pago exitosamente.\n\n" +
@@ -254,11 +253,10 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
 
             mostrarAlerta("Éxito", mensajeDetallado, Alert.AlertType.INFORMATION);
 
-            // Limpiar la cotización después de confirmar
             currentShipment = null;
             lblCostoEstimado.setText("$ 0.00");
 
-            // Limpiar campos
+
             cmbOrigen.getSelectionModel().clearSelection();
             cmbDestino.getSelectionModel().clearSelection();
             txtPeso.clear();
@@ -268,7 +266,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             if (chkSignatureRequired != null) chkSignatureRequired.setSelected(false);
 
         } catch (IllegalStateException e) {
-            // Este es el error que estábamos teniendo
+
             mostrarAlerta("Error de Validación",
                     "Error al confirmar el envío:\n" + e.getMessage() +
                             "\n\nPor favor, vuelva a calcular el costo.",
@@ -283,11 +281,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         }
     }
 
-    // --- 3. Métodos Auxiliares ---
-
-    /**
-     * Construye y retorna el objeto Shipment utilizando el Factory y luego aplica los Decoradores.
-     */
     private Shipment createShipmentFromInputs() throws NumberFormatException {
 
         String shipmentId = "SHIP-" + UUID.randomUUID().toString().substring(0, 8);
@@ -301,7 +294,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         System.out.println("   - Destino: " + (destination != null ? destination.getCity() : "NULL"));
         System.out.println("   - Servicio: " + baseServiceStrategy);
 
-        // Obtener el objeto Rate (Tarifa)
         Rate shipmentRate = userService.getRateForService(baseServiceStrategy);
 
         if (shipmentRate == null) {
@@ -309,7 +301,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
                     baseServiceStrategy + ". Verifique que el UserService tenga la información de tarifas.");
         }
 
-        // 1. CREACIÓN DE PackageModel
+
         double weightKg = Double.parseDouble(txtPeso.getText().trim());
         double heightCm = Double.parseDouble(txtDimensiones.getText().trim());
         String contentDescription = txtDescripcion.getText().trim();
@@ -320,7 +312,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         tempPackage.setHeightCm(heightCm);
         tempPackage.setDescription(contentDescription);
 
-        // 2. Uso del Factory para crear el COMPONENTE BASE
+
         String zone = origin.getCity() + "-" + destination.getCity();
 
         Shipment shipment = ShipmentFactory.createShipment(
@@ -328,13 +320,13 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
                 shipmentId,
                 userService.getCurrentUser(),
                 zone,
-                origin,           // ⬅️ Dirección de origen
-                destination,      // ⬅️ Dirección de destino
+                origin,
+                destination,
                 tempPackage,
                 shipmentRate
         );
 
-        // Verificación inmediata después del Factory
+
         if (shipment.getOriginAddress() == null) {
             throw new IllegalStateException("ERROR: ShipmentFactory no estableció la dirección de origen");
         }
@@ -344,7 +336,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
 
         System.out.println("✅ Envío creado por Factory con direcciones correctas");
 
-        // 3. APLICACIÓN DECORATOR: Envuelve el objeto base con servicios opcionales
+
         if (chkSecureShipping != null && chkSecureShipping.isSelected()) {
             shipment = new SecureShipping(shipment);
             System.out.println("   + Decorador SecureShipping aplicado");
@@ -355,7 +347,7 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
             System.out.println("   + Decorador SignatureRequiredShipment aplicado");
         }
 
-        // Verificación final después de decoradores
+
         if (shipment.getOriginAddress() == null || shipment.getDestinationAddress() == null) {
             throw new IllegalStateException("ERROR: Los decoradores eliminaron las direcciones del envío");
         }
@@ -363,9 +355,6 @@ public class ShipmentQuotationController implements ServiceInjectable<UserServic
         return shipment;
     }
 
-    // -------------------------------------------------------------------------
-    // 4. MÉTODOS DE ALERTA
-    // -------------------------------------------------------------------------
 
     private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);

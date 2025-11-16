@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ShipmentTableController implements ServiceInjectable<UserService>, Initializable {
 
-    // --- Campos FXML ---
+
     @FXML
     private TableView<Shipment> shipmentTableView;
     @FXML
@@ -41,13 +41,10 @@ public class ShipmentTableController implements ServiceInjectable<UserService>, 
     @FXML
     private TableColumn<Shipment, String> colPrice;
 
-    // --- Dependencias ---
     private UserService userService;
     private final ObservableList<Shipment> shipmentList = FXCollections.observableArrayList();
 
-    // -------------------------------------------------------------------------
-    // 1. INYECCIÓN DE DEPENDENCIA Y CICLO DE VIDA
-    // -------------------------------------------------------------------------
+
 
     @Override
     public void setService(UserService service) {
@@ -61,38 +58,28 @@ public class ShipmentTableController implements ServiceInjectable<UserService>, 
         shipmentTableView.setItems(shipmentList);
     }
 
-    // -------------------------------------------------------------------------
-    // 2. CONFIGURACIÓN DE LA TABLA
-    // -------------------------------------------------------------------------
-
     private void setupTableView() {
         colId.setCellValueFactory(new PropertyValueFactory<>("shipmentId"));
 
-        // ✅ Origen: Maneja el caso en que getOriginAddress() sea null.
         colOrigin.setCellValueFactory(cellData -> {
             Address origin = cellData.getValue().getOriginAddress();
             return new SimpleStringProperty(origin != null ? origin.getCity() : "Dirección N/A");
         });
-
-        // ✅ Destino: Maneja el caso en que getDestinationAddress() sea null.
         colDestination.setCellValueFactory(cellData -> {
             Address destination = cellData.getValue().getDestinationAddress();
             return new SimpleStringProperty(destination != null ? destination.getCity() : "Dirección N/A");
         });
 
-        // 🟢 CORRECCIÓN: Estado. Maneja el caso en que getStatus() sea null.
         colStatus.setCellValueFactory(cellData -> {
             ShippingStatus status = cellData.getValue().getStatus();
             return new SimpleStringProperty(status != null ? status.toString() : "INDEFINIDO");
         });
 
-        // Fecha: Se mantiene la verificación de nulo.
         colDate.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getCreationDate() != null ?
                         cellData.getValue().getCreationDate().toLocalDate().toString() : "N/A")
         );
 
-        // Precio: Se mantiene la verificación de nulo.
         colPrice.setCellValueFactory(cellData -> {
             Shipment shipment = cellData.getValue();
             if (shipment.getRate() != null) {
@@ -104,32 +91,20 @@ public class ShipmentTableController implements ServiceInjectable<UserService>, 
         shipmentTableView.setPlaceholder(new Label("No hay solicitudes de envío en su lista temporal ni histórica."));
     }
 
-    // -------------------------------------------------------------------------
-    // 3. CARGA DE DATOS
-    // -------------------------------------------------------------------------
 
     private void loadShipments() {
         if (userService != null) {
             List<Shipment> userPendingShipments = userService.getCurrentUser().getShipments();
 
-            // 🟢 CORRECCIÓN TEMPORAL PARA DATOS VIEJOS:
-            // Asegura que cualquier envío sin estado se corrija al cargar.
             for (Shipment shipment : userPendingShipments) {
                 if (shipment.getStatus() == null) {
-                    // Si es nulo, asígnale el estado inicial correcto
                     shipment.setStatus(ShippingStatus.CREATED);
                 }
             }
-            // ----------------------------------------------------
 
             shipmentList.setAll(userPendingShipments);
-            // ...
         }
-        // ...
     }
-    // -------------------------------------------------------------------------
-    // 4. MÉTODOS DE GESTIÓN (EJ. Cancelar)
-    // -------------------------------------------------------------------------
 
     @FXML
     private void onCancelShipment() {
@@ -140,8 +115,6 @@ public class ShipmentTableController implements ServiceInjectable<UserService>, 
             return;
         }
 
-        // 🟢 CORRECCIÓN LÓGICA: Se usan los estados CREADO o PENDIENTE DE PAGO
-        // para la cancelación, que coinciden con el mensaje de advertencia.
         if (selectedShipment.getStatus() == ShippingStatus.CREATED || selectedShipment.getStatus() == ShippingStatus.IN_TRANSIT) {
 
             String mensajeConfirmacion = "¿Está seguro de que desea cancelar el envío " + selectedShipment.getShipmentId() + "? Esta acción no se puede deshacer.";
@@ -160,16 +133,6 @@ public class ShipmentTableController implements ServiceInjectable<UserService>, 
         }
     }
 
-    // -------------------------------------------------------------------------
-    // 5. MÉTODOS AUXILIARES DE ALERTA (Implementados aquí)
-    // -------------------------------------------------------------------------
-
-    /**
-     * Muestra una alerta simple.
-     * @param titulo Título de la ventana de alerta.
-     * @param contenido Mensaje principal de la alerta.
-     * @param tipo Tipo de alerta (ERROR, WARNING, INFORMATION).
-     */
     private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -178,12 +141,6 @@ public class ShipmentTableController implements ServiceInjectable<UserService>, 
         alerta.showAndWait();
     }
 
-    /**
-     * Muestra un diálogo de confirmación.
-     * @param titulo Título de la ventana de confirmación.
-     * @param mensaje Mensaje de la pregunta.
-     * @return true si el usuario presiona OK, false en caso contrario.
-     */
     private boolean confirmarAccion(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle(titulo);

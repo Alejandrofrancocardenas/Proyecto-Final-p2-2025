@@ -10,18 +10,9 @@ import co.edu.uniquindio.proyectofinalp2.exceptions.IncorrectPasswordException;
 import java.time.LocalDate;
 import java.util.*;
 
-/**
- * SystemFacade
- *
- * Este patrón *Facade* centraliza el acceso a todos los servicios del sistema,
- * proporcionando un único punto de entrada para los controladores, pruebas o interfaces gráficas.
- *
- * Su propósito es simplificar la comunicación entre las capas del sistema.
- */
 public class SystemFacade {
 
 
-    //  INSTANCIAS DE SERVICIO
 
     private final CompanyService companyService;
     private final AdminService adminService;
@@ -31,7 +22,7 @@ public class SystemFacade {
     private final ShippingService shippingService;
 
 
-    // SINGLETON: solo una instancia del Facade
+
 
     private static SystemFacade instance;
 
@@ -51,19 +42,6 @@ public class SystemFacade {
         this.shippingService = ShippingService.getInstance();
     }
 
-
-    //==============================================================
-    // SECCIÓN 1: LOGIN, REGISTRO Y SESIÓN (Actualizada y Completa)
-    //==============================================================
-
-    /**
-     * Intenta iniciar sesión y devuelve el objeto (User, Admin o Dealer) si es exitoso.
-     * @param email Correo del usuario
-     * @param password Contraseña
-     * @param role Rol a verificar ("Usuario", "Administrador", "Repartidor")
-     * @return El objeto logueado (User, Admin o Dealer).
-     * @throws Exception Si las credenciales son incorrectas o el rol no existe.
-     */
     public Object login(String email, String password, String role) throws IncorrectEmailException, IncorrectPasswordException {
         switch (role) {
             case "Usuario":
@@ -136,15 +114,6 @@ public class SystemFacade {
     }
 
 
-    //==============================================================
-    // SECCIÓN 2: USERS (CRUD)
-    //==============================================================
-
-    // 🔴 NOTA: Los métodos de CRUD de User (viewUser, updateUser, deleteUser, listUsers, findUserById)
-    //          NO están definidos en el CompanyService proporcionado.
-
-    // Se comentan o ajustan las llamadas a CompanyService:
-
     public UserDTO viewUser(String id) {
         // companyService.readUser(id); // 🔴 MÉTODO FALTANTE
         return null; // Retorno temporal
@@ -167,11 +136,6 @@ public class SystemFacade {
         // return companyService.findUserByID(id); // 🔴 MÉTODO FALTANTE
         return Optional.empty(); // Retorno temporal
     }
-
-
-    //==============================================================
-    // SECCIÓN 3: ADMIN (Gestión de CRUD avanzada y Asignaciones)
-    //==============================================================
 
     public boolean addUserAsAdmin(User newUser) {
         return adminService.addUserAdmin(newUser);

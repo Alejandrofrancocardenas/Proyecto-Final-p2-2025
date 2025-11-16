@@ -4,23 +4,17 @@ import co.edu.uniquindio.proyectofinalp2.Model.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Clase Abstracta base para todos los Decoradores de Shipment.
- * CRÍTICO: Debe delegar TODAS las llamadas al componente envuelto.
- */
+
 public abstract class ShipmentDecorate extends Shipment {
 
     private static final long serialVersionUID = 1L;
-    protected Shipment shipment; // El objeto Shipment que estamos envolviendo
+    protected Shipment shipment;
 
     public ShipmentDecorate(Shipment shipment) {
-        super(); // Constructor vacío de Shipment
+        super();
         this.shipment = shipment;
     }
 
-    // =========================================================================
-    // MÉTODOS ABSTRACTOS IMPLEMENTADOS (Delegación)
-    // =========================================================================
 
     @Override
     public String getDescription() {
@@ -32,9 +26,6 @@ public abstract class ShipmentDecorate extends Shipment {
         return shipment.track();
     }
 
-    // =========================================================================
-    // CRÍTICO: Delegar TODOS los getters/setters al componente envuelto
-    // =========================================================================
 
     @Override
     public Address getOriginAddress() {

@@ -28,14 +28,13 @@ public class Company {
         return instance;
     }
 
-    // --- Getters y Setters ---
 
     public List<User> getUsers() {
         return users;
     }
 
     public void setUsers(List<User> loadedUsers) {
-        // 🟢 CORRECCIÓN APLICADA: Asignar la lista de usuarios cargada
+
         this.users = loadedUsers;
     }
 

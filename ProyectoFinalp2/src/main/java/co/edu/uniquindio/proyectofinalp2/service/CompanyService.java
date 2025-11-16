@@ -20,7 +20,7 @@ public class CompanyService {
     private static CompanyService instance;
     public final Company company;
 
-    // Archivos de persistencia (Mantener como referencia, pero no se usarán)
+
     private static final String USERS_FILE = "data/company_users.dat";
     private static final String ADMINS_FILE = "data/company_admins.dat";
     private static final String DEALERS_FILE = "data/company_dealers.dat";
@@ -37,7 +37,6 @@ public class CompanyService {
         return instance;
     }
 
-    // --- MÉTODOS DE BÚSQUEDA ---
 
     public Optional<User> findUserByEmail(String email) {
         return company.getUsers().stream()
@@ -58,7 +57,6 @@ public class CompanyService {
     }
 
 
-    // --- REGISTRO DE ROLES (CREATE) ---
 
     public void registerUser(User user) {
         Optional<User> userAux = findUserByEmail(user.getEmail());
@@ -66,32 +64,25 @@ public class CompanyService {
             throw new IllegalArgumentException("Ya existe una cuenta con el email: "+ user.getEmail());
         }
         company.getUsers().add(user);
-        // persistUserData(); // ❌ Deshabilitado
     }
 
-    // Registro de Administrador
     public void registerAdmin(Admin admin) {
         Optional<Admin> adminAux = findAdminByEmail(admin.getEmail());
         if (adminAux.isPresent()) {
             throw new IllegalArgumentException("Ya existe una cuenta Admin con el email: " + admin.getEmail());
         }
         company.getAdmins().add(admin);
-        // persistAdminsData(); // ❌ Deshabilitado
+
     }
 
-    // Registro de Repartidor
     public void registerDealer(Dealer dealer) {
         Optional<Dealer> dealerAux = findDealerByEmail(dealer.getEmail());
         if (dealerAux.isPresent()) {
             throw new IllegalArgumentException("Ya existe una cuenta Repartidor con el email: " + dealer.getEmail());
         }
         company.getDealers().add(dealer);
-        // persistDealersData(); // ❌ Deshabilitado
+
     }
-
-
-    // --- MÉTODOS DE INICIO DE SESIÓN (LOGIN) ---
-    // (Lógica de login sin cambios, ya que opera sobre las listas en memoria)
 
     public User login(String email, String password) {
         Optional<User> user = findUserByEmail(email);
@@ -135,41 +126,24 @@ public class CompanyService {
         return dealerAux;
     }
 
-    // --- NUEVOS MÉTODOS DE LÓGICA DE NEGOCIO PARA COTIZACIÓN ---
 
-    /**
-     * Calcula el costo final del envío aplicando todos los decoradores.
-     * @param shipment El objeto Shipment (ya decorado o no)
-     * @return El costo total del envío.
-     */
-
-    /**
-     * Retorna una lista de las opciones de decoración de envíos disponibles
-     * para que la vista pueda mostrarlas.
-     * @return Lista de nombres de decoradores.
-     */
     public List<String> getAvailableDecorators() {
-        // Estos nombres deben coincidir con la lógica del controlador para aplicar los decoradores.
         List<String> decorators = new ArrayList<>();
         decorators.add("Fragile");
         decorators.add("Urgent");
-        // 🟢 Añadir los nuevos decoradores
         decorators.add("SecureShipping");
         decorators.add("SignatureRequiredShipment");
         return decorators;
     }
 
 
-    // Gestión de Envíos
     public void makeShipment(Shipment shipment) {
         this.company.getShipments().add(shipment);
-        // persistShipmentData(); // ❌ Deshabilitado
         System.out.println("📦 Envío registrado con éxito: " + shipment.getShipmentId());
     }
 
     public void addShipmentToCompany(Shipment shipment) {
         this.company.getShipments().add(shipment);
-        // persistShipmentData(); // ❌ Deshabilitado
         System.out.println("📦 Envío " + shipment.getShipmentId() + " registrado centralmente y persistido.");
     }
 

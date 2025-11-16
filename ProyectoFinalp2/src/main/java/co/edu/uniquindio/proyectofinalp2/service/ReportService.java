@@ -21,8 +21,6 @@ public class ReportService {
         }
         return instance;
     }
-
-    // metodo para gnerar archivo CSV con la informacion de los envios
     public void generateCsvReport(List<Shipment> shipments, String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write("ID,Usuario,Zona,Estado,Precio,Fecha\n");
@@ -42,7 +40,6 @@ public class ReportService {
         }
     }
 
-    // metodo para generrar un archivo pdf
     public void generatePdfReport(List<Shipment> shipments, String filePath) {
         try {
             Document document = new Document();

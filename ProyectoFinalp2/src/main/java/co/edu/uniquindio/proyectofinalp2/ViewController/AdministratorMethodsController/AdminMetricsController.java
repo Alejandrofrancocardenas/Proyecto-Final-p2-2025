@@ -31,7 +31,6 @@ public class AdminMetricsController {
         loadIncidenceBarChart();
     }
 
-    // =============== MÉTRICAS ===============
 
     private void loadDeliveryTimeChart() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();

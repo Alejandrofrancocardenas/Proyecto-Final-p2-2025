@@ -2,13 +2,10 @@ package co.edu.uniquindio.proyectofinalp2.decorators;
 
 import co.edu.uniquindio.proyectofinalp2.Model.Shipment;
 
-/**
- * Decorador para marcar un envío como Frágil, incrementando el costo.
- */
 public class FragileShipment extends ShipmentDecorate {
 
     private static final long serialVersionUID = 1L;
-    private static final double FRAGILE_COST = 2500.0; // 2500 COP
+    private static final double FRAGILE_COST = 2500.0;
 
     public FragileShipment(Shipment decoratedShipment) {
         super(decoratedShipment);

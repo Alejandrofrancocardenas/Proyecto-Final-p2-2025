@@ -6,7 +6,7 @@ public class AmountValidationHandler extends PaymentHandler {
 
     @Override
     public void handlePayment(Payment payment) {
-        // Verifica si el monto es válido
+
         if (payment.getAmount() <= 0) {
             System.out.println("❌ Error: Monto de pago inválido.");
             return;

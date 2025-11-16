@@ -15,20 +15,10 @@ public class Rate implements Serializable {
         this.costStrategy = costStrategy;
     }
 
-    /**
-     * Delega el cálculo de la tarifa base a la estrategia de costos
-     * (PriorityCostStrategy, FragileCostStrategy, etc.) asignada a este Rate.
-     * * @param packageModel El paquete a enviar.
-     * @param originAddress La dirección de origen.
-     * @param destinationAddress La dirección de destino.
-     * @return El precio base calculado por la estrategia.
-     */
     public double calculateShipmentRate(PackageModel packageModel, Address originAddress, Address destinationAddress) {
-        // Llama al método de la interfaz ShippingCostStrategy
         return this.costStrategy.calculateShippingRate(packageModel, originAddress, destinationAddress);
     }
 
-    // --- Getters and Setters ---
 
     public String getRateId() {
         return rateId;

@@ -26,9 +26,6 @@ public class DealerController {
     private Dealer dealerLogueado;
     private DealerService dealerService;
 
-    /**
-     * Inicializa el controlador con los datos del repartidor logueado.
-     */
     public void initData(Dealer dealer) {
         if (dealer == null) {
             throw new IllegalArgumentException("El dealer no puede ser nulo");
@@ -39,11 +36,9 @@ public class DealerController {
 
         System.out.println("✅ Repartidor logueado: " + dealer.getFullname());
 
-        // Mensaje de bienvenida
         Label lblBienvenida = new Label("🚚 Bienvenido(a) " + dealer.getFullname());
         contenedorCentral.getChildren().setAll(lblBienvenida);
 
-        // Cargar vista de envíos por defecto
         onMisEnvios();
     }
 
@@ -106,7 +101,6 @@ public class DealerController {
             System.out.println("🚪 Cerrando sesión del repartidor: " +
                     (dealerLogueado != null ? dealerLogueado.getFullname() : "Desconocido"));
 
-            // Usar App.setRoot para mantener la ventana maximizada
             App.setRoot("LoginView.fxml");
 
         } catch (IOException e) {
@@ -117,9 +111,6 @@ public class DealerController {
         }
     }
 
-    /**
-     * Carga una vista FXML en el contenedor central.
-     */
     private void cargarVista(String fxmlPath) {
         if (dealerService == null || dealerLogueado == null) {
             mostrarAlerta("Error", "El servicio o el repartidor no están inicializados.",
@@ -141,7 +132,6 @@ public class DealerController {
 
             Object controller = loader.getController();
 
-            // Inyección de dependencias
             if (controller instanceof ServiceInjectable) {
                 @SuppressWarnings("unchecked")
                 ServiceInjectable<DealerService> injectable = (ServiceInjectable<DealerService>) controller;
